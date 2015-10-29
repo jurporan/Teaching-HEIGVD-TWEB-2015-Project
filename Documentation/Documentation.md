@@ -25,7 +25,7 @@ Si le client n'a rien spécifié lors de sa requête, ```nb_recent``` = ```nb_op
         name : "<nom du sondage>",
         creator : "<nom du créateur>",
         creation_date : "<mm.dd.aaaa>",
-        state : "draft|open|close"
+        state : "draft|open|close",
         nb_questions : <nombre de questions>,
         nb_participations : <nombre de participants différents>
     }
@@ -48,8 +48,13 @@ Cette requête permet de faire de la pagination en renvoyant *nb* résultats dep
     {
         text : "<texte de la question>",
         choices_available : <nombre de choix qu'il est possible de choisir simultanément>,
-        optional : <true/false>,
-        choices : []
+        optional : <true|false>,
+        choices : [
+            {
+                id : <id>,
+                text : "<texte du choix>"
+            }
+        ]
     }
 ```
 
@@ -63,8 +68,98 @@ Cette requête permet de faire de la pagination en renvoyant *nb* résultats dep
             {
                 id : <id>,
                 text : "<texte du choix>",
-                correct : <true/false>
+                correct : <true|false>,
                 nb_chosen : <nb de personnes ayant sélectionné ce choix>
             }
+        ]
     }
 ```
+
+- **POST** ```/api/poll``` : Crée un nouveau sondage dans la base de données. Le status du sondage nouvellement créé est toujours *draft*. Le client envoie les informations du nouveau sondage sous le forme:
+
+```
+    {
+        name : "<nom du sondage>",
+        creator : "<nom du créateur>",
+        admin_password : "<mot de passe d'administration>",
+        user_password : "<mot de passe à destination des utilisateurs>"
+    }
+```
+
+Le mot de passe *admin_password* est obligatoire, mais le mot de passe *user_password* est facultatif, le cas échéant n'importe qui peut accéder au sondage et y participer.
+
+Le serveur répond simplement un message contenant l'dentifiant du sondage nouvellement créé: ```{id : <id>}```
+
+
+- **POST** ```/api/poll/<id>/question``` : Crée une nouvelle question dans le sondage spécifié. Le client spécifie la question et éventuellement les choix possibles sous la forme:
+
+```
+    {
+        text : "<texte de la question>",
+        choices_available : <nombre de choix qu'il est possible de choisir simultanément>,
+        optional : <true|false>,
+        choices : [
+            {
+                text : "<texte du choix>",
+                correct : <true|false>
+            }
+        ]
+    }
+```
+
+Le serveur répond simplement un message contenant l'dentifiant de la question nouvellement créée: ```{id : <id>}```
+
+- **POST** ```/api/poll/<id>/question/<id>/choice``` : Crée un nouveau choix dans la question spécifiée du sondage spécifié. Le nouveau choix prend la forme:
+
+```
+    {
+        text : "<texte du choix>",
+        correct : <true|false>
+    }
+```
+
+- **PUT** ```/api/poll/<id>``` : Modifie un sondage existant. Le client spécifie ses modifications dans la structure suivante:
+
+```
+    {
+        name : "<nom du sondage>",
+        creator : "<nom du créateur>",
+        admin_password : "<mot de passe d'administration>",
+        user_password : "<mot de passe à destination des utilisateurs>",
+        state : "draft|open|close",
+        public_results : <true|false>
+    }
+```
+
+Chaque champ est facultatif, le client peut très bien ne modifier qu'une propriété.
+
+- **PUT** ```/api/poll/<id>/question/<id>``` : Modifie une question existante. Le client spécifie ses modifications dans la structure suivante:
+
+```
+    {
+        text : "<texte de la question>",
+        choices_available : <nombre de choix qu'il est possible de choisir simultanément>,
+        optional : <true|false>
+    }
+```
+
+Chaque champ est facultatif, le client peut très bien ne modifier qu'une propriété.
+
+- **PUT** ```/api/poll/<id>/question/<id>/choice/<id>``` : Modifie un choix d'une question. Le client spécifie ses modifications dans la structure suivante:
+
+```
+    {
+        text : "<texte du choix>",
+        correct : <true|false>
+    }
+```
+
+Chaque champ est facultatif, le client peut très bien ne modifier qu'une propriété.
+
+- **DELETE** ```/api/poll/<id>``` : Supprime un sondage existant. Attention, cette action supprimera aussi toutes les questions et leurs choix liées à ce sondage.
+
+- **DELETE** ```/api/poll/<id>/question/<id>``` : Supprime une question d'un sondage. Attention, cette action supprimera aussi tous les choix liés à cette question.
+
+- **DELETE** ```/api/poll/<id>/question/<id>/choice/<id>``` : Supprime choix d'une question.
+
+
