@@ -1,6 +1,8 @@
 var express = require('express');
 router = express.Router();
 
+var errorCode = 418;
+
 module.exports = function (app)
 {
   app.use('/api', router);
@@ -68,5 +70,16 @@ router.get('/poll', function (req, res)
 router.post('/poll', function (req, res)
 {
     var data = req.body;
-    res.send("Envoyer du json ici!!! " + data.name);
+    var badData = new Array();
+
+    if (!(typeof data.name === "string")) {badData.push("name");}
+    if (!(typeof data.creator === "string")) {badData.push("creator");}
+    if (!(typeof data.admin_password === "string")) {badData.push("admin_password");}
+    
+    if (badData.length > 0) {res.send(errorCode, {errors : badData});}
+    else
+    {
+        // Données correctes
+        res.send("OK");
+    }
 });
