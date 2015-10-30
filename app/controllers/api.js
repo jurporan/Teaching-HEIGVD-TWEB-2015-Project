@@ -6,9 +6,10 @@ module.exports = function (app)
   app.use('/api', router);
 };
 
-router.get('/poll/*/question/*/results', function (req, res)
+// GET
+
+router.get('/poll/:pollid/question/:questionid/results', function (req, res)
 {
-    // Les paramètres sont récupérables via req.params[x]
   res.format(
   {
     'application/json': function()
@@ -18,9 +19,8 @@ router.get('/poll/*/question/*/results', function (req, res)
   });
 });
 
-router.get('/poll/*/question/*', function (req, res)
+router.get('/poll/:pollid/question/:questionid', function (req, res)
 {
-    // Les paramètres sont récupérables via req.params[x]
   res.format(
   {
     'application/json': function()
@@ -30,10 +30,8 @@ router.get('/poll/*/question/*', function (req, res)
   });
 });
 
-router.get('/polls/*', function (req, res)
+router.get('/polls/:type', function (req, res)
 {
-    // Les paramètres sont récupérables via req.params[x]
-    // * peut être égal à draft/open/close
   res.format(
   {
     'application/json': function()
@@ -43,9 +41,8 @@ router.get('/polls/*', function (req, res)
   });
 });
 
-router.get('/poll/*', function (req, res)
+router.get('/poll/:pollid', function (req, res)
 {
-    // Les paramètres sont récupérables via req.params[x]
   res.format(
   {
     'application/json': function()
@@ -57,7 +54,6 @@ router.get('/poll/*', function (req, res)
 
 router.get('/poll', function (req, res)
 {
-    // Les paramètres sont récupérables via req.params[x]
   res.format(
   {
     'application/json': function()
@@ -65,4 +61,12 @@ router.get('/poll', function (req, res)
       res.send("Envoyer du json ici!!!");
     }
   });
+});
+
+// POST
+
+router.post('/poll', function (req, res)
+{
+    var data = req.body;
+    res.send("Envoyer du json ici!!! " + data.name);
 });
