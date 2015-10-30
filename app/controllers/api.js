@@ -5,8 +5,7 @@ var express = require('express'),
 
 
 var errorCode = 418;
-module.exports = function (app)
-{
+module.exports = function (app) {
   app.use('/api', router);
 };
 
@@ -51,12 +50,7 @@ router.get('/poll/:pollid', function (req, res) {
 router.get('/poll', function (req, res) {
 
   var response = {};
-  Poll.count({
-      $or: [
-        {state: "active"},
-        {state: "drafti"}
-      ]
-    },
+  Poll.count({state: "active"},
     function (err, nb_open) {
       if (err) throw next(err);
 
@@ -85,54 +79,81 @@ router.get('/poll', function (req, res) {
 });
 
 // POST
-router.post('/poll', function (req, res)
-{
-    var data = req.body;
-    var badData = new Array();
+router.post('/poll', function (req, res) {
+  var data = req.body;
+  var badData = new Array();
 
-    if (!(typeof data.name === "string")) {badData.push("name");}
-    if (!(typeof data.creator === "string")) {badData.push("creator");}
-    if (!(typeof data.admin_password === "string")) {badData.push("admin_password");}
+  if (!(typeof data.name === "string")) {
+    badData.push("name");
+  }
+  if (!(typeof data.creator === "string")) {
+    badData.push("creator");
+  }
+  if (!(typeof data.admin_password === "string")) {
+    badData.push("admin_password");
+  }
 
-    if (badData.length > 0) {res.send(errorCode, {errors : badData});}
-    else
-    {
-        // Données correctes
-        // Attention, data.user_password peut être défini ou non, à contrôler
-        res.send("OK");
-    }
+  if (badData.length > 0) {
+    res.send(errorCode, {errors: badData});
+  }
+  else {
+    var newPoll = new Poll({
+      name: data.name,
+      creationDate: Date.now(),
+      state: "draft",
+      creator: data.creator,
+      admin_password: data.admin_password,
+      user_password: data.user_password
+    });
+
+    newPoll.save(function (err, insert) {
+      if (err) throw err;
+      console.log("Poll saved successfully");
+      res.send({id: insert.id});
+    });
+  }
 });
 
-router.post('/poll/:pollid/question', function (req, res)
-{
-    var data = req.body;
-    var badData = new Array();
+router.post('/poll/:pollid/question', function (req, res) {
+  var data = req.body;
+  var badData = new Array();
 
-    if (!(typeof data.text === "string")) {badData.push("text");}
-    if (!(typeof data.choices_available === "number")) {badData.push("choices_available");}
-    if (!(typeof data.optional === "boolean")) {badData.push("optional");}
+  if (!(typeof data.text === "string")) {
+    badData.push("text");
+  }
+  if (!(typeof data.choices_available === "number")) {
+    badData.push("choices_available");
+  }
+  if (!(typeof data.optional === "boolean")) {
+    badData.push("optional");
+  }
 
-    if (badData.length > 0) {res.send(errorCode, {errors : badData});}
-    else
-    {
-        // Données correctes
-        // Attention, choices peut déjà contenir des choix à traiter
-        res.send("OK");
-    }
+  if (badData.length > 0) {
+    res.send(errorCode, {errors: badData});
+  }
+  else {
+    // Données correctes
+    // Attention, choices peut déjà contenir des choix à traiter
+    res.send("OK");
+  }
 });
 
-router.post('/poll/:pollid/question/:questionid/choice', function (req, res)
-{
-    var data = req.body;
-    var badData = new Array();
+router.post('/poll/:pollid/question/:questionid/choice', function (req, res) {
+  var data = req.body;
+  var badData = new Array();
 
-    if (!(typeof data.text === "string")) {badData.push("text");}
-    if (!(typeof data.correct === "boolean")) {badData.push("correct");}
+  if (!(typeof data.text === "string")) {
+    badData.push("text");
+  }
+  if (!(typeof data.correct === "boolean")) {
+    badData.push("correct");
+  }
 
-    if (badData.length > 0) {res.send(errorCode, {errors : badData});}
-    else
-    {
-        // Données correctes
-        res.send("OK");
-    }
+  if (badData.length > 0) {
+    res.send(errorCode, {errors: badData});
+  }
+  else {
+    // Données correctes
+    res.send("OK");
+  }
 });
