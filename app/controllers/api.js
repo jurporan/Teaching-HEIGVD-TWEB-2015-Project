@@ -80,6 +80,25 @@ router.post('/poll', function (req, res)
     else
     {
         // Données correctes
+        // Attention, data.user_password peut être défini ou non, à contrôler
+        res.send("OK");
+    }
+});
+
+router.post('/poll/:pollid/question', function (req, res)
+{
+    var data = req.body;
+    var badData = new Array();
+
+    if (!(typeof data.text === "string")) {badData.push("text");}
+    if (!(typeof data.choices_available === "number")) {badData.push("choices_available");}
+    if (!(typeof data.optional === "boolean")) {badData.push("optional");}
+    
+    if (badData.length > 0) {res.send(errorCode, {errors : badData});}
+    else
+    {
+        // Données correctes
+        // Attention, choices peut déjà contenir des choix à traiter
         res.send("OK");
     }
 });
