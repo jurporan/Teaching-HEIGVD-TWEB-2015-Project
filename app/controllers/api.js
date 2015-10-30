@@ -102,3 +102,19 @@ router.post('/poll/:pollid/question', function (req, res)
         res.send("OK");
     }
 });
+
+router.post('/poll/:pollid/question/:questionid/choice', function (req, res)
+{
+    var data = req.body;
+    var badData = new Array();
+
+    if (!(typeof data.text === "string")) {badData.push("text");}
+    if (!(typeof data.correct === "boolean")) {badData.push("correct");}
+    
+    if (badData.length > 0) {res.send(errorCode, {errors : badData});}
+    else
+    {
+        // Données correctes
+        res.send("OK");
+    }
+});
