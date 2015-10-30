@@ -160,6 +160,6 @@ Chaque champ est facultatif, le client peut très bien ne modifier qu'une propri
 
 - **DELETE** ```/api/poll/<id>/question/<id>``` : Supprime une question d'un sondage. Attention, cette action supprimera aussi tous les choix liés à cette question.
 
-- **DELETE** ```/api/poll/<id>/question/<id>/choice/<id>``` : Supprime choix d'une question.
+- **DELETE** ```/api/poll/<id>/question/<id>/choice/<id>``` : Supprime un choix d'une question.
 
-
+Dans de futures versions de l'application, l'API couvrira la gestion des réponses aux questions.
