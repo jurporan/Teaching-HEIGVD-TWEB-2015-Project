@@ -106,8 +106,12 @@ head
     script(src='js/jquery.js')
     // Bootstrap Core JavaScript
     script(src='js/bootstrap.min.js')
- 
+    script(src='js/stat.js')
+
   p Welcome to #{title}
-  p Tot polls:  #{pollsTot}
-  p Tot polls week: #{pollsTotWeek}
-  p Tot polls open: #{pollsTotOpen}
+  p Tot polls:
+    span#nbTotal -
+  p Tot polls week:
+    span#nbThisWeek -
+  p Tot polls open:
+    span#nbOpen -
