@@ -26,8 +26,8 @@ var config = {
     app: {
       name: 'teaching-heigvd-tweb-2015-project'
     },
-    port: 3000,
-    db: 'mongodb://localhost/teaching-heigvd-tweb-2015-project-production'
+    port: process.env.PORT,
+    db: 'mongodb://jermoret:_Ma$t3rQ#b0rd@ds045454.mongolab.com:45454/heroku_scf8b718'
   }
 };
 
