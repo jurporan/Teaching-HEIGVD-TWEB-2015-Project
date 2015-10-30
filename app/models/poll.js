@@ -5,8 +5,11 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var PollSchema = new Schema({
-  title: String,
+  name: String,
   creationDate: Date,
+  creator: String,
+  admin_password: String,
+  user_password: String,
   state: String
 });
 
