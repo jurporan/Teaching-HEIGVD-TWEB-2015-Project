@@ -5,8 +5,9 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var ChoiceSchema = new Schema({
-  key: String,
-  text: String
+  text: String,
+  correct: Boolean,
+  question_id: String
 });
 
 mongoose.model('Choice', ChoiceSchema);

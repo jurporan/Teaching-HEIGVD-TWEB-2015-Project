@@ -15,16 +15,4 @@ var PollSchema = new Schema({
 
 mongoose.model('Poll', PollSchema);
 
-/* New poll
-var poll1 = new Poll({
-  title: "First poll",
-  creationDate: Date.now(),
-  state: "open"
-});
-
-poll1.save(function(err){
-  if(err) throw err;
-  console.log("Poll saved successfully");
-})*/
-
 

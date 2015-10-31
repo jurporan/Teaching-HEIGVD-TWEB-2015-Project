@@ -4,9 +4,10 @@
 var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
-var PersonSchema = new Schema({
+var ParticipantSchema = new Schema({
   participant: String,
-  submissionDate: Date
+  submissionDate: Date,
+  poll_id: String
 });
 
-mongoose.model('Person', PersonSchema);
+mongoose.model('Participant', ParticipantSchema);

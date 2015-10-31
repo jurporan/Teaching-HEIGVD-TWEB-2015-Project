@@ -5,8 +5,10 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var QuestionSchema = new Schema({
-  title: String,
-  type: String
+  text: String,
+  choices_available: Number,
+  optional: Boolean,
+  poll_id: String
 });
 
 mongoose.model('Question', QuestionSchema);

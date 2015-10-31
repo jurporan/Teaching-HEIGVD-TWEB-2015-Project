@@ -1,8 +1,32 @@
 var express = require('express'),
   router = express.Router(),
   mongoose = require('mongoose'),
-  Poll = mongoose.model('Poll');
+  Poll = mongoose.model('Poll'),
+  Question = mongoose.model('Question'),
+  Participant = mongoose.model('Participant'),
+  Choice = mongoose.model('Choice'),
+  Answer = mongoose.model('Answer');
 
+function getPollById(id, callback) {
+  var response = {};
+  Poll.findOne({_id: id}, function (err, poll) {
+    if (err) throw err;
+    if (!poll) callback(null, 404);
+    response.name = poll.name;
+    response.creator = poll.creator;
+    response.creation_date = poll.creationDate;
+    response.state = poll.state;
+    Question.count({poll_id: id}, function (err, nb_quest) {
+      if (err) throw err;
+      response.nb_questions = nb_quest;
+      Participant.count({poll_id: id}, function (err, nb_part) {
+        if (err) throw err;
+        response.nb_participations = nb_part;
+        callback(response);
+      });
+    });
+  });
+}
 
 var errorCode = 418;
 module.exports = function (app) {
@@ -12,37 +36,95 @@ module.exports = function (app) {
 // GET
 
 router.get('/poll/:pollid/question/:questionid/results', function (req, res) {
-  res.format(
-    {
-      'application/json': function () {
-        res.send({});
-      }
+  var response = {};
+  Question.findOne({_id: req.params.questionid}, function (err, quest) {
+    if (err) throw err;
+    response.text = quest.text;
+    response.nb_answers = 0;
+    response.results = [];
+    Choice.find({question_id: req.params.questionid}, function (err, choices) {
+      if (err) throw err;
+      choices.forEach(function (choice, idx, arr) {
+        Answer.count({choice_id: choice._id}, function (err, nbr) {
+          if (err) throw err;
+          response.nb_answers += nbr;
+          response.results.push({
+            id: choice._id,
+            text: choice.text,
+            correct: choice.correct,
+            nb_chosen: nbr
+          });
+          if (idx === arr.length - 1) {
+            res.format(
+              {
+                'application/json': function () {
+                  res.send(response);
+                }
+              });
+          }
+        })
+      });
     });
+  });
+
 });
 
 router.get('/poll/:pollid/question/:questionid', function (req, res) {
-  res.format(
-    {
-      'application/json': function () {
-        res.send("Envoyer du json ici!!!");
-      }
+  var response = {};
+  Question.findOne({_id: req.params.questionid}, function (err, quest) {
+    if (err) throw err;
+    response.text = quest.text;
+    response.choices_available = quest.choices_available;
+    response.optional = quest.optional;
+    response.choices = [];
+    Choice.find({question_id: req.params.questionid}, function (err, choices) {
+      if (err) throw err;
+      choices.forEach(function (choice, idx, arr) {
+        response.choices.push(choice);
+        if (idx === arr.length - 1) {
+          res.format(
+            {
+              'application/json': function () {
+                res.send(response);
+              }
+            });
+        }
+      });
     });
+  });
+
 });
 
+
 router.get('/polls/:type', function (req, res) {
-  res.format(
-    {
-      'application/json': function () {
-        res.send("Envoyer du json ici!!!");
-      }
+  var response = {polls: []};
+  Poll.find({state: req.params.type}, function (err, polls) {
+    if (err) throw err;
+    if (!polls) return res.send(404);
+    polls.forEach(function (poll, idx, arr) {
+      getPollById(poll._id, function (resp, err) {
+        if (err) throw err;
+        response.polls.push(resp);
+        if (idx === arr.length - 1) {
+          res.format(
+            {
+              'application/json': function () {
+                res.send(response);
+              }
+            });
+        }
+      });
     });
+  })
 });
 
 router.get('/poll/:pollid', function (req, res) {
   res.format(
     {
       'application/json': function () {
-        res.send("Envoyer du json ici!!!");
+        getPollById(req.params.pollid, function (poll) {
+          res.send(poll);
+        });
       }
     });
 });
@@ -108,7 +190,6 @@ router.post('/poll', function (req, res) {
 
     newPoll.save(function (err, insert) {
       if (err) throw err;
-      console.log("Poll saved successfully");
       res.send({id: insert.id});
     });
   }
@@ -132,9 +213,28 @@ router.post('/poll/:pollid/question', function (req, res) {
     res.send(errorCode, {errors: badData});
   }
   else {
-    // Données correctes
-    // Attention, choices peut déjà contenir des choix à traiter
-    res.send("OK");
+    var newQuestion = new Question({
+      text: data.text,
+      choices_available: data.choices_available,
+      optional: data.optional,
+      poll_id: req.params.pollid,
+    });
+
+    newQuestion.save(function (err, quest) {
+      if (err) throw err;
+      res.send({id: quest.id});
+
+      data.choices.forEach(function (choice, idx, array) {
+        var newChoice = new Choice({
+          text: choice.text,
+          correct: choice.correct,
+          question_id: quest.id
+        });
+        newChoice.save(function (err, save) {
+          if (err) throw err;
+        });
+      });
+    });
   }
 });
 
@@ -153,7 +253,15 @@ router.post('/poll/:pollid/question/:questionid/choice', function (req, res) {
     res.send(errorCode, {errors: badData});
   }
   else {
-    // Données correctes
-    res.send("OK");
+    var newChoice = new Choice({
+      text: data.text,
+      correct: data.correct,
+      question_id: req.params.questionid
+    });
+    newChoice.save(function (err, save) {
+      if (err) throw err;
+      res.send({id: save.id});
+    });
   }
-});
+})
+;
