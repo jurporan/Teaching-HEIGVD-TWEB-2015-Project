@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>QPolls</title>
+    <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+</description>
+    <link>http://jurporan.github.io/teaching-heigvd-tweb-2015-project/</link>
+    <atom:link href="http://jurporan.github.io/teaching-heigvd-tweb-2015-project/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Sat, 31 Oct 2015 16:00:37 +0100</pubDate>
+    <lastBuildDate>Sat, 31 Oct 2015 16:00:37 +0100</lastBuildDate>
+    <generator>Jekyll v3.0.0</generator>
+    
+      <item>
+        <title>API Rest</title>
+        <description>&lt;p&gt;Blablabla&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 31 Oct 2015 11:40:57 +0100</pubDate>
+        <link>http://jurporan.github.io/teaching-heigvd-tweb-2015-project/2015/10/31/tests.html</link>
+        <guid isPermaLink="true">http://jurporan.github.io/teaching-heigvd-tweb-2015-project/2015/10/31/tests.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Tests Effectués</title>
+        <description>&lt;p&gt;Blablabla&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 31 Oct 2015 09:40:57 +0100</pubDate>
+        <link>http://jurporan.github.io/teaching-heigvd-tweb-2015-project/2015/10/31/rest.html</link>
+        <guid isPermaLink="true">http://jurporan.github.io/teaching-heigvd-tweb-2015-project/2015/10/31/rest.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Modèle de domaine</title>
+        <description>&lt;p&gt;Blablabla&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 31 Oct 2015 08:40:57 +0100</pubDate>
+        <link>http://jurporan.github.io/teaching-heigvd-tweb-2015-project/2015/10/31/modele.html</link>
+        <guid isPermaLink="true">http://jurporan.github.io/teaching-heigvd-tweb-2015-project/2015/10/31/modele.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Mockup</title>
+        <description>&lt;p&gt;Blablabla&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 31 Oct 2015 07:40:57 +0100</pubDate>
+        <link>http://jurporan.github.io/teaching-heigvd-tweb-2015-project/2015/10/31/mockup.html</link>
+        <guid isPermaLink="true">http://jurporan.github.io/teaching-heigvd-tweb-2015-project/2015/10/31/mockup.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Fonctionnalités prévues</title>
+        <description>&lt;p&gt;BlaBlaBla&lt;/p&gt;
+</description>
+        <pubDate>Sat, 31 Oct 2015 06:40:57 +0100</pubDate>
+        <link>http://jurporan.github.io/teaching-heigvd-tweb-2015-project/2015/10/31/fonctionnalites.html</link>
+        <guid isPermaLink="true">http://jurporan.github.io/teaching-heigvd-tweb-2015-project/2015/10/31/fonctionnalites.html</guid>
+        
+        
+      </item>
+    
+  </channel>
+</rss>
