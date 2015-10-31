@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>API Rest</title>
+  <title>Tests Effectués</title>
 
   <!-- Bootstrap Core CSS -->
   <link rel="stylesheet" href="/Teaching-HEIGVD-TWEB-2015-Project/css/main.css">
@@ -74,12 +74,47 @@
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">API Rest</h1>
+    <h1 class="post-title" itemprop="name headline">Tests Effectués</h1>
     <p class="post-meta"><time datetime="2015-10-31T11:40:57+01:00" itemprop="datePublished">Oct 31, 2015</time></p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <p>Blablabla</p>
+    <h1 id="stratgie-de-tests">Stratégie de tests</h1>
+
+<p>Afin de tester les fonctionnalités de base de notre API REST, nous allons tester les quelques requêtes implémentées dans cette partie 1:</p>
+
+<p>Premièrement nous allons insérer des données:</p>
+
+<ul>
+  <li>Créer plusieurs sondages</li>
+  <li>Créer plusieurs questions dans chacun de ces sondages, parfois en spécifiant directement une liste de choix</li>
+  <li>Ajouter plusieurs choix dans chacune des questions</li>
+</ul>
+
+<p>Puis, dans un second temps, nous allons contrôler que ces données ont bien été créées:</p>
+
+<ul>
+  <li>Récupérer les statistiques de la page d’accueil et contrôler que les trois statistiques soient cohérentes par rapport aux données insérées, soit:
+    <ul>
+      <li>Nombre de sondages total = nombre de sondages créés</li>
+      <li>Nombre de sondages de cette semaine = nombre de sondages créés</li>
+      <li>Nombre de sondages ouverts 0</li>
+    </ul>
+  </li>
+  <li>
+    <p>Via la même URL <code>/api/poll</code>, récupérer le nombre de sondages créés récemment en précisant <code>?since=&lt;date de demain&gt;</code> et la statistique <code>nb_recent</code> devrait être = 0.</p>
+  </li>
+  <li>
+    <p>Récupérer les listes aux adresses <code>/api/polls/draft</code>, <code>/api/polls/open</code> et <code>/api/polls/closed</code> où les sondages <code>draft</code> devraient contenir la liste de tous les sondages créés précédemment, et les deux autres devraient être vides</p>
+  </li>
+  <li>
+    <p>Avec la liste des sondages récupérés au point précédent, contrôler que leurs données correspondent aux données insérées à leur création</p>
+  </li>
+  <li>
+    <p>Récupérer les questions d’un sondage et contrôler qu’il y en a autant que de questions insérées</p>
+  </li>
+  <li>Pour chacune des questions, contrôler que le nombre de choix insérés correspond au nombre de choix spécifiés à la création de la question + les choix ajoutés après coup</li>
+</ul>
 
 
   </div>

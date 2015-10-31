@@ -6,13 +6,48 @@
 </description>
     <link>http://jurporan.github.io/Teaching-HEIGVD-TWEB-2015-Project/</link>
     <atom:link href="http://jurporan.github.io/Teaching-HEIGVD-TWEB-2015-Project/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 31 Oct 2015 17:51:42 +0100</pubDate>
-    <lastBuildDate>Sat, 31 Oct 2015 17:51:42 +0100</lastBuildDate>
+    <pubDate>Sat, 31 Oct 2015 18:11:52 +0100</pubDate>
+    <lastBuildDate>Sat, 31 Oct 2015 18:11:52 +0100</lastBuildDate>
     <generator>Jekyll v3.0.0</generator>
     
       <item>
-        <title>API Rest</title>
-        <description>&lt;p&gt;Blablabla&lt;/p&gt;
+        <title>Tests Effectués</title>
+        <description>&lt;h1 id=&quot;stratgie-de-tests&quot;&gt;Stratégie de tests&lt;/h1&gt;
+
+&lt;p&gt;Afin de tester les fonctionnalités de base de notre API REST, nous allons tester les quelques requêtes implémentées dans cette partie 1:&lt;/p&gt;
+
+&lt;p&gt;Premièrement nous allons insérer des données:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Créer plusieurs sondages&lt;/li&gt;
+  &lt;li&gt;Créer plusieurs questions dans chacun de ces sondages, parfois en spécifiant directement une liste de choix&lt;/li&gt;
+  &lt;li&gt;Ajouter plusieurs choix dans chacune des questions&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Puis, dans un second temps, nous allons contrôler que ces données ont bien été créées:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Récupérer les statistiques de la page d’accueil et contrôler que les trois statistiques soient cohérentes par rapport aux données insérées, soit:
+    &lt;ul&gt;
+      &lt;li&gt;Nombre de sondages total = nombre de sondages créés&lt;/li&gt;
+      &lt;li&gt;Nombre de sondages de cette semaine = nombre de sondages créés&lt;/li&gt;
+      &lt;li&gt;Nombre de sondages ouverts 0&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Via la même URL &lt;code&gt;/api/poll&lt;/code&gt;, récupérer le nombre de sondages créés récemment en précisant &lt;code&gt;?since=&amp;lt;date de demain&amp;gt;&lt;/code&gt; et la statistique &lt;code&gt;nb_recent&lt;/code&gt; devrait être = 0.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Récupérer les listes aux adresses &lt;code&gt;/api/polls/draft&lt;/code&gt;, &lt;code&gt;/api/polls/open&lt;/code&gt; et &lt;code&gt;/api/polls/closed&lt;/code&gt; où les sondages &lt;code&gt;draft&lt;/code&gt; devraient contenir la liste de tous les sondages créés précédemment, et les deux autres devraient être vides&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Avec la liste des sondages récupérés au point précédent, contrôler que leurs données correspondent aux données insérées à leur création&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Récupérer les questions d’un sondage et contrôler qu’il y en a autant que de questions insérées&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Pour chacune des questions, contrôler que le nombre de choix insérés correspond au nombre de choix spécifiés à la création de la question + les choix ajoutés après coup&lt;/li&gt;
+&lt;/ul&gt;
 
 </description>
         <pubDate>Sat, 31 Oct 2015 11:40:57 +0100</pubDate>
@@ -23,8 +58,237 @@
       </item>
     
       <item>
-        <title>Tests Effectués</title>
-        <description>&lt;p&gt;Blablabla&lt;/p&gt;
+        <title>API Rest</title>
+        <description>&lt;h1 id=&quot;documentation&quot;&gt;Documentation&lt;/h1&gt;
+
+&lt;h1 id=&quot;interface-rest&quot;&gt;Interface REST&lt;/h1&gt;
+&lt;p&gt;L’interface REST de notre application permet d’interagir avec les fonctionnalités des sondages et de ce qui les compose. L’API est utilise le JSON comme format de transmission de données. Elle est disponible à l’adresse &lt;code&gt;/api&lt;/code&gt; et reconnaît les chemins suivants:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;GET&lt;/strong&gt; &lt;code&gt;/api/poll&lt;/code&gt; : Renvoie des statistiques à propos de tous les sondages existants:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;
+    {
+        nb_open : &amp;lt;nombre de sondages ouverts&amp;gt;
+        nb_closed : &amp;lt;nombre de sondages terminés&amp;gt;
+        nb_recent : &amp;lt;nombres de sondages récents&amp;gt;
+    }
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Le nombre de sondages récents correspond au nombre de sondages créés depuis une date x fournie par le client lorsqu’il effectue sa requête dans l’URL: &lt;code&gt;?since=mm.dd.aaaa&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Si le client n’a rien spécifié lors de sa requête, &lt;code&gt;nb_recent&lt;/code&gt; = &lt;code&gt;nb_open + nb_closed&lt;/code&gt;.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;GET&lt;/strong&gt; &lt;code&gt;/api/poll/&amp;lt;pollid&amp;gt;&lt;/code&gt; : Renvoie des informations à propos d’un sondage en particulier sous la forme suivante:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;
+    {
+        name : &quot;&amp;lt;nom du sondage&amp;gt;&quot;,
+        creator : &quot;&amp;lt;nom du créateur&amp;gt;&quot;,
+        creation_date : &quot;&amp;lt;mm.dd.aaaa&amp;gt;&quot;,
+        state : &quot;draft|open|close&quot;,
+        nb_questions : &amp;lt;nombre de questions&amp;gt;,
+        nb_participations : &amp;lt;nombre de participants différents&amp;gt;
+    }
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;GET&lt;/strong&gt; &lt;code&gt;/api/polls/draft&lt;/code&gt;, &lt;code&gt;/api/polls/open&lt;/code&gt; et &lt;code&gt;/api/polls/closed&lt;/code&gt; : Renvoie la liste des sondages ouverts, respectivement terminés selon le json suivant:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;
+    {
+        polls : [{poll}, {poll}, ..., {poll}]
+    }
+&lt;/code&gt;
+où la structure &lt;code&gt;{poll}&lt;/code&gt; correspond au json décrit au point précédent.&lt;/p&gt;
+
+&lt;p&gt;Cette requête permet de faire de la pagination en renvoyant &lt;em&gt;nb&lt;/em&gt; résultats depuis un numéro &lt;em&gt;FROM&lt;/em&gt; en spécifiant dans l’URL les paramètres suivants: &lt;code&gt;?from=x&amp;amp;nb=y&lt;/code&gt;. Attention, si aucun paramètre n’est spécifié, la liste de tous les sondages est renvoyée (et c’est le mal!).&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;GET&lt;/strong&gt; &lt;code&gt;/api/poll/&amp;lt;pollid&amp;gt;/question/&amp;lt;questionid&amp;gt;&lt;/code&gt; : Renvoie les informations à propos d’une question particulière d’un sondage en particulier sous la forme:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;
+    {
+        text : &quot;&amp;lt;texte de la question&amp;gt;&quot;,
+        choices_available : &amp;lt;nombre de choix qu&#39;il est possible de choisir simultanément&amp;gt;,
+        optional : &amp;lt;true|false&amp;gt;,
+        choices : [
+            {
+                id : &amp;lt;id&amp;gt;,
+                text : &quot;&amp;lt;texte du choix&amp;gt;&quot;
+            }
+        ]
+    }
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;GET&lt;/strong&gt; &lt;code&gt;/api/poll/&amp;lt;pollid&amp;gt;/question/&amp;lt;questionid&amp;gt;/results&lt;/code&gt; : Renvoie les résultats actuels pour une question sous la forme:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;
+    {
+        text : &quot;&amp;lt;texte de la question&amp;gt;&quot;
+        nb_answers : &amp;lt;nombre de résultats collectés&amp;gt;,
+        results : [
+            {
+                id : &amp;lt;id&amp;gt;,
+                text : &quot;&amp;lt;texte du choix&amp;gt;&quot;,
+                correct : &amp;lt;true|false&amp;gt;,
+                nb_chosen : &amp;lt;nb de personnes ayant sélectionné ce choix&amp;gt;
+            }
+        ]
+    }
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;POST&lt;/strong&gt; &lt;code&gt;/api/poll&lt;/code&gt; : Crée un nouveau sondage dans la base de données. Le status du sondage nouvellement créé est toujours &lt;em&gt;draft&lt;/em&gt;. Le client envoie les informations du nouveau sondage sous le forme:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;
+    {
+        name : &quot;&amp;lt;nom du sondage&amp;gt;&quot;,
+        creator : &quot;&amp;lt;nom du créateur&amp;gt;&quot;,
+        admin_password : &quot;&amp;lt;mot de passe d&#39;administration&amp;gt;&quot;,
+        user_password : &quot;&amp;lt;mot de passe à destination des utilisateurs&amp;gt;&quot;
+    }
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Le mot de passe &lt;em&gt;admin_password&lt;/em&gt; est obligatoire, mais le mot de passe &lt;em&gt;user_password&lt;/em&gt; est facultatif, le cas échéant n’importe qui peut accéder au sondage et y participer.&lt;/p&gt;
+
+&lt;p&gt;Le serveur répond simplement un message contenant l’dentifiant du sondage nouvellement créé: &lt;code&gt;{id : &amp;lt;id&amp;gt;}&lt;/code&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;POST&lt;/strong&gt; &lt;code&gt;/api/poll/&amp;lt;pollid&amp;gt;/question&lt;/code&gt; : Crée une nouvelle question dans le sondage spécifié. Le client spécifie la question et éventuellement les choix possibles sous la forme:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;
+    {
+        text : &quot;&amp;lt;texte de la question&amp;gt;&quot;,
+        choices_available : &amp;lt;nombre de choix qu&#39;il est possible de choisir simultanément&amp;gt;,
+        optional : &amp;lt;true|false&amp;gt;,
+        choices : [
+            {
+                text : &quot;&amp;lt;texte du choix&amp;gt;&quot;,
+                correct : &amp;lt;true|false&amp;gt;
+            }
+        ]
+    }
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Le serveur répond simplement un message contenant l’dentifiant de la question nouvellement créée: &lt;code&gt;{id : &amp;lt;id&amp;gt;}&lt;/code&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;POST&lt;/strong&gt; &lt;code&gt;/api/poll/&amp;lt;pollid&amp;gt;/question/&amp;lt;questionid&amp;gt;/choice&lt;/code&gt; : Crée un nouveau choix dans la question spécifiée du sondage spécifié. Le nouveau choix prend la forme:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;
+    {
+        text : &quot;&amp;lt;texte du choix&amp;gt;&quot;,
+        correct : &amp;lt;true|false&amp;gt;
+    }
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;PUT&lt;/strong&gt; &lt;code&gt;/api/poll/&amp;lt;pollid&amp;gt;&lt;/code&gt; : Modifie un sondage existant. Le client spécifie ses modifications dans la structure suivante:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;
+    {
+        name : &quot;&amp;lt;nom du sondage&amp;gt;&quot;,
+        creator : &quot;&amp;lt;nom du créateur&amp;gt;&quot;,
+        admin_password : &quot;&amp;lt;mot de passe d&#39;administration&amp;gt;&quot;,
+        user_password : &quot;&amp;lt;mot de passe à destination des utilisateurs&amp;gt;&quot;,
+        state : &quot;draft|open|close&quot;,
+        public_results : &amp;lt;true|false&amp;gt;
+    }
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Chaque champ est facultatif, le client peut très bien ne modifier qu’une propriété.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;PUT&lt;/strong&gt; &lt;code&gt;/api/poll/&amp;lt;pollid&amp;gt;/question/&amp;lt;questionid&amp;gt;&lt;/code&gt; : Modifie une question existante. Le client spécifie ses modifications dans la structure suivante:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;
+    {
+        text : &quot;&amp;lt;texte de la question&amp;gt;&quot;,
+        choices_available : &amp;lt;nombre de choix qu&#39;il est possible de choisir simultanément&amp;gt;,
+        optional : &amp;lt;true|false&amp;gt;
+    }
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Chaque champ est facultatif, le client peut très bien ne modifier qu’une propriété.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;PUT&lt;/strong&gt; &lt;code&gt;/api/poll/&amp;lt;pollid&amp;gt;/question/&amp;lt;questionid&amp;gt;/choice/&amp;lt;choiceid&amp;gt;&lt;/code&gt; : Modifie un choix d’une question. Le client spécifie ses modifications dans la structure suivante:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;
+    {
+        text : &quot;&amp;lt;texte du choix&amp;gt;&quot;,
+        correct : &amp;lt;true|false&amp;gt;
+    }
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Chaque champ est facultatif, le client peut très bien ne modifier qu’une propriété.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;DELETE&lt;/strong&gt; &lt;code&gt;/api/poll/&amp;lt;pollid&amp;gt;&lt;/code&gt; : Supprime un sondage existant. Attention, cette action supprimera aussi toutes les questions et leurs choix liées à ce sondage.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;DELETE&lt;/strong&gt; &lt;code&gt;/api/poll/&amp;lt;pollid&amp;gt;/question/&amp;lt;questionid&amp;gt;&lt;/code&gt; : Supprime une question d’un sondage. Attention, cette action supprimera aussi tous les choix liés à cette question.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;DELETE&lt;/strong&gt; &lt;code&gt;/api/poll/&amp;lt;pollid&amp;gt;/question/&amp;lt;questionid&amp;gt;/choice/&amp;lt;choiceid&amp;gt;&lt;/code&gt; : Supprime un choix d’une question.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Dans cette première partie seront implémentées les requêtes GET et POST ci-dessus. Deux exemples, un GET et un POST sont dosponibles sur &lt;a href=&quot;REST examples.md&quot;&gt;cette page&lt;/a&gt;. Dans de futures versions de l’application, l’API couvrira la gestion des participations et des réponses aux questions.&lt;/p&gt;
+
+&lt;h1 id=&quot;exemples-de-lutilisation-de-linterface-rest&quot;&gt;Exemples de l’utilisation de l’interface REST&lt;/h1&gt;
+&lt;p&gt;GET &lt;code&gt;/api/poll&lt;/code&gt;
+—————&lt;/p&gt;
+
+&lt;p&gt;```
+GET /api/poll HTTP/1.1
+Host: localhost:3000
+Accept: application/json&lt;/p&gt;
+
+&lt;p&gt;HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 41&lt;/p&gt;
+
+&lt;p&gt;{“nb_open”:0,”nb_closed”:0,”nb_recent”:0}
+```&lt;/p&gt;
+
+&lt;h2 id=&quot;post-apipoll&quot;&gt;POST &lt;code&gt;/api/poll&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;```
+POST /api/poll HTTP/1.1
+Host: localhost:3000
+Content-Type: application/json; charset=UTF-8
+Content-Length: 107&lt;/p&gt;
+
+&lt;p&gt;{
+   “name” : “TWEB - Questionnaire n..1”,
+   “creator” : “QPoll staff”,
+   “admin_password” : “tweb1234”
+}&lt;/p&gt;
+
+&lt;p&gt;HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 33&lt;/p&gt;
+
+&lt;p&gt;{“id”:”5634abe6e4530b2459ce91e5”}
+```&lt;/p&gt;
 
 </description>
         <pubDate>Sat, 31 Oct 2015 09:40:57 +0100</pubDate>
