@@ -15,13 +15,13 @@ Puis, dans un second temps, nous allons contrôler que ces données ont bien ét
     - Nombre de sondages de cette semaine = nombre de sondages créés
     - Nombre de sondages ouverts 0
 
-  - Via la même URL ```/api/poll```, récupérer le nombre de sondages créés récemment en précisant ```?since=<date de demain>``` et la statistique ```nb_recent``` devrait être = 0.
+- Via la même URL ```/api/poll```, récupérer le nombre de sondages créés récemment en précisant ```?since=<date de demain>``` et la statistique ```nb_recent``` devrait être = 0.
 
-  - Récupérer les listes aux adresses ```/api/polls/draft```, ```/api/polls/open``` et ```/api/polls/closed``` où les sondages ```draft``` devraient contenir la liste de tous les sondages créés précédemment, et les deux autres devraient être vides
+- Récupérer les listes aux adresses ```/api/polls/draft```, ```/api/polls/open``` et ```/api/polls/closed``` où les sondages ```draft``` devraient contenir la liste de tous les sondages créés précédemment, et les deux autres devraient être vides
 
-  - Avec la liste des sondages récupérés au point précédent, contrôler que leurs données correspondent aux données insérées à leur création
+- Avec la liste des sondages récupérés au point précédent, contrôler que leurs données correspondent aux données insérées à leur création
 
-  - Récupérer les questions d'un sondage et contrôler que leurs données correspondent à leur création
+- Récupérer les questions d'un sondage et contrôler que leurs données correspondent à leur création
 
-  - Pour chacune des questions, contrôler que les choix insérés correspondent aux choix spécifiés à la création de la question + les choix ajoutés après coup
+- Pour chacune des questions, contrôler que les choix insérés correspondent aux choix spécifiés à la création de la question + les choix ajoutés après coup
     
