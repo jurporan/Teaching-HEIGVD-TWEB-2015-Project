@@ -21,7 +21,7 @@ Puis, dans un second temps, nous allons contrôler que ces données ont bien ét
 
 - Avec la liste des sondages récupérés au point précédent, contrôler que leurs données correspondent aux données insérées à leur création
 
-- Récupérer les questions d'un sondage et contrôler que leurs données correspondent à leur création
+- Récupérer les questions d'un sondage et contrôler qu'il y en a autant que de questions insérées
 
-- Pour chacune des questions, contrôler que les choix insérés correspondent aux choix spécifiés à la création de la question + les choix ajoutés après coup
+- Pour chacune des questions, contrôler que le nombre de choix insérés correspond au nombre de choix spécifiés à la création de la question + les choix ajoutés après coup
     
