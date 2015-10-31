@@ -6,25 +6,14 @@ include ./includes/head.jade
       .headline
         .container
           h2 QPolls
-    // Page Content
-    .container
-      hr.featurette-divider
-      // First Featurette
-      #about.featurette
-        img.featurette-image.img-circle.img-responsive.pull-right(src='http://placehold.it/500x500')
-        |             
-        h2.featurette-heading
-          | This First Heading
-          span.text-muted Will Catch Your Eye
-        |             
-        p.lead
-          | Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.
-p Welcome to #{title}
-p Tot polls:
-  span#nbTotal -
-p Tot polls week:
-  span#nbThisWeek -
-p Tot polls open:
-  span#nbOpen -
+          h3 Just some statistics
+        
+          p Tot polls:
+            span#nbTotal -
+          p Tot polls week:
+            span#nbThisWeek -
+          p Tot polls open:
+            span#nbOpen -
       
-      include ./includes/footer.jade
+        include ./includes/footer.jade
+        script(src='js/stat.js')
