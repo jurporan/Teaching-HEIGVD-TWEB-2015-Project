@@ -1,19 +1,24 @@
 include ./includes/head.jade
-  body
+body
     include ./includes/header.jade
+    link(href='css/stat.css', rel='stylesheet')
     // Full Width Image Header
     header.header-image
       .headline
         .container
           h2 QPolls
           h3 Just some statistics
-        
-          p Tot polls:
-            span#nbTotal -
-          p Tot polls week:
-            span#nbThisWeek -
-          p Tot polls open:
-            span#nbOpen -
-      
+          
+          table.statTable
+            tr
+              td Tot polls:
+              td#nbTotal.statTableNumber -
+            tr
+              td Tot polls week:
+              td#nbThisWeek.statTableNumber -
+            tr
+              td Tot polls open:
+              td#nbOpen.statTableNumber -
+
         include ./includes/footer.jade
         script(src='js/stat.js')
