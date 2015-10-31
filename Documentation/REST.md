@@ -162,4 +162,5 @@ Chaque champ est facultatif, le client peut très bien ne modifier qu'une propri
 
 - **DELETE** ```/api/poll/<pollid>/question/<questionid>/choice/<choiceid>``` : Supprime un choix d'une question.
 
-Dans de futures versions de l'application, l'API couvrira la gestion des réponses aux questions.
+Dans cette première partie seront implémentées les requêtes GET et POST ci-dessus. Deux exemples, un GET et un POST sont dosponibles sur [cette page](REST examples.md). Dans de futures versions de l'application, l'API couvrira la gestion des participations et des réponses aux questions.
+
