@@ -12,19 +12,19 @@ var express = require('express'),
 // This function is useful to fetch a Poll object with just its ID
 function getPollById(id, callback) {
   var response = {};
-  
+
   // We perfirm a search
   Poll.findOne({_id: id}, function (err, poll) {
     if (err) throw err;
     if (!poll) callback(null, 404);
-    
+
     // We set the properties of the Poll we are going to return
     response.id = poll._id;
     response.name = poll.name;
     response.creator = poll.creator;
     response.creation_date = poll.creationDate;
     response.state = poll.state;
-    
+
     // We perform the count of questions and participations
     Question.count({poll_id: id}, function (err, nb_quest) {
       if (err) throw err;
@@ -42,37 +42,39 @@ function getPollById(id, callback) {
 function getQuestionsByPoll(id, callback)
 {
     var response = [];
-    
+
     // We perform the search
     Question.find({poll_id : id}, function (err, qs)
     {
         if (err) throw err;
         if (!qs) callback(null, 404);
-        
+
         // We handle every question in it
         qs.forEach(function(q, qidx, qarr)
         {
+            console.log(q);
             var question = {};
             question.id = q._id;
             question.text = q.text;
             question.choices_available = q.choices_available;
             question.optional = q.optional;
             question.choices = [];
-            
+
             // We can look now for the choices available for this question
             Choice.find({question_id : q._id}, function (err, cs)
             {
                 if (err) throw err;
                 if (!cs) callback(null, 404);
-                
+
                 // We handle every choice
                 cs.forEach(function (c, cidx, carr)
                 {
+                    console.log(c);
                     var choice = {};
                     choice.id = c._id;
                     choice.text = c.text;
                     question.choices.push(choice);
-                    
+
                     // When the last choice of the last question has been stored, we can return the array
                     if (qidx == qarr.length - 1 && cidx == carr.length - 1)
                     {
@@ -97,19 +99,19 @@ module.exports = function (app) {
 
 router.get('/poll/:pollid/question/:questionid/results', function (req, res) {
   var response = {};
-  
+
   // we perform a search for the quesiton, we don't really need the poll id, but we respect the REST syntax
   Question.findOne({_id: req.params.questionid}, function (err, quest) {
     if (err) throw err;
-    
+
     response.text = quest.text;
     response.nb_answers = 0;
     response.results = [];
-    
+
     // We look for every choices associated to this question
     Choice.find({question_id: req.params.questionid}, function (err, choices) {
       if (err) throw err;
-      
+
       choices.forEach(function (choice, idx, arr) {
         Answer.count({choice_id: choice._id}, function (err, nbr) {
           if (err) throw err;
@@ -120,7 +122,7 @@ router.get('/poll/:pollid/question/:questionid/results', function (req, res) {
             correct: choice.correct,
             nb_chosen: nbr
           });
-          
+
           // If we have stored all the data, we can return the results
           if (idx === arr.length - 1) {
             res.format(
@@ -139,22 +141,22 @@ router.get('/poll/:pollid/question/:questionid/results', function (req, res) {
 
 router.get('/poll/:pollid/question/:questionid', function (req, res) {
   var response = {};
-  
+
   // We perform the search
   Question.findOne({_id: req.params.questionid}, function (err, quest) {
     if (err) throw err;
-    
+
     response.text = quest.text;
     response.choices_available = quest.choices_available;
     response.optional = quest.optional;
     response.choices = [];
-    
+
     // We search for every possible choice for this question
     Choice.find({question_id: req.params.questionid}, function (err, choices) {
       if (err) throw err;
       choices.forEach(function (choice, idx, arr) {
         response.choices.push(choice);
-        
+
         // If we stored all the available choices, we can return the data
         if (idx === arr.length - 1) {
           res.format(
@@ -171,7 +173,7 @@ router.get('/poll/:pollid/question/:questionid', function (req, res) {
 });
 
 router.get("/poll/:pollid/questions", function (req, res) {
-    
+
     // Here, we just use our previously created function "getQuestionsByPoll"
     res.format(
     {
@@ -186,21 +188,21 @@ router.get("/poll/:pollid/questions", function (req, res) {
 router.get('/polls/:type', function (req, res) {
   var response = {polls: []};
   var inserted = 0;
-  
+
   // We search for every poll in the state :type
   Poll.find({state: req.params.type}, function (err, polls) {
     if (err) throw err;
-    
+
     // If there is none, we simply return the empty array
     if (polls.length < 1) return res.send(response);
-    
+
     // Otherwise, we get the details of every poll
     polls.forEach(function (poll, idx, arr) {
       getPollById(poll._id, function (resp, err) {
         if (err) throw err;
         response.polls.push(resp);
         inserted++;
-        
+
         // If we stored every poll available, we can return the result
         if (inserted === arr.length) {
           res.format(
@@ -230,7 +232,7 @@ router.get('/poll/:pollid', function (req, res) {
 router.get('/poll', function (req, res) {
 
   var response = {};
-  
+
   // Here, we only need to count the polls
   Poll.count({state: "active"},
     function (err, nb_open) {
@@ -239,7 +241,7 @@ router.get('/poll', function (req, res) {
       Poll.count({state: "closed"},
         function (err, nb_closed) {
           if (err) throw err;
-          
+
           // We use the date provided in the URL
           var sinceDate = new Date(req.query.since);
           Poll.count({creationDate: {$gt: sinceDate}},
@@ -266,7 +268,7 @@ router.get('/poll', function (req, res) {
 router.post('/poll', function (req, res) {
   var data = req.body;
   var badData = new Array();
-  
+
   // We check that every mandatory field is there and is of the right type
   if (!(typeof data.name === "string")) {
     badData.push("name");
@@ -280,7 +282,7 @@ router.post('/poll', function (req, res) {
   if (!(data.user_password === undefined) && !(typeof data.user_password === "string")) {
     badData.push("user_password");
   }
-  
+
   // If there are errors, we tell the client
   if (badData.length > 0) {
     res.send(errorCode, {errors: badData});
@@ -306,7 +308,7 @@ router.post('/poll', function (req, res) {
 router.post('/poll/:pollid/question', function (req, res) {
   var data = req.body;
   var badData = new Array();
-  
+
   // We check that every mandatory field is there and is of the right type
   if (!(typeof data.text === "string")) {
     badData.push("text");
@@ -317,7 +319,7 @@ router.post('/poll/:pollid/question', function (req, res) {
   if (!(typeof data.optional === "boolean")) {
     badData.push("optional");
   }
-  
+
   // Here, there is an optional field, we check if it is there and is an array
   if (!(data.choices === undefined) && !(Object.getPrototypeOf(data.choices) === Object.getPrototypeOf(Array())))
   {
@@ -336,12 +338,12 @@ router.post('/poll/:pollid/question', function (req, res) {
           }
       }
   }
-  
+
   // If there are errors, we tell the client
   if (badData.length > 0) {
     res.send(errorCode, {errors: badData});
   }
-  
+
   // Otherwise, we can store the data
   else {
     var newQuestion = new Question({
@@ -354,7 +356,7 @@ router.post('/poll/:pollid/question', function (req, res) {
     newQuestion.save(function (err, quest) {
       if (err) throw err;
       res.send({id: quest.id});
-      
+
       // We want to insert choices only if there are some
       if (!(data.choices === undefined))
       {
@@ -376,7 +378,7 @@ router.post('/poll/:pollid/question', function (req, res) {
 router.post('/poll/:pollid/question/:questionid/choice', function (req, res) {
   var data = req.body;
   var badData = new Array();
-  
+
   // We check that every mandatory field is there and is of the right type
   if (!(typeof data.text === "string")) {
     badData.push("text");
@@ -384,12 +386,12 @@ router.post('/poll/:pollid/question/:questionid/choice', function (req, res) {
   if (!(typeof data.correct === "boolean")) {
     badData.push("correct");
   }
-  
+
   // If there are errors, we tell the client
   if (badData.length > 0) {
     res.send(errorCode, {errors: badData});
   }
-  
+
   // Otherwise, we can store the data
   else {
     var newChoice = new Choice({
