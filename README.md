@@ -2,6 +2,20 @@
 
 Welcome to the home of the TWEB Project. This is where you will find information about the project (specifications, evaluation, etc.).
 
+## People working on this repo
+
+- Mélanie Huck
+- Jérôme Moret
+- Jan Purro
+- Benoist Wolleb
+
+## Results
+### Part 1
+
+- [Link to the deployed project on Heroku](http://heig-vd.ch)
+
+- [Link to our product page on Github Pages](http://jurporan.github.io/Teaching-HEIGVD-TWEB-2015-Project/)
+
 ## How to use this repo
 
 ### What should we do with this repo?

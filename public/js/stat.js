@@ -9,6 +9,6 @@ window.onload = function()
 function loadStats(data)
 {
     $("#nbTotal").html(data.nb_open + data.nb_closed);
-    $("#nbThisWeek").html(data.nb_open + data.nb_closed);
-    $("#nbOpen").html(data.nb_recent);
+    $("#nbThisWeek").html(data.nb_recent);
+    $("#nbOpen").html(data.nb_open);
 }
