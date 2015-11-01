@@ -74,7 +74,7 @@ You will validate your implementation with the following test strategy:
 
 * firstly, you will implement a method for **generating test data** (Polls, questions, participations, etc.). You must use your REST API for that purpose. We strongly recommend that you use [API Copilot](https://github.com/AlphaHydrae/api-copilot).
 
-* secondly, you will validate that the content of the database (the generated test data) and the statistics displayed on the landing page are correct. You must also consider that closing of polls.
+* secondly, you will validate that the content of the database (the generated test data) and the statistics displayed on the landing page are correct. You must also consider the closing of polls.
 
 
 ## Documentation
