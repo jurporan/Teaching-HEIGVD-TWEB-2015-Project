@@ -6,15 +6,13 @@
 </description>
     <link>http://jurporan.github.io/Teaching-HEIGVD-TWEB-2015-Project/</link>
     <atom:link href="http://jurporan.github.io/Teaching-HEIGVD-TWEB-2015-Project/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 01 Nov 2015 16:40:55 +0100</pubDate>
-    <lastBuildDate>Sun, 01 Nov 2015 16:40:55 +0100</lastBuildDate>
+    <pubDate>Sun, 01 Nov 2015 19:25:17 +0100</pubDate>
+    <lastBuildDate>Sun, 01 Nov 2015 19:25:17 +0100</lastBuildDate>
     <generator>Jekyll v3.0.0</generator>
     
       <item>
         <title>Fonctionnalités</title>
-        <description>&lt;h1 id=&quot;mockups&quot;&gt;Mockups&lt;/h1&gt;
-
-&lt;h3 id=&quot;page-dacceuil&quot;&gt;Page d’acceuil&lt;/h3&gt;
+        <description>&lt;h3 id=&quot;page-dacceuil&quot;&gt;Page d’acceuil&lt;/h3&gt;
 
 &lt;p&gt;La page d’acceuil présente l’application. Elle affiche le nom de l’application, ainsi que quelques statistiques telles que le nombre de sondages ouverts, terminés, ou créés dans la semaine courrante.&lt;/p&gt;
 
@@ -324,40 +322,51 @@ Pour chaque question, la visualisation de ses résultats comprend
 &lt;p&gt;GET &lt;code&gt;/api/poll&lt;/code&gt;
 —————&lt;/p&gt;
 
-&lt;p&gt;```
+&lt;p&gt;&lt;code&gt;
 GET /api/poll HTTP/1.1
 Host: localhost:3000
-Accept: application/json&lt;/p&gt;
+Accept: application/json
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;HTTP/1.1 200 OK
+&lt;p&gt;&lt;code&gt;
+HTTP/1.1 200 OK
 X-Powered-By: Express
 Content-Type: application/json; charset=utf-8
-Content-Length: 41&lt;/p&gt;
+Content-Length: 41
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;{“nb_open”:0,”nb_closed”:0,”nb_recent”:0}
-```&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;
+{&quot;nb_open&quot;:0,&quot;nb_closed&quot;:0,&quot;nb_recent&quot;:0}
+&amp;lt;/code&amp;gt;
+&lt;/code&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;post-apipoll&quot;&gt;POST &lt;code&gt;/api/poll&lt;/code&gt;&lt;/h2&gt;
 
-&lt;p&gt;```
+&lt;p&gt;&lt;code&gt;
 POST /api/poll HTTP/1.1
 Host: localhost:3000
 Content-Type: application/json; charset=UTF-8
-Content-Length: 107&lt;/p&gt;
+Content-Length: 107
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;{
-   “name” : “TWEB - Questionnaire n..1”,
-   “creator” : “QPoll staff”,
-   “admin_password” : “tweb1234”
-}&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;
+{
+   &quot;name&quot; : &quot;TWEB - Questionnaire n..1&quot;,
+   &quot;creator&quot; : &quot;QPoll staff&quot;,
+   &quot;admin_password&quot; : &quot;tweb1234&quot;
+}
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;HTTP/1.1 200 OK
+&lt;p&gt;&lt;code&gt;
+HTTP/1.1 200 OK
 X-Powered-By: Express
 Content-Type: application/json; charset=utf-8
-Content-Length: 33&lt;/p&gt;
+Content-Length: 33
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;{“id”:”5634abe6e4530b2459ce91e5”}
-```&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;
+{&quot;id&quot;:&quot;5634abe6e4530b2459ce91e5&quot;}
+&lt;/code&gt;&lt;/p&gt;
 </description>
         <pubDate>Sat, 31 Oct 2015 09:40:57 +0100</pubDate>
         <link>http://jurporan.github.io/Teaching-HEIGVD-TWEB-2015-Project/2015/10/31/rest.html</link>
@@ -368,7 +377,15 @@ Content-Length: 33&lt;/p&gt;
     
       <item>
         <title>Modèle de domaine</title>
-        <description>&lt;p&gt;Blablabla&lt;/p&gt;
+        <description>&lt;h1 id=&quot;modle-de-donnes&quot;&gt;Modèle de données&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&quot;/Teaching-HEIGVD-TWEB-2015-Project/img/dataModel.png&quot; alt=&quot;Modèle de données&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;remarques&quot;&gt;Remarques&lt;/h2&gt;
+&lt;p&gt;Nous avons conservé les cardinalités des relations et les tables proposés par la modèle présent dans la spécification de la partie 1.&lt;/p&gt;
+
+&lt;p&gt;Pour mettre en oeuvre la notion de relation, nous avons utilisé un champ “Foreign key” xxx_id référençant le champ “_id” mongo de la table référencée.&lt;/p&gt;
+
+&lt;p&gt;Nous avons utilisé les mêmes noms pour les champs des documents mongo et pour les payloads JSON des requêtes http.&lt;/p&gt;
 
 </description>
         <pubDate>Sat, 31 Oct 2015 08:40:57 +0100</pubDate>
@@ -420,26 +437,36 @@ Content-Length: 33&lt;/p&gt;
 &lt;h2 id=&quot;rsultats&quot;&gt;Résultats&lt;/h2&gt;
 &lt;p&gt;Les résultats rendus par notre script de test pour la partie 1 correspondent à nos attente et semblent indiquer que tout a bien été traité du côté de l’API REST. Voici le listing des résultats:&lt;/p&gt;
 
-&lt;p&gt;```
-TWEB Test for Part 1&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;
+TWEB Test for Part 1
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;Base URL set to http://localhost:3000/api
-Runtime parameters: none&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;
+Base URL set to http://localhost:3000/api
+Runtime parameters: none
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;STEP 1: get stats before insert
+&lt;p&gt;&lt;code&gt;
+STEP 1: get stats before insert
 http[1] GET /api/poll
 http[1] 200 OK in 74ms
-Completed in 77ms&lt;/p&gt;
+Completed in 77ms
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;STEP 2: store stats before insert
-Completed in 1ms&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;
+STEP 2: store stats before insert
+Completed in 1ms
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;STEP 3: create an invalid poll
+&lt;p&gt;&lt;code&gt;
+STEP 3: create an invalid poll
 http[2] POST /api/poll
 http[2] 418 undefined in 51ms
-Completed in 53ms&lt;/p&gt;
+Completed in 53ms
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;STEP 4: create 4 polls
+&lt;p&gt;&lt;code&gt;
+STEP 4: create 4 polls
 http[3] POST /api/poll
 http[4] POST /api/poll
 http[5] POST /api/poll
@@ -448,9 +475,11 @@ http[3] 200 OK in 53ms
 http[4] 200 OK in 56ms
 http[5] 200 OK in 58ms
 http[6] 200 OK in 64ms
-Completed in 67ms&lt;/p&gt;
+Completed in 67ms
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;STEP 5: create 3 questions in each poll
+&lt;p&gt;&lt;code&gt;
+STEP 5: create 3 questions in each poll
 http[7] POST /api/poll/56361e96fa5e1a927544f215/question
 http[8] POST /api/poll/56361e96fa5e1a927544f215/question
 http[9] POST /api/poll/56361e96fa5e1a927544f215/question
@@ -475,44 +504,58 @@ http[10] 200 OK in 88ms
 http[15] 200 OK in 88ms
 http[11] 200 OK in 96ms
 http[16] 200 OK in 97ms
-Completed in 102ms&lt;/p&gt;
+Completed in 102ms
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;STEP 6: get stats after insert
+&lt;p&gt;&lt;code&gt;
+STEP 6: get stats after insert
 http[19] GET /api/poll
 http[19] 200 OK in 12ms
-Completed in 13ms&lt;/p&gt;
+Completed in 13ms
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;STEP 7: check stats
+&lt;p&gt;&lt;code&gt;
+STEP 7: check stats
 Before insert: 216, after insert: 220
 220 = 216 + 4, everything seems OK
-Completed in 1ms&lt;/p&gt;
+Completed in 1ms
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;STEP 8: get stats for tomorrow
+&lt;p&gt;&lt;code&gt;
+STEP 8: get stats for tomorrow
 http[20] GET /api/poll
 http[20] 200 OK in 14ms
-Completed in 15ms&lt;/p&gt;
+Completed in 15ms
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;STEP 9: check tomorrow stats
+&lt;p&gt;&lt;code&gt;
+STEP 9: check tomorrow stats
 There are 0 polls created in the future, everything seems OK
-Completed in 0ms&lt;/p&gt;
+Completed in 0ms
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;STEP 10: get drafts/open/closed
+&lt;p&gt;&lt;code&gt;
+STEP 10: get drafts/open/closed
 http[21] GET /api/polls/draft
 http[22] GET /api/polls/open
 http[23] GET /api/polls/closed
 http[22] 200 OK in 89ms
 http[23] 200 OK in 219ms
 http[21] 200 OK in 380ms
-Completed in 381ms&lt;/p&gt;
+Completed in 381ms
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;STEP 11: check draft/open/closed
+&lt;p&gt;&lt;code&gt;
+STEP 11: check draft/open/closed
 Drafts: 220, should be 220
 Open: 0, should be 0
 Closed: 0, should be 0
 Found all 4 polls
-Completed in 2ms&lt;/p&gt;
+Completed in 2ms
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;STEP 12: get the questions of each polls
+&lt;p&gt;&lt;code&gt;
+STEP 12: get the questions of each polls
 http[24] GET /api/poll/56361e96fa5e1a927544f215/questions
 http[25] GET /api/poll/56361e97fa5e1a927544f216/questions
 http[26] GET /api/poll/56361e97fa5e1a927544f217/questions
@@ -521,9 +564,11 @@ http[24] 200 OK in 34ms
 http[26] 200 OK in 37ms
 http[25] 200 OK in 40ms
 http[27] 200 OK in 39ms
-Completed in 42ms&lt;/p&gt;
+Completed in 42ms
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;STEP 13: check the number of questions of each polls
+&lt;p&gt;&lt;code&gt;
+STEP 13: check the number of questions of each polls
 Question contains 0 choices, should contain 0, seems ok
 Question contains 0 choices, should contain 0, seems ok
 Question contains 2 choices, should contain 2, seems ok
@@ -537,10 +582,12 @@ Question contains 0 choices, should contain 0, seems ok
 Question contains 0 choices, should contain 0, seems ok
 Question contains 2 choices, should contain 2, seems ok
 Found all 3 questions
-Completed in 2ms&lt;/p&gt;
+Completed in 2ms
+&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;DONE in 0.76s!
-```&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;
+DONE in 0.76s!
+&lt;/code&gt;&lt;/p&gt;
 
 </description>
         <pubDate>Sat, 31 Oct 2015 07:40:57 +0100</pubDate>
