@@ -32,34 +32,40 @@ function getQuestionsByPoll(id, callback)
 {
     var response = [];
     
-    Question.find({poll_id : id}, function (err, q)
+    Question.find({poll_id : id}, function (err, qs)
     {
         if (err) throw err;
-        if (!q) callback(null, 404);
+        if (!qs) callback(null, 404);
         
-        for (var qindex in q)
+        qs.forEach(function(q, qidx, qarr)
         {
-            var question;
+            var question = {};
             question.id = q._id;
+            question.text = q.text;
             question.choices_available = q.choices_available;
             question.optional = q.optional;
             question.choices = [];
-            Choice.find({question_id : q._id}, function (err, c)
+            Choice.find({question_id : q._id}, function (err, cs)
             {
                 if (err) throw err;
-                if (!c) callback(null, 404);
+                if (!cs) callback(null, 404);
                 
-                for (var cindex in c)
+                cs.forEach(function (c, cidx, carr)
                 {
-                    var choice;
+                    var choice = {};
                     choice.id = c._id;
                     choice.text = c.text;
                     question.choices.push(choice);
-                }
+                    
+                    if (qidx == qarr.length - 1 && cidx == carr.length - 1)
+                    {
+                        callback(response);
+                    }
+                });
             });
             
             response.push(question);
-        }
+        });
     });
 }
 
@@ -131,7 +137,14 @@ router.get('/poll/:pollid/question/:questionid', function (req, res) {
 });
 
 router.get("/poll/:pollid/questions", function (req, res) {
-    
+    res.format(
+    {
+      'application/json': function () {
+        getQuestionsByPoll(req.params.pollid, function (questionsOfPoll) {
+          res.send({questions : questionsOfPoll});
+        });
+      }
+    });
 });
 
 router.get('/polls/:type', function (req, res) {
