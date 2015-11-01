@@ -12,9 +12,11 @@ Welcome to the home of the TWEB Project. This is where you will find information
 ## Results
 ### Part 1
 
-- [Link to the deployed project on Heroku](http://heig-vd.ch)
+- [Link to the deployed project on Heroku](https://qpolls-tweb-2015-project.herokuapp.com/)
 
 - [Link to our product page on Github Pages](http://jurporan.github.io/Teaching-HEIGVD-TWEB-2015-Project/)
+
+- [Link to our documentation folder](Documentation) (also available on Github Pages)
 
 ## How to use this repo
 
