@@ -38,7 +38,8 @@ Si le client n'a rien spécifié lors de sa requête, ```nb_recent``` = ```nb_op
         polls : [{poll}, {poll}, ..., {poll}]
     }
 ```
-où la structure ```{poll}``` correspond au json décrit au point précédent.
+
+où la structure ```{poll}``` correspond au json décrit au point précédent, en y ajoutant la valeur ```id```.
 
 Cette requête permet de faire de la pagination en renvoyant *nb* résultats depuis un numéro *FROM* en spécifiant dans l'URL les paramètres suivants: ```?from=x&nb=y```. Attention, si aucun paramètre n'est spécifié, la liste de tous les sondages est renvoyée (et c'est le mal!).
 
@@ -57,6 +58,16 @@ Cette requête permet de faire de la pagination en renvoyant *nb* résultats dep
         ]
     }
 ```
+
+- **GET** ```/api/poll/<pollid>/questions``` : Renvoie la liste des questions du sondage spécifié sous la forme:
+
+```
+    {
+        questions : [{question}, {question}, ..., {question}]
+    }
+```
+
+où la structure ```{poll}``` correspond au json décrit au point précédent, en y ajoutant la valeur ```id```.
 
 - **GET** ```/api/poll/<pollid>/question/<questionid>/results``` : Renvoie les résultats actuels pour une question sous la forme:
 

@@ -28,6 +28,41 @@ function getPollById(id, callback) {
   });
 }
 
+function getQuestionsByPoll(id, callback)
+{
+    var response = [];
+    
+    Question.find({poll_id : id}, function (err, q)
+    {
+        if (err) throw err;
+        if (!q) callback(null, 404);
+        
+        for (var qindex in q)
+        {
+            var question;
+            question.id = q._id;
+            question.choices_available = q.choices_available;
+            question.optional = q.optional;
+            question.choices = [];
+            Choice.find({question_id : q._id}, function (err, c)
+            {
+                if (err) throw err;
+                if (!c) callback(null, 404);
+                
+                for (var cindex in c)
+                {
+                    var choice;
+                    choice.id = c._id;
+                    choice.text = c.text;
+                    question.choices.push(choice);
+                }
+            });
+            
+            response.push(question);
+        }
+    });
+}
+
 var errorCode = 418;
 module.exports = function (app) {
   app.use('/api', router);
@@ -95,6 +130,9 @@ router.get('/poll/:pollid/question/:questionid', function (req, res) {
 
 });
 
+router.get("/poll/:pollid/questions", function (req, res) {
+    
+});
 
 router.get('/polls/:type', function (req, res) {
   var response = {polls: []};
@@ -174,6 +212,9 @@ router.post('/poll', function (req, res) {
   if (!(typeof data.admin_password === "string")) {
     badData.push("admin_password");
   }
+  if (!(data.user_password === undefined) && !(typeof data.user_password === "string")) {
+    badData.push("user_password");
+  }
 
   if (badData.length > 0) {
     res.send(errorCode, {errors: badData});
@@ -208,6 +249,22 @@ router.post('/poll/:pollid/question', function (req, res) {
   if (!(typeof data.optional === "boolean")) {
     badData.push("optional");
   }
+  if (!(data.choices === undefined) && !(Object.getPrototypeOf(data.choices) === Object.getPrototypeOf(Array())))
+  {
+      badData.push("choices");
+  }
+  else if (!(data.choices === undefined))
+  {
+      for (var index in data.choices)
+      {
+          var choice = data.choices[index];
+          if (!(typeof choice.text === "string") || !(typeof choice.correct === "boolean"))
+          {
+              badData.push("choices");
+              break;
+          }
+      }
+  }
 
   if (badData.length > 0) {
     res.send(errorCode, {errors: badData});
@@ -224,16 +281,19 @@ router.post('/poll/:pollid/question', function (req, res) {
       if (err) throw err;
       res.send({id: quest.id});
 
-      data.choices.forEach(function (choice, idx, array) {
-        var newChoice = new Choice({
-          text: choice.text,
-          correct: choice.correct,
-          question_id: quest.id
-        });
-        newChoice.save(function (err, save) {
-          if (err) throw err;
-        });
-      });
+      if (!(data.choices === undefined))
+      {
+            data.choices.forEach(function (choice, idx, array) {
+            var newChoice = new Choice({
+              text: choice.text,
+              correct: choice.correct,
+              question_id: quest.id
+            });
+            newChoice.save(function (err, save) {
+              if (err) throw err;
+            });
+          });
+      }
     });
   }
 });
