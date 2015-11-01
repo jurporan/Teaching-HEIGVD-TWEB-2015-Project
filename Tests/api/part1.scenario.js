@@ -26,11 +26,12 @@ var questionData = [
   [ "Do you like pepper?", 1, false, [{text : "Yes", correct : false}, {text : "No", correct : false}]]
 ];
 
+// We will store the ids of the polls we will create
 var insertedPolls = [];
 
 scenario.step('get stats before insert', function() {
 
-  // make HTTP calls
+  // Simple request for the stats
   return this.get({
     url : '/poll',
     expect : {
@@ -40,12 +41,13 @@ scenario.step('get stats before insert', function() {
 });
 
 scenario.step('store stats before insert', function(data) {
-
+  // We store the results for a future use
   stats = data.body;
 });
 
 scenario.step('create an invalid poll', function(unused) {
 
+  // We try to create a poll without specifying the admin_password, we expect to receive an error code and one error
   return this.post({
     url: '/poll',
     body: {
@@ -61,8 +63,9 @@ scenario.step('create an invalid poll', function(unused) {
   });
 });
 
-scenario.step('create 3 polls', function(unused) {
+scenario.step('create 4 polls', function(unused) {
 
+  // We create the polls
   var requests = _.map(pollData, function(data) {
     return this.post({
       url: "/poll",
@@ -85,6 +88,7 @@ scenario.step('create 3 questions in each poll', function(response) {
   var polls = response;
   var requests = new Array();
   
+  // We create 3 questions in each poll, so 12 requests
   for (var index in response)
   {
       var poll = polls[index].body;
@@ -108,7 +112,8 @@ scenario.step('create 3 questions in each poll', function(response) {
 });
 
 scenario.step('get stats after insert', function(unused) {
-  // make HTTP calls
+    
+  // We fetch the current stats
   return this.get({
     url : '/poll',
     expect : {
@@ -119,6 +124,7 @@ scenario.step('get stats after insert', function(unused) {
 
 scenario.step('check stats', function(data) {
     
+    // Now we can compare the stats before and after the insertion
     console.log("Before insert: " + stats.nb_recent + ", after insert: " + data.body.nb_recent);
     
     if (data.body.nb_recent != (stats.nb_recent + pollData.length)) {
@@ -132,6 +138,7 @@ scenario.step('check stats', function(data) {
 
 scenario.step('get stats for tomorrow', function(unused) {
   
+  // Here we try to get the number of apps that were created since a date in the future, should be empty
   tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
   
   return this.get({
@@ -144,6 +151,7 @@ scenario.step('get stats for tomorrow', function(unused) {
 
 scenario.step('check tomorrow stats', function(data) {
     
+    // No apps have been created in the future
     if (data.body.nb_recent > 0) {
     throw new Error("Wrong number of polls");
   }
@@ -154,22 +162,43 @@ scenario.step('check tomorrow stats', function(data) {
 });
 
 scenario.step('get drafts/open/closed', function(unused) {
-    
+    // We try to fetch the complete list of polls in each section
 return this.all([
-    this.get({url : '/polls/draft', expect : {statusCode : 200}})
+    this.get({url : '/polls/draft', expect : {statusCode : 200}}),
+    this.get({url : '/polls/open', expect : {statusCode : 200}}),
+    this.get({url : '/polls/closed', expect : {statusCode : 200}})
   ]);
 });
 
 scenario.step('check draft/open/closed', function(data) {
-
-    console.log("Drafts: " + data[0].body.polls.length + ", should be " + (stats.nb_recent + pollData.length));
-    //console.log("Open: " + data[1].body.polls.length + ", should be " + stat.nb_open);
-    //console.log("Closed: " + data[2].body.polls.length + ", should be " + stat.nb_open);
     
+    // We check the number of polls in each section, Both "open" and "closed" should be equal to the stats before the insertion since we didn't perform a PUT ton change the state of any poll
+    console.log("Drafts: " + data[0].body.polls.length + ", should be " + (stats.nb_recent + pollData.length));
+    console.log("Open: " + data[1].body.polls.length + ", should be " + stats.nb_open);
+    console.log("Closed: " + data[2].body.polls.length + ", should be " + stats.nb_open);
+    
+    // If the count don't match, this is an error
+    if (data[0].body.polls.length != (stats.nb_recent + pollData.length) || data[1].body.polls.length != stats.nb_open || data[2].body.polls.length != stats.nb_closed)
+    {
+        throw new Error("Wrong poll number");
+    }
+    
+    // We check that the list contains the polls that we created before
     for (var index in insertedPolls)
     {
         var pollid = insertedPolls[index];
-        var pollindex = data[0].body.polls.indexOf(pollid);
+        var pollindex = -1;
+        
+        // We search our polls in the list
+        for (var pindex in data[0].body.polls)
+        {
+            if (data[0].body.polls[pindex].id == pollid)
+            {
+                pollindex = pindex;
+                break;
+            }
+        }
+        
         if ( pollindex == -1)
         {
             throw new Error("Poll " + pollid + "not found");
@@ -180,7 +209,8 @@ scenario.step('check draft/open/closed', function(data) {
 });
 
 scenario.step('get the questions of each polls', function(unused) {
-
+    
+    // Here we are performing a request to fetch the questions and their choices within the polls
   var requests = _.map(insertedPolls, function(id) {
     return this.get({
       url: "/poll/" + id + "/questions",
@@ -194,6 +224,7 @@ scenario.step('get the questions of each polls', function(unused) {
 
 scenario.step('check the number of questions of each polls', function(response) {
     
+    // We check that there are 3 questions
     for (var index in response)
     {
         var questions = response[index].body.questions;
@@ -203,6 +234,7 @@ scenario.step('check the number of questions of each polls', function(response) 
         }
         else
         {
+            // We check that the number of choices is correct
             for (var qindex in questions)
             {
                 if (questions[qindex].choices.length == (questionData[qindex][3] == undefined? 0 : questionData[qindex][3].length))

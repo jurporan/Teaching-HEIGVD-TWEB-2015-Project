@@ -1,3 +1,5 @@
+// We include everything we need, the express framework, mongoose and the models
+
 var express = require('express'),
   router = express.Router(),
   mongoose = require('mongoose'),
@@ -12,6 +14,7 @@ function getPollById(id, callback) {
   Poll.findOne({_id: id}, function (err, poll) {
     if (err) throw err;
     if (!poll) callback(null, 404);
+    response.id = poll._id;
     response.name = poll.name;
     response.creator = poll.creator;
     response.creation_date = poll.creationDate;
@@ -153,7 +156,7 @@ router.get('/polls/:type', function (req, res) {
   var inserted = 0;
   Poll.find({state: req.params.type}, function (err, polls) {
     if (err) throw err;
-    if (polls.length < 1) return res.send(404);
+    if (polls.length < 1) return res.send(response);
 
     polls.forEach(function (poll, idx, arr) {
       getPollById(poll._id, function (resp, err) {

@@ -6,6 +6,7 @@ Afin de tester les fonctionnalités de base de notre API REST, nous utilisons le
 
 Premièrement nous allons insérer des données:
 
+- Créer un sondage en passant une structure incorrecte, champ manquant par exemple, et le serveur devrait renvoyer un code d'erreur et une structure listant les erreurs
 - Créer plusieurs sondages
 - Créer plusieurs questions dans chacun de ces sondages, parfois en spécifiant directement une liste de choix
 - Ajouter des choix dans certaines questions
@@ -27,7 +28,7 @@ Puis, dans un second temps, nous allons contrôler que ces données ont bien ét
 
 Résultats
 ---------
-
+Les résultats rendus par notre script de test pour la partie 1 sont 
 
 
 
