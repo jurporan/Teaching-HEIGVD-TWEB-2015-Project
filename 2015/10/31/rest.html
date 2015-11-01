@@ -79,9 +79,7 @@
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <h1 id="documentation">Documentation</h1>
-
-<h1 id="interface-rest">Interface REST</h1>
+    <h1 id="interface-rest">Interface REST</h1>
 <p>L’interface REST de notre application permet d’interagir avec les fonctionnalités des sondages et de ce qui les compose. L’API est utilise le JSON comme format de transmission de données. Elle est disponible à l’adresse <code>/api</code> et reconnaît les chemins suivants:</p>
 
 <ul>
@@ -123,8 +121,9 @@
     {
         polls : [{poll}, {poll}, ..., {poll}]
     }
-</code>
-où la structure <code>{poll}</code> correspond au json décrit au point précédent.</p>
+</code></p>
+
+<p>où la structure <code>{poll}</code> correspond au json décrit au point précédent, en y ajoutant la valeur <code>id</code>.</p>
 
 <p>Cette requête permet de faire de la pagination en renvoyant <em>nb</em> résultats depuis un numéro <em>FROM</em> en spécifiant dans l’URL les paramètres suivants: <code>?from=x&amp;nb=y</code>. Attention, si aucun paramètre n’est spécifié, la liste de tous les sondages est renvoyée (et c’est le mal!).</p>
 
@@ -145,6 +144,18 @@ où la structure <code>{poll}</code> correspond au json décrit au point précé
         ]
     }
 </code></p>
+
+<ul>
+  <li><strong>GET</strong> <code>/api/poll/&lt;pollid&gt;/questions</code> : Renvoie la liste des questions du sondage spécifié sous la forme:</li>
+</ul>
+
+<p><code>
+    {
+        questions : [{question}, {question}, ..., {question}]
+    }
+</code></p>
+
+<p>où la structure <code>{poll}</code> correspond au json décrit au point précédent, en y ajoutant la valeur <code>id</code>.</p>
 
 <ul>
   <li><strong>GET</strong> <code>/api/poll/&lt;pollid&gt;/question/&lt;questionid&gt;/results</code> : Renvoie les résultats actuels pour une question sous la forme:</li>
@@ -271,6 +282,25 @@ où la structure <code>{poll}</code> correspond au json décrit au point précé
 
 <p>Dans cette première partie seront implémentées les requêtes GET et POST ci-dessus. Deux exemples, un GET et un POST sont dosponibles sur <a href="REST examples.md">cette page</a>. Dans de futures versions de l’application, l’API couvrira la gestion des participations et des réponses aux questions.</p>
 
+<h2 id="remarques">Remarques</h2>
+
+<ul>
+  <li>
+    <p>Pour certaines fonctionnalités de recherche, comme par exemple chercher le contenu d’une question en particulier d’un sondage via <code>/api/poll/&lt;pollid&gt;/question/&lt;questionid&gt;</code> il n’est pas absolument nécessaire de spécifier le <code>pollid</code>. En effet, nous utilisons directement les identifiants attribués par mongodb dans les URL, donc la recherche d’une question peut très bien être effectuée uniquement en connaissant son identifiant. Le chemin d’accès des questions aurait d’ailleurs très bien pu être simplement <code>/api/question/&lt;questionid&gt;</code>, cependant nous avons décidé de placer les questions dans le chemin d’un sondage car il s’agit d’une relation de composition. Une question ne peut exister sans sondage. Idem pour les choix des questions.</p>
+  </li>
+  <li>
+    <p>Lorsque le client effectue une requête erronnée, par exemple un POST ne contenant pas tous les champs obligatoires pour créer une ressource, le serveur contrôle la présence et le type de chacun des champs et retourne une erreur n°418 <em>I am a teapot</em>. D’autre part, dans le <em>body</em> de la réponse, le serveur aura spécifié quels champs sont incorrects selon le json:</p>
+  </li>
+</ul>
+
+<p><code>
+{
+    errors : ["champ", "champ", ..., "champ"]
+}
+</code></p>
+
+<p>où “champ” est le nom de chaque champ incorrect, qu’il soit manquant ou contienne un type incorrect. Le client sait alors que sa requête est fausse et peut la corriger.</p>
+
 <h1 id="exemples-de-lutilisation-de-linterface-rest">Exemples de l’utilisation de l’interface REST</h1>
 <p>GET <code>/api/poll</code>
 —————</p>
@@ -309,7 +339,6 @@ Content-Length: 33</p>
 
 <p>{“id”:”5634abe6e4530b2459ce91e5”}
 ```</p>
-
 
   </div>
 
