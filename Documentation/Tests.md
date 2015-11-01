@@ -1,12 +1,14 @@
 # Stratégie de tests
+Opérations de tests
+-------------------
 
-Afin de tester les fonctionnalités de base de notre API REST, nous allons tester les quelques requêtes implémentées dans cette partie 1:
+Afin de tester les fonctionnalités de base de notre API REST, nous utilisons le module ```api-copilot``` nous permettant d'effectuer des requêtes et de les valider. Nous allons tester les quelques requêtes implémentées dans cette partie 1:
 
 Premièrement nous allons insérer des données:
 
 - Créer plusieurs sondages
 - Créer plusieurs questions dans chacun de ces sondages, parfois en spécifiant directement une liste de choix
-- Ajouter plusieurs choix dans chacune des questions
+- Ajouter des choix dans certaines questions
 
 Puis, dans un second temps, nous allons contrôler que ces données ont bien été créées:
 
@@ -22,4 +24,10 @@ Puis, dans un second temps, nous allons contrôler que ces données ont bien ét
 - Récupérer les questions d'un sondage et contrôler qu'il y en a autant que de questions insérées
 
 - Pour chacune des questions, contrôler que le nombre de choix insérés correspond au nombre de choix spécifiés à la création de la question + les choix ajoutés après coup
-    
+
+Résultats
+---------
+
+
+
+

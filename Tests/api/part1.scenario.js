@@ -11,6 +11,7 @@ var scenario = new copilot.Scenario({
   }
 });
 
+// Here are the polls we are going to create
 var pollData = [
   [ "Mono poll", "The QPoll team", "53cr3tp@$$"],
   [ "Metro poll", "The QPoll team", "53cr3tp@$$"],
@@ -18,6 +19,7 @@ var pollData = [
   [ "Megalo poll", "The QPoll team", "53cr3tp@$$"]
 ];
 
+// Here are the questions we are going to insert in the polls
 var questionData = [
   [ "Do you like cheese?", 1, false],
   [ "Do you like chocolate?", 1, false],
@@ -151,31 +153,31 @@ scenario.step('check tomorrow stats', function(data) {
   }
 });
 
-//scenario.step('get drafts/open/closed', function(unused) {
+scenario.step('get drafts/open/closed', function(unused) {
     
-//return this.all([
-    //this.get({url : '/polls/draft', expect : {statusCode : 200}})
-  //]);
-//});
+return this.all([
+    this.get({url : '/polls/draft', expect : {statusCode : 200}})
+  ]);
+});
 
-//scenario.step('check draft/open/closed', function(data) {
+scenario.step('check draft/open/closed', function(data) {
 
-    //console.log("Drafts: " + data[0].body.polls.length + ", should be " + (stats.nb_recent + pollData.length));
-    ////console.log("Open: " + data[1].body.polls.length + ", should be " + stat.nb_open);
-    ////console.log("Closed: " + data[2].body.polls.length + ", should be " + stat.nb_open);
+    console.log("Drafts: " + data[0].body.polls.length + ", should be " + (stats.nb_recent + pollData.length));
+    //console.log("Open: " + data[1].body.polls.length + ", should be " + stat.nb_open);
+    //console.log("Closed: " + data[2].body.polls.length + ", should be " + stat.nb_open);
     
-    //for (var index in insertedPolls)
-    //{
-        //var pollid = insertedPolls[index];
-        //var pollindex = data[0].body.polls.indexOf(pollid);
-        //if ( pollindex == -1)
-        //{
-            //throw new Error("Poll " + pollid + "not found");
-        //}
-    //}
+    for (var index in insertedPolls)
+    {
+        var pollid = insertedPolls[index];
+        var pollindex = data[0].body.polls.indexOf(pollid);
+        if ( pollindex == -1)
+        {
+            throw new Error("Poll " + pollid + "not found");
+        }
+    }
     
-    //console.log("Found all " + insertedPolls.length + " polls");
-//});
+    console.log("Found all " + insertedPolls.length + " polls");
+});
 
 scenario.step('get the questions of each polls', function(unused) {
 
