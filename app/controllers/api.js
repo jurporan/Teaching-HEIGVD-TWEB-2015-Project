@@ -31,12 +31,12 @@ function getPollById(id, callback) {
 function getQuestionsByPoll(id, callback)
 {
     var response = [];
-    
+
     Question.find({poll_id : id}, function (err, q)
     {
         if (err) throw err;
         if (!q) callback(null, 404);
-        
+
         for (var qindex in q)
         {
             var question;
@@ -48,7 +48,7 @@ function getQuestionsByPoll(id, callback)
             {
                 if (err) throw err;
                 if (!c) callback(null, 404);
-                
+
                 for (var cindex in c)
                 {
                     var choice;
@@ -57,7 +57,7 @@ function getQuestionsByPoll(id, callback)
                     question.choices.push(choice);
                 }
             });
-            
+
             response.push(question);
         }
     });
@@ -131,14 +131,15 @@ router.get('/poll/:pollid/question/:questionid', function (req, res) {
 });
 
 router.get("/poll/:pollid/questions", function (req, res) {
-    
+
 });
 
 router.get('/polls/:type', function (req, res) {
   var response = {polls: []};
   Poll.find({state: req.params.type}, function (err, polls) {
     if (err) throw err;
-    if (!polls) return res.send(404);
+    if (polls.length < 1) return res.send(404);
+    console.log(polls);
     polls.forEach(function (poll, idx, arr) {
       getPollById(poll._id, function (resp, err) {
         if (err) throw err;
