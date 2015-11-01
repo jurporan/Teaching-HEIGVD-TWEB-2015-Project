@@ -178,7 +178,16 @@ Dans cette première partie seront implémentées les requêtes GET et POST ci-d
 Remarques
 --------
 
-- Pour certains chemins, 
+- Pour certaines fonctionnalités de recherche, comme par exemple chercher le contenu d'une question en particulier d'un sondage via ```/api/poll/<pollid>/question/<questionid>``` il n'est pas absolument nécessaire de spécifier le ```pollid```. En effet, nous utilisons directement les identifiants attribués par mongodb dans les URL, donc la recherche d'une question peut très bien être effectuée uniquement en connaissant son identifiant. Le chemin d'accès des questions aurait d'ailleurs très bien pu être simplement ```/api/question/<questionid>```, cependant nous avons décidé de placer les questions dans le chemin d'un sondage car il s'agit d'une relation de composition. Une question ne peut exister sans sondage. Idem pour les choix des questions.
  
-- Erreurs 
+- Lorsque le client effectue une requête erronnée, par exemple un POST ne contenant pas tous les champs obligatoires pour créer une ressource, le serveur contrôle la présence et le type de chacun des champs et retourne une erreur n°418 *I am a teapot*. D'autre part, dans le *body* de la réponse, le serveur aura spécifié quels champs sont incorrects selon le json:
+
+```
+s
+{
+    errors : ["champ", "champ", ..., "champ"]
+}
+```
+
+où "champ" est le nom de chaque champ incorrect, qu'il soit manquant ou contienne un type incorrect. Le client sait alors que sa requête est fausse et peut la corriger.
 
