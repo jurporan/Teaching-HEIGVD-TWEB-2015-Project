@@ -305,40 +305,51 @@
 <p>GET <code>/api/poll</code>
 —————</p>
 
-<p>```
+<p><code>
 GET /api/poll HTTP/1.1
 Host: localhost:3000
-Accept: application/json</p>
+Accept: application/json
+</code></p>
 
-<p>HTTP/1.1 200 OK
+<p><code>
+HTTP/1.1 200 OK
 X-Powered-By: Express
 Content-Type: application/json; charset=utf-8
-Content-Length: 41</p>
+Content-Length: 41
+</code></p>
 
-<p>{“nb_open”:0,”nb_closed”:0,”nb_recent”:0}
-```</p>
+<p><code>
+{"nb_open":0,"nb_closed":0,"nb_recent":0}
+&lt;/code&gt;
+</code></p>
 
 <h2 id="post-apipoll">POST <code>/api/poll</code></h2>
 
-<p>```
+<p><code>
 POST /api/poll HTTP/1.1
 Host: localhost:3000
 Content-Type: application/json; charset=UTF-8
-Content-Length: 107</p>
+Content-Length: 107
+</code></p>
 
-<p>{
-   “name” : “TWEB - Questionnaire n..1”,
-   “creator” : “QPoll staff”,
-   “admin_password” : “tweb1234”
-}</p>
+<p><code>
+{
+   "name" : "TWEB - Questionnaire n..1",
+   "creator" : "QPoll staff",
+   "admin_password" : "tweb1234"
+}
+</code></p>
 
-<p>HTTP/1.1 200 OK
+<p><code>
+HTTP/1.1 200 OK
 X-Powered-By: Express
 Content-Type: application/json; charset=utf-8
-Content-Length: 33</p>
+Content-Length: 33
+</code></p>
 
-<p>{“id”:”5634abe6e4530b2459ce91e5”}
-```</p>
+<p><code>
+{"id":"5634abe6e4530b2459ce91e5"}
+</code></p>
 
   </div>
 

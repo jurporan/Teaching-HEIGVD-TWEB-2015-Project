@@ -3,7 +3,6 @@ layout: post
 title:  "Fonctionnalités"
 date:   2015-10-31 10:40:57 +0100
 ---
-# Mockups
 
 ### Page d'acceuil
 

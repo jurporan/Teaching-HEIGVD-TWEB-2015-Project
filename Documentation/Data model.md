@@ -1,5 +1,5 @@
 #Modèle de données
-![Modèle de données](diagrams/dataModel.png)
+![Modèle de données]({{ "/img/dataModel.png" | prepend: site.baseurl }})
 
 ## Remarques ##
 Nous avons conservé les cardinalités des relations et les tables proposés par la modèle présent dans la spécification de la partie 1.
