@@ -150,15 +150,17 @@ router.get("/poll/:pollid/questions", function (req, res) {
 
 router.get('/polls/:type', function (req, res) {
   var response = {polls: []};
+  var inserted = 0;
   Poll.find({state: req.params.type}, function (err, polls) {
     if (err) throw err;
     if (polls.length < 1) return res.send(404);
-    console.log(polls);
+
     polls.forEach(function (poll, idx, arr) {
       getPollById(poll._id, function (resp, err) {
         if (err) throw err;
         response.polls.push(resp);
-        if (idx === arr.length - 1) {
+        inserted++;
+        if (inserted === arr.length) {
           res.format(
             {
               'application/json': function () {
