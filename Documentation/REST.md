@@ -183,7 +183,6 @@ Remarques
 - Lorsque le client effectue une requête erronnée, par exemple un POST ne contenant pas tous les champs obligatoires pour créer une ressource, le serveur contrôle la présence et le type de chacun des champs et retourne une erreur n°418 *I am a teapot*. D'autre part, dans le *body* de la réponse, le serveur aura spécifié quels champs sont incorrects selon le json:
 
 ```
-s
 {
     errors : ["champ", "champ", ..., "champ"]
 }
