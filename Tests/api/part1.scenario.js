@@ -24,13 +24,15 @@ var questionData = [
   [ "Do you like pepper?", 1, false, [{text : "Yes", correct : false}, {text : "No", correct : false}]]
 ];
 
+var insertedPolls = [];
+
 scenario.step('get stats before insert', function() {
 
   // make HTTP calls
   return this.get({
     url : '/poll',
     expect : {
-        statusCode : 200,
+        statusCode : 200
     }
   });
 });
@@ -40,7 +42,7 @@ scenario.step('store stats before insert', function(data) {
   stats = data.body;
 });
 
-scenario.step('create an invalid poll', function() {
+scenario.step('create an invalid poll', function(unused) {
 
   return this.post({
     url: '/poll',
@@ -79,12 +81,12 @@ scenario.step('create 3 polls', function(unused) {
 scenario.step('create 3 questions in each poll', function(response) {
 
   var polls = response;
-  console.log(response[0]);
   var requests = new Array();
   
   for (var index in response)
   {
       var poll = polls[index].body;
+      insertedPolls.push(polls[index].body.id);
       requests = requests.concat(_.map(questionData, function(data) {
         return this.post({
           url: "/poll/" + poll.id + "/question",
@@ -103,7 +105,7 @@ scenario.step('create 3 questions in each poll', function(response) {
   return this.all(requests);
 });
 
-scenario.step('get stats after insert', function(data) {
+scenario.step('get stats after insert', function(unused) {
   // make HTTP calls
   return this.get({
     url : '/poll',
@@ -126,7 +128,7 @@ scenario.step('check stats', function(data) {
   }
 });
 
-scenario.step('get stats for tomorrow', function(data) {
+scenario.step('get stats for tomorrow', function(unused) {
   
   tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
   
@@ -147,6 +149,73 @@ scenario.step('check tomorrow stats', function(data) {
   {
       console.log("There are " + data.body.nb_recent + " polls created in the future, everything seems OK");
   }
+});
+
+//scenario.step('get drafts/open/closed', function(unused) {
+    
+//return this.all([
+    //this.get({url : '/polls/draft', expect : {statusCode : 200}})
+  //]);
+//});
+
+//scenario.step('check draft/open/closed', function(data) {
+
+    //console.log("Drafts: " + data[0].body.polls.length + ", should be " + (stats.nb_recent + pollData.length));
+    ////console.log("Open: " + data[1].body.polls.length + ", should be " + stat.nb_open);
+    ////console.log("Closed: " + data[2].body.polls.length + ", should be " + stat.nb_open);
+    
+    //for (var index in insertedPolls)
+    //{
+        //var pollid = insertedPolls[index];
+        //var pollindex = data[0].body.polls.indexOf(pollid);
+        //if ( pollindex == -1)
+        //{
+            //throw new Error("Poll " + pollid + "not found");
+        //}
+    //}
+    
+    //console.log("Found all " + insertedPolls.length + " polls");
+//});
+
+scenario.step('get the questions of each polls', function(unused) {
+
+  var requests = _.map(insertedPolls, function(id) {
+    return this.get({
+      url: "/poll/" + id + "/questions",
+      expect: { statusCode: 200 }
+    });
+  }, this);
+
+  // run HTTP requests in parallel
+  return this.all(requests);
+});
+
+scenario.step('check the number of questions of each polls', function(response) {
+    
+    for (var index in response)
+    {
+        var questions = response[index].body.questions;
+        if (questions.length != questionData.length)
+        {
+            throw new Error("Question error");
+        }
+        else
+        {
+            for (var qindex in questions)
+            {
+                if (questions[qindex].choices.length == (questionData[qindex][3] == undefined? 0 : questionData[qindex][3].length))
+                {
+                    console.log("Question contains " + questions[qindex].choices.length + " choices, should contain " + (questionData[qindex][3] == undefined? "0" : questionData[qindex][3].length) + ", seems ok");
+                }
+                else
+                {
+                    throw new Error("Wrong number of choices error");
+                }
+            }
+        }
+    }
+    
+    console.log("Found all " + questionData.length + " questions");
 });
 
 module.exports = scenario;
