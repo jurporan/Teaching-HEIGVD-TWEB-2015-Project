@@ -9,16 +9,15 @@ body
           h2 QPolls
           h3 Just some statistics
           
-          table.statTable
+          table.statTable(ng-controller="statController")
             tr
               td Tot polls (open/closed):
-              td#nbTotal.statTableNumber -
+              td#nbTotal.statTableNumber {{ total }}
             tr
               td Tot polls week:
-              td#nbThisWeek.statTableNumber -
+              td#nbThisWeek.statTableNumber {{ recent }}
             tr
               td Tot polls open:
-              td#nbOpen.statTableNumber -
+              td#nbOpen.statTableNumber {{ open }}
 
         include ./includes/footer.jade
-        script(src='js/stat.js')
