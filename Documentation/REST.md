@@ -4,7 +4,7 @@ Interface REST
 =============
 L'interface REST de notre application permet d'interagir avec les fonctionnalités des sondages et de ce qui les compose. L'API est utilise le JSON comme format de transmission de données. Elle est disponible à l'adresse ```/api``` et reconnaît les chemins suivants:
 
-- **GET** ```/api/poll``` : Renvoie des statistiques à propos de tous les sondages existants:
+- **GET** ```/api/polls``` : Renvoie des statistiques à propos de tous les sondages existants:
 
 ```
     {
@@ -18,7 +18,7 @@ Le nombre de sondages récents correspond au nombre de sondages créés depuis u
 
 Si le client n'a rien spécifié lors de sa requête, ```nb_recent``` = ```nb_open + nb_closed```.
 
-- **GET** ```/api/poll/<pollid>``` : Renvoie des informations à propos d'un sondage en particulier sous la forme suivante:
+- **GET** ```/api/polls/<pollid>``` : Renvoie des informations à propos d'un sondage en particulier sous la forme suivante:
 
 ```
     {
@@ -27,7 +27,7 @@ Si le client n'a rien spécifié lors de sa requête, ```nb_recent``` = ```nb_op
         creation_date : "<mm.dd.aaaa>",
         state : "draft|open|close",
         nb_questions : <nombre de questions>,
-        nb_participations : <nombre de participants différents>
+        nb_instances : <nombre de fois que ce sondage a été soumis>
     }
 ```
 
@@ -43,7 +43,7 @@ où la structure ```{poll}``` correspond au json décrit au point précédent, e
 
 Cette requête permet de faire de la pagination en renvoyant *nb* résultats depuis un numéro *FROM* en spécifiant dans l'URL les paramètres suivants: ```?from=x&nb=y```. Attention, si aucun paramètre n'est spécifié, la liste de tous les sondages est renvoyée (et c'est le mal!).
 
-- **GET** ```/api/poll/<pollid>/question/<questionid>``` : Renvoie les informations à propos d'une question particulière d'un sondage en particulier sous la forme:
+- **GET** ```/api/polls/<pollid>/questions/<questionid>``` : Renvoie les informations à propos d'une question particulière d'un sondage en particulier sous la forme:
 
 ```
     {
@@ -59,7 +59,7 @@ Cette requête permet de faire de la pagination en renvoyant *nb* résultats dep
     }
 ```
 
-- **GET** ```/api/poll/<pollid>/questions``` : Renvoie la liste des questions du sondage spécifié sous la forme:
+- **GET** ```/api/polls/<pollid>/questions``` : Renvoie la liste des questions du sondage spécifié sous la forme:
 
 ```
     {
@@ -69,7 +69,7 @@ Cette requête permet de faire de la pagination en renvoyant *nb* résultats dep
 
 où la structure ```{poll}``` correspond au json décrit au point précédent, en y ajoutant la valeur ```id```.
 
-- **GET** ```/api/poll/<pollid>/question/<questionid>/results``` : Renvoie les résultats actuels pour une question sous la forme:
+- **GET** ```/api/polls/<pollid>/instances/<instanceid>/results/questions/<questionid>``` : Renvoie les résultats actuels pour une question sous la forme:
 
 ```
     {
@@ -86,7 +86,23 @@ où la structure ```{poll}``` correspond au json décrit au point précédent, e
     }
 ```
 
-- **POST** ```/api/poll``` : Crée un nouveau sondage dans la base de données. Le status du sondage nouvellement créé est toujours *draft*. Le client envoie les informations du nouveau sondage sous le forme:
+- **GET** ```/api/polls/<pollid>/instances``` : Liste les instances existantes pour un sondage, renvoie la structure:
+
+```  
+{
+    instances : [
+        {
+            id : <id>,
+            creation_date : "<date de création>",
+            open : <true|false>,
+            nb_questions : <nombre de questions>,
+            nb_participations : <nombre de participations enregistrées>
+        }
+    ]
+}
+```
+
+- **POST** ```/api/polls``` : Crée un nouveau sondage dans la base de données. Le status du sondage nouvellement créé est toujours *draft*. Le client envoie les informations du nouveau sondage sous le forme:
 
 ```
     {
@@ -102,7 +118,7 @@ Le mot de passe *admin_password* est obligatoire, mais le mot de passe *user_pas
 Le serveur répond simplement un message contenant l'dentifiant du sondage nouvellement créé: ```{id : <id>}```
 
 
-- **POST** ```/api/poll/<pollid>/question``` : Crée une nouvelle question dans le sondage spécifié. Le client spécifie la question et éventuellement les choix possibles sous la forme:
+- **POST** ```/api/polls/<pollid>/questions``` : Crée une nouvelle question dans le sondage spécifié. Le client spécifie la question et éventuellement les choix possibles sous la forme:
 
 ```
     {
@@ -120,7 +136,7 @@ Le serveur répond simplement un message contenant l'dentifiant du sondage nouve
 
 Le serveur répond simplement un message contenant l'dentifiant de la question nouvellement créée: ```{id : <id>}```
 
-- **POST** ```/api/poll/<pollid>/question/<questionid>/choice``` : Crée un nouveau choix dans la question spécifiée du sondage spécifié. Le nouveau choix prend la forme:
+- **POST** ```/api/polls/<pollid>/questions/<questionid>/choices``` : Crée un nouveau choix dans la question spécifiée du sondage spécifié. Le nouveau choix prend la forme:
 
 ```
     {
@@ -129,7 +145,17 @@ Le serveur répond simplement un message contenant l'dentifiant de la question n
     }
 ```
 
-- **PUT** ```/api/poll/<pollid>``` : Modifie un sondage existant. Le client spécifie ses modifications dans la structure suivante:
+- **POST** ```/api/polls/<pollid>/instances``` : Crée une nouvelle instance d'un sondage. Le résultat contient simplement l'identifiant du sondage nouvellement créé: ```{id : <id>}```.
+
+- **POST** ```/api/polls/<pollid>/instances/<instanceid>/results``` : Permet de créer une participation contenant les réponses à toutes les questions obligatoires du sondage sous la forme:
+
+```
+{
+    results : [{question : "<texte de la question 1>", choice : "<choix>"}, ...]
+}
+```
+
+- **PUT** ```/api/polls/<pollid>``` : Modifie un sondage existant. Le client spécifie ses modifications dans la structure suivante:
 
 ```
     {
@@ -144,7 +170,7 @@ Le serveur répond simplement un message contenant l'dentifiant de la question n
 
 Chaque champ est facultatif, le client peut très bien ne modifier qu'une propriété.
 
-- **PUT** ```/api/poll/<pollid>/question/<questionid>``` : Modifie une question existante. Le client spécifie ses modifications dans la structure suivante:
+- **PUT** ```/api/polls/<pollid>/questions/<questionid>``` : Modifie une question existante. Le client spécifie ses modifications dans la structure suivante:
 
 ```
     {
@@ -156,7 +182,7 @@ Chaque champ est facultatif, le client peut très bien ne modifier qu'une propri
 
 Chaque champ est facultatif, le client peut très bien ne modifier qu'une propriété.
 
-- **PUT** ```/api/poll/<pollid>/question/<questionid>/choice/<choiceid>``` : Modifie un choix d'une question. Le client spécifie ses modifications dans la structure suivante:
+- **PUT** ```/api/polls/<pollid>/questions/<questionid>/choices/<choiceid>``` : Modifie un choix d'une question. Le client spécifie ses modifications dans la structure suivante:
 
 ```
     {
@@ -165,13 +191,15 @@ Chaque champ est facultatif, le client peut très bien ne modifier qu'une propri
     }
 ```
 
+- **PUT** ```/api/polls/<pollid>/instances``` : Modifie une instance d'un sondage donné, permet de fermer l'instance. Prend simplement le json : ```{open : <true|false>}```.
+
 Chaque champ est facultatif, le client peut très bien ne modifier qu'une propriété.
 
-- **DELETE** ```/api/poll/<pollid>``` : Supprime un sondage existant. Attention, cette action supprimera aussi toutes les questions et leurs choix liées à ce sondage.
+- **DELETE** ```/api/polls/<pollid>``` : Supprime un sondage existant. Attention, cette action supprimera aussi toutes les questions et leurs choix liées à ce sondage.
 
-- **DELETE** ```/api/poll/<pollid>/question/<questionid>``` : Supprime une question d'un sondage. Attention, cette action supprimera aussi tous les choix liés à cette question.
+- **DELETE** ```/api/polls/<pollid>/questions/<questionid>``` : Supprime une question d'un sondage. Attention, cette action supprimera aussi tous les choix liés à cette question.
 
-- **DELETE** ```/api/poll/<pollid>/question/<questionid>/choice/<choiceid>``` : Supprime un choix d'une question.
+- **DELETE** ```/api/polls/<pollid>/questions/<questionid>/choices/<choiceid>``` : Supprime un choix d'une question.
 
 Dans cette première partie seront implémentées les requêtes GET et POST ci-dessus. Deux exemples, un GET et un POST sont dosponibles sur [cette page](REST examples.md). Dans de futures versions de l'application, l'API couvrira la gestion des participations et des réponses aux questions.
 

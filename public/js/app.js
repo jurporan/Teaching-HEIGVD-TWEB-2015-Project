@@ -1,6 +1,6 @@
-var qpoll = angular.module('qpoll', []);
+var northPoll = angular.module('northPoll', []);
 
-qpoll.controller("statController", function($http, $scope)
+northPoll.controller("statController", function($http, $scope)
 {
     $http.get("/api/poll").then(function(response)
     {
