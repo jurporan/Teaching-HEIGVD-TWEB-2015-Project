@@ -8,6 +8,11 @@ var QuestionSchema = new Schema({
   text: String,
   choices_available: Number,
   optional: Boolean,
+  choices: [{
+    text: String,
+    correct: Boolean
+  }],
+  public_results: Boolean,
   poll_id: String
 });
 
