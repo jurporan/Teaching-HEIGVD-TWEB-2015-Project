@@ -52,6 +52,15 @@ body#home.homepage(ng-app='northPoll')
           h2.section-title.text-center.wow.fadeInDown Sondages
           p.text-center.wow.fadeInDown
             | Sondages existants
+            
+            div(ng-controller='pollsController')
+               p Il y a {{ polls.length }} sondages.
+               ul
+                  li(ng-repeat="poll in polls") {{poll.name}}
+                    a(ng-href="http://api/{{poll.name}}")    {{poll.description}}
+
+            
+            
         .row
     section#about
       .container
