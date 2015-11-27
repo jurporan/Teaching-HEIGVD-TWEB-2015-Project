@@ -76,3 +76,8 @@ northPoll.controller("PollCreationController", function($scope, $http)
 {
     $scope.pouet = "pouet";
 });
+
+northPoll.controller("AnswerCtrl", function ($scope, $http) {
+
+  $scope.mot = "pouet";
+});
