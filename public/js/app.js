@@ -74,6 +74,22 @@ northPoll.factory('pollManager', function($http) {
 
 northPoll.controller("AnswerCtrl", function ($scope, $http) {
 
-  $scope.mot = "pouet";
+  $scope.question = "Quelle heure est-il?";
+  $scope.choices = [];
+  
+  $scope.availableChoices = 2;
+  $scope.choices.push({text : "12:00", selected : false});
+  $scope.choices.push({text : "13:00", selected : false});
+  $scope.choices.push({text : "14:00", selected : false});
+  
+  $scope.select = function(choice)
+  {
 
+      if (choice.selected || (!choice.selected && $scope.availableChoices > 0))
+      {
+          $scope.availableChoices += (choice.selected ? 1 : -1)
+          choice.selected = !choice.selected;
+      }
+  }
+  
 });
