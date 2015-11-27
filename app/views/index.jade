@@ -1,5 +1,5 @@
 include ./includes/head.jade
-body#home.homepage
+body#home.homepage(ng-app='northPoll')
   header#header
     nav#main-menu.navbar.navbar-default.navbar-fixed-top(role='banner')
       .container
@@ -14,7 +14,7 @@ body#home.homepage
         .collapse.navbar-collapse.navbar-right
           ul.nav.navbar-nav
             li.scroll
-              a(href='#answer') Answer
+              a(href='#answer') Sondages
             li.scroll
               a(href='#ask') Ask
             li.scroll
@@ -37,7 +37,13 @@ body#home.homepage
               .row
                 .col-sm-6
                   .carousel-content
-                    p Statistiques !
+                    h2(ng-controller='statController')
+                      span Total
+                        {{total}}
+                      span Recent
+                        {{recent}}
+                      span Open
+                        {{open}}
 
     section#answer
       .container
@@ -61,5 +67,5 @@ body#home.homepage
         .row
 
     include ./partials/create_poll.jade
-
+    include ./partials/answer.jade
     include ./includes/footer.jade
