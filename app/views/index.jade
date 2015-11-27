@@ -16,9 +16,9 @@ body#home.homepage(ng-app='northPoll')
             li.scroll
               a(href='#answer') Sondages
             li.scroll
-              a(href='#ask') Ask
+              a(href='#ask') Créer un sondage
             li.scroll
-              a(href='#about') About
+              a(href='#about') A propos
     section#main-slider
       .owl-carousel
         .item(style='background-image: url(images/slider/background1.jpg);')
@@ -49,17 +49,23 @@ body#home.homepage(ng-app='northPoll')
     section#answer
       .container
         .section-header
-          h2.section-title.text-center.wow.fadeInDown Answer !
+          h2.section-title.text-center.wow.fadeInDown Sondages
           p.text-center.wow.fadeInDown
-            | Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-            | tempor incididunt ut
-            br
-            |  et dolore magna aliqua. Ut enim ad minim veniam
+            | Sondages existants
+            
+            div(ng-controller='pollsController')
+               p Il y a {{ polls.length }} sondages.
+               ul
+                  li(ng-repeat="poll in polls") {{poll.name}}
+                    a(ng-href="http://api/{{poll.name}}")    {{poll.description}}
+
+            
+            
         .row
     section#about
       .container
         .section-header
-          h2.section-title.text-center.wow.fadeInDown About
+          h2.section-title.text-center.wow.fadeInDown A propos
           p.text-center.wow.fadeInDown
             | Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
             | tempor incididunt ut
