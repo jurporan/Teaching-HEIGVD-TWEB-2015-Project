@@ -72,8 +72,12 @@ northPoll.factory('pollManager', function($http) {
     $scope.polls = pollManager.getPolls();
  });
 
+northPoll.controller("PollCreationController", function($scope, $http)
+{
+    
+});
+
 northPoll.controller("AnswerCtrl", function ($scope, $http) {
 
   $scope.mot = "pouet";
-
 });
