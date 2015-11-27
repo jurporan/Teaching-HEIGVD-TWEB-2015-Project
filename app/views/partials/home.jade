@@ -1,0 +1,12 @@
+h2 QPolls
+  h3 Just some statistics
+    table.statTable(ng-controller='statController')
+      tr
+        td Tot polls (open/closed):
+        td#nbTotal.statTableNumber {{ total }}
+      tr
+        td Tot polls week:
+        td#nbThisWeek.statTableNumber {{ recent }}
+      tr
+        td Tot polls open:
+        td#nbOpen.statTableNumber {{ open }}

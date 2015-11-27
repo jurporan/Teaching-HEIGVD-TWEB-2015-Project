@@ -1,23 +1,12 @@
 include ./includes/head.jade
-body
+body(ng-app='northPoll')
     include ./includes/header.jade
     link(href='css/stat.css', rel='stylesheet')
     // Full Width Image Header
     header.header-image
       .headline
-        .container
-          h2 QPolls
-          h3 Just some statistics
-          
-          table.statTable(ng-controller="statController")
-            tr
-              td Tot polls (open/closed):
-              td#nbTotal.statTableNumber {{ total }}
-            tr
-              td Tot polls week:
-              td#nbThisWeek.statTableNumber {{ recent }}
-            tr
-              td Tot polls open:
-              td#nbOpen.statTableNumber {{ open }}
+        div.container(ui-view)
+          include ./partials/poll.jade
 
         include ./includes/footer.jade
+

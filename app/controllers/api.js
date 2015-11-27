@@ -39,7 +39,7 @@ function getPollById(id, callback) {
 function getQuestionById(id, callback) {
   var question = {};
   Question.findById(id, function (err, quest) {
-    if (err) return callback({reason:"Couldn't find the specified question"}, null);
+    if (err) return callback({reason: "Couldn't find the specified question"}, null);
     question.text = quest.text;
     question.choices_available = quest.choices_available;
     question.optional = quest.optional;
@@ -109,69 +109,80 @@ module.exports = function (app) {
 router.get('/polls/:pollid/instances/:instanceid/results/questions/:questionid', function (req, res) {
   var response = {};
   var choices = [];
-  Question.findById(req.params.questionid, function(err, question) {
-    if(err) return res.status(500).send("Couldn't find the specified question");
+  Question.findById(req.params.questionid, function (err, question) {
+    if (err) return res.status(500).send("Couldn't find the specified question");
     response.text = question.text;
     response.results = [];
-    question.choices.forEach(function(choice, idx, arr) {
+    question.choices.forEach(function (choice, idx, arr) {
       response.results.push({
-        text:choice.text,
-        correct: choice.correct
+        text: choice.text,
+        correct: choice.correct,
+        nb_chosen: 0
       });
     });
-    Instance.findById(req.params.instanceid, function(err, instance) {
-      if(err) return res.status(500).send("Couldn't find the specified instance");
+    Instance.findById(req.params.instanceid, function (err, instance) {
+      if (err) return res.status(500).send("Couldn't find the specified instance");
       var nb_anwsers = 0;
-      instance.participations.forEach(function(part, idx, arr) {
-        if(part.question === question.text) {
+      instance.participations.forEach(function (part, idx, arr) {
+        if (part.question === question.text) {
           nb_anwsers++;
-          //choices.push(Question.findOne({text:part.question}, function()))
-        }
-        if(idx === arr.length - 1) {
-          response.nb_answers = nb_anwsers;
-
-        }
-      });
-    });
-  });
-  // we perform a search for the quesiton, we don't really need the poll id, but we respect the REST syntax
-  Question.findOne({_id: req.params.questionid}, function (err, quest) {
-    if (err) throw err;
-
-    response.text = quest.text;
-    response.nb_answers = 0;
-    response.results = [];
-
-    // We look for every choices associated to this question
-    Choice.find({question_id: req.params.questionid}, function (err, choices) {
-      if (err) throw err;
-
-      choices.forEach(function (choice, idx, arr) {
-        Answer.count({choice_id: choice._id}, function (err, nbr) {
-          if (err) throw err;
-          response.nb_answers += nbr;
-          response.results.push({
-            id: choice._id,
-            text: choice.text,
-            correct: choice.correct,
-            nb_chosen: nbr
+          response.results.forEach(function (choice, idx, arr) {
+            var myChoice = part.choice;
+            if (choice.text === myChoice) {
+              choice.nb_chosen++;
+            }
           });
-
-          // If we have stored all the data, we can return the results
-          if (idx === arr.length - 1) {
-            res.format(
-              {
-                'application/json': function () {
-                  res.send(response);
-                }
-              });
-          }
-        })
+        }
+        if (idx === arr.length - 1) {
+          response.nb_answers = nb_anwsers;
+          res.format({
+            'application/json': function () {
+              res.send(response);
+            }
+          });
+        }
       });
     });
   });
-
 });
+// we perform a search for the quesiton, we don't really need the poll id, but we respect the REST syntax
+/*Question.findOne({_id: req.params.questionid}, function (err, quest) {
+ if (err) throw err;
+
+ response.text = quest.text;
+ response.nb_answers = 0;
+ response.results = [];
+
+ // We look for every choices associated to this question
+ Choice.find({question_id: req.params.questionid}, function (err, choices) {
+ if (err) throw err;
+
+ choices.forEach(function (choice, idx, arr) {
+ Answer.count({choice_id: choice._id}, function (err, nbr) {
+ if (err) throw err;
+ response.nb_answers += nbr;
+ response.results.push({
+ id: choice._id,
+ text: choice.text,
+ correct: choice.correct,
+ nb_chosen: nbr
+ });
+
+ // If we have stored all the data, we can return the results
+ if (idx === arr.length - 1) {
+ res.format(
+ {
+ 'application/json': function () {
+ res.send(response);
+ }
+ });
+ }
+ })
+ });
+ });
+ });
+
+ });*/
 
 router.get('/polls/:pollid/questions/:questionid', function (req, res) {
   res.format({
@@ -190,7 +201,7 @@ router.get("/polls/:pollid/questions", function (req, res) {
     if (err) return res.status(500).send("Couldn'f find any questions");
     questions.forEach(function (quest, idx, arr) {
       getQuestionById(quest._id, function (err, question) {
-        if(err) return res.status(500).send(err.reason);
+        if (err) return res.status(500).send(err.reason);
         response.questions.push(question);
         if (idx === arr.length - 1) {
           res.format({
@@ -300,7 +311,7 @@ router.get('/polls', function (req, res) {
 
 // POST requests handlers
 
-router.post('/poll', function (req, res) {
+router.post('/polls', function (req, res) {
   var data = req.body;
   var badData = new Array();
 
@@ -392,7 +403,7 @@ router.post('/polls/:pollid/questions', function (req, res) {
   }
 });
 
-router.post('/poll/:pollid/question/:questionid/choice', function (req, res) {
+router.post('/polls/:pollid/questions/:questionid/choices', function (req, res) {
   var data = req.body;
   var badData = new Array();
 
@@ -419,6 +430,42 @@ router.post('/poll/:pollid/question/:questionid/choice', function (req, res) {
     newChoice.save(function (err, save) {
       if (err) throw err;
       res.send({id: save.id});
+    });
+  }
+});
+
+router.post('/polls/:pollid/instances', function (req, res) {
+  var newInstance = new Instance({
+    participations: [],
+    poll_id: req.params.pollid
+  });
+  newInstance.save(function (err, save) {
+    if (err) res.status(500).send("Couldn't create this instance");
+    res.send({id: save.id});
+  });
+});
+
+router.post('/polls/:pollid/instances/:instanceid/results', function (req, res) {
+  var data = req.body;
+  var badData = new Array();
+
+  // We check that every mandatory field is there and is of the right type
+  if (!(data.results === undefined) && !(Object.getPrototypeOf(data.results) === Object.getPrototypeOf(Array()))) {
+    badData.push("results");
+  }
+
+  // If there are errors, we tell the client
+  if (badData.length > 0) {
+    res.send(errorCode, {errors: badData});
+  }
+
+  // Otherwise, we can store the data
+  else {
+    Instance.findById(req.params.instanceid, function(err, inst) {
+      if(err) res.status(500).send("Couldn't find the specified instance.");
+      inst.participations = inst.participations.concat(data.results);
+      inst.save();
+      res.status(200).send();
     });
   }
 });

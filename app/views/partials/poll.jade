@@ -1,0 +1,4 @@
+div(ng-controller='BarCtrl')
+  p Nombre de réponses : {{nb_answers}}
+  p Question : {{question_text}}
+  canvas#bar.chart.chart-bar(chart-data='data', chart-labels='labels', chart-legend='true')
