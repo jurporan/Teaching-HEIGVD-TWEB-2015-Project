@@ -72,6 +72,11 @@ northPoll.factory('pollManager', function($http) {
     $scope.polls = pollManager.getPolls();
  });
 
+northPoll.controller("PollCreationController", function($scope, $http)
+{
+    
+});
+
 northPoll.controller("AnswerCtrl", function ($scope, $http) {
 
   $scope.question = "Quelle heure est-il?";
@@ -91,5 +96,4 @@ northPoll.controller("AnswerCtrl", function ($scope, $http) {
           choice.selected = !choice.selected;
       }
   }
-  
 });
