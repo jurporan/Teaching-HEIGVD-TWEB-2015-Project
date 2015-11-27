@@ -38,12 +38,13 @@ body#home.homepage(ng-app='northPoll')
                 .col-sm-6
                   .carousel-content
                     h2(ng-controller='statController')
-                      span Total
-                        //{{total}}
-                      span Recent
-                        //{{recent}}
-                      span Open
-                        //{{open}}
+                      span Statistiques
+                      div Total
+                        {{total}}
+                      div Recent
+                        {{recent}}
+                      div Open
+                        {{open}}
 
     section#answer
       .container
@@ -65,7 +66,7 @@ body#home.homepage(ng-app='northPoll')
             br
             |  et dolore magna aliqua. Ut enim ad minim veniam
         .row
-    
+
     include ./partials/answer.jade
     include ./includes/footer.jade
 
