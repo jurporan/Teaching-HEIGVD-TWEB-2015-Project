@@ -20,4 +20,14 @@ body
               td Tot polls open:
               td#nbOpen.statTableNumber {{ open }}
 
+          .container
+             h2 Sondage
+             h3 Sondages existants
+             
+             div(ng-controller='pollsController')
+               p Il y a {{ polls.length }} sondages.
+               ul
+                  li(ng-repeat="poll in polls") {{poll.name}}
+                    a(ng-href="http://api/{{poll.name}}")    {{poll.description}}
+            
         include ./includes/footer.jade
