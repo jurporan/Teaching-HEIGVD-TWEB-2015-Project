@@ -84,3 +84,7 @@ northPoll.controller("statController", function($http, $scope) {
     $scope.polls = pollManager.getPolls();
  });
 
+northPoll.controller("PollCreationController")
+{
+    $scope.pouet = "pouet";
+}
