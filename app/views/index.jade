@@ -1,22 +1,64 @@
 include ./includes/head.jade
-body(ng-app='northPoll')
-    include ./includes/header.jade
-    link(href='css/stat.css', rel='stylesheet')
-    // Full Width Image Header
-    header.header-image
-      .headline
-        div.container(ui-view)
-          include ./partials/poll.jade
+body#home.homepage
+  header#header
+    nav#main-menu.navbar.navbar-default.navbar-fixed-top(role='banner')
+      .container
+        .navbar-header
+          button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a.navbar-brand(href='index.html')
+            img(src='images/logo2.png', alt='logo')
+        .collapse.navbar-collapse.navbar-right
+          ul.nav.navbar-nav
+            li.scroll
+              a(href='#answer') Answer
+            li.scroll
+              a(href='#ask') Ask
+            li.scroll
+              a(href='#about') About
+    section#main-slider
+      .owl-carousel
+        .item(style='background-image: url(images/slider/background1.jpg);')
+          .slider-inner
+            .container
+              .row
+                .col-sm-6
+                  .carousel-content
+                    h2
+                      span NorthPoll
+                      |  Ask and answer !
+        // /.item
+        .item(style='background-image: url(images/slider/background2.jpg);')
+          .slider-inner
+            .container
+              .row
+                .col-sm-6
+                  .carousel-content
+                    p Statistiques !
 
-          .container
-             h2 Sondage
-             h3 Sondages existants
-             
-             div(ng-controller='pollsController')
-               p Il y a {{ polls.length }} sondages.
-               ul
-                  li(ng-repeat="poll in polls") {{poll.name}}
-                    a(ng-href="http://api/{{poll.name}}")    {{poll.description}}
-            
-        include ./includes/footer.jade
+    section#answer
+      .container
+        .section-header
+          h2.section-title.text-center.wow.fadeInDown Answer !
+          p.text-center.wow.fadeInDown
+            | Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+            | tempor incididunt ut
+            br
+            |  et dolore magna aliqua. Ut enim ad minim veniam
+        .row
+    section#about
+      .container
+        .section-header
+          h2.section-title.text-center.wow.fadeInDown About
+          p.text-center.wow.fadeInDown
+            | Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+            | tempor incididunt ut
+            br
+            |  et dolore magna aliqua. Ut enim ad minim veniam
+        .row
+
+    include ./includes/footer.jade
 
