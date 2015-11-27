@@ -1,2 +1,8 @@
-div(ng-controller=PollCreationController)
-    p Trompette : {{pouet}}
+div(ng-controller='PollCreationController', align='center')
+    form
+        |Nom du sondage :
+        input(type='text' name='pollName')
+        br
+        br
+        |Pseudonyme du créateur :
+        input(type='text', name='creatorName')
