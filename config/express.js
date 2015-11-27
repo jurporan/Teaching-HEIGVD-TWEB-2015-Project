@@ -37,7 +37,7 @@ module.exports = function(app, config) {
   });
 
   app.get('/', function(req, res) {
-    res.render('partials/home.jade');
+    res.render('index.jade');
   });
 
   app.use(function (req, res, next) {
