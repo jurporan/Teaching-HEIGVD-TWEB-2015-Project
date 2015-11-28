@@ -5,12 +5,17 @@ var northPoll = angular.module('northPoll', [
 ]);
 
 // Angular chart JS
-northPoll.controller("BarCtrl", function ($scope, $http) {
+northPoll.controller("BarCtrl", function ($scope, $http, $timeout) {
 
   $scope.nb_answers;
   $scope.question_text;
   $scope.labels = [];
   $scope.data = [[]];
+
+  $timeout(function() {
+    $scope.renderChart = true;
+    console.log('rendering chart');
+  });
 
   $http.get('/api/polls/563376e632fc6d2c205744a2/instances/565773186039652c19587340/results/questions/564cc9b615f11a8c1e979702')
     .then(function(response) {
