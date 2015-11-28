@@ -1,2 +1,4 @@
 div(ng-controller='AnswerCtrl')
-  p Mot fétiche : {{ mot }}
+  h3 Question : {{ question }}
+  ul.list-group
+    li.list-group-item(ng-repeat="choice in choices" ng-click="select(choice)" ng-class="{'list-group-item-success' : choice.selected}") {{ choice.text }}

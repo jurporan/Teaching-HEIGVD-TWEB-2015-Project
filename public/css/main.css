@@ -8,7 +8,7 @@ body {
   background: #fff;
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
-  color: #292C4E;
+  color: #000000;
   line-height: 26px;
 }
 h1,
@@ -19,10 +19,10 @@ h5,
 h6 {
   font-weight: 600;
   font-family: 'Roboto', sans-serif;
-  color: #292C4E;
+  color: #000000;
 }
 a {
-  color: ##292C4E;
+  color: #000000;
   -webkit-transition: color 400ms, background-color 400ms;
   -moz-transition: color 400ms, background-color 400ms;
   -o-transition: color 400ms, background-color 400ms;
@@ -31,10 +31,10 @@ a {
 a:hover,
 a:focus {
   text-decoration: none;
-  color: ##292C4E;
+  color: ##000000;
 }
 hr {
-  border-top: 1px solid ##292C4E;
+  border-top: 1px solid #000000;
   border-bottom: 1px solid #fff;
 }
 .gradiant {
@@ -53,7 +53,7 @@ hr {
 }
 .section-header .section-title {
   font-size: 44px;
-  color: #272727;
+  color: #000000;
   text-transform: uppercase;
   position: relative;
   padding-bottom: 100px;
@@ -65,20 +65,17 @@ hr {
   width: 10px;
   bottom: 40;
   left: 50%;
-  margin-left: -140px;
+  margin-left: -100px;
   height: 1px;
   background: #ebebeb;
 }
 .section-header .section-title:after {
   content: "";
   position: absolute;
-  width: 24px;
-  height: 24px;
-  bottom: -11px;
+  bottom: 0px;
   left: 50%;
   margin-left: -12px;
   border: 5px solid #fff;
-  border-radius: 20px;
   background: #292C4E;
 }
 .btn {
@@ -87,12 +84,12 @@ hr {
   border-radius: 3px;
 }
 .btn.btn-primary {
-  background: #292C4E;
-  border-color: #292C4E;
+  background: #000000;
+  border-color: #000000;
 }
 .btn.btn-primary:hover,
 .btn.btn-primary:focus {
-  background: #292C4E;
+  background: #000000;
 }
 .column-title {
   margin-top: 0;
@@ -107,7 +104,7 @@ hr {
   bottom: -1px;
   left: 0;
   width: 40%;
-  border-bottom: 1px solid #292C4E;
+  border-bottom: 1px solid #000000;
 }
 ul.nostyle {
   list-style: none;
@@ -266,7 +263,7 @@ ul.nostyle i {
 }
 #main-slider .owl-prev:hover,
 #main-slider .owl-next:hover {
-  background-color: #292C4E;
+  background-color: #000000;
 }
 #main-slider .owl-prev {
   left: -35px;
@@ -276,11 +273,12 @@ ul.nostyle i {
   right: -35px;
   text-indent: -14px;
 }
+
 #bar {
   width: 0%;
   max-width: 100%;
   height: 4px;
-  background: #292C4E;
+  background: #000000;
 }
 
 #cta {
@@ -458,7 +456,7 @@ ul.nostyle i {
   padding-top: 30px;
   padding-bottom: 30px;
   color: #fff;
-  background: #292C4E;
+  background: #000000;
 }
 #footer a {
   color: #fff;
