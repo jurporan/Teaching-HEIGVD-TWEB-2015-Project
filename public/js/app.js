@@ -82,6 +82,8 @@ northPoll.controller("AnswerCtrl", function ($scope, $http) {
   $scope.question = "Quelle heure est-il?";
   $scope.choices = [];
   
+  $scope.nbQuestions = 4;
+  $scope.currentQuestion = 2;
   $scope.availableChoices = 2;
   $scope.choices.push({text : "12:00", selected : false});
   $scope.choices.push({text : "13:00", selected : false});

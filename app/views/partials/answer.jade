@@ -1,4 +1,6 @@
 div(ng-controller='AnswerCtrl')
-  h3 Question : {{ question }}
-  ul.list-group
-    li.list-group-item(ng-repeat="choice in choices" ng-click="select(choice)" ng-class="{'list-group-item-success' : choice.selected}") {{ choice.text }}
+  h3 Question {{ currentQuestion }} / {{ nbQuestions }}:
+    h4{{ question }}
+    ul.list-group
+      li.list-group-item(ng-repeat="choice in choices" ng-click="select(choice)" ng-class="{'list-group-item-success' : choice.selected}") {{ choice.text }}
+    
