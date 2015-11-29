@@ -1,4 +1,14 @@
-div(ng-controller='BarCtrl')
-  p Nombre de réponses : {{nb_answers}}
-  p Question : {{question_text}}
-  canvas#bar.chart.chart-bar(chart-data='data', chart-labels='labels', chart-legend='true')
+section#poll
+  .container
+    .section-header
+      h2.section-title.text-center.wow.fadeInDown Stats for a question
+      div(ng-controller='BarCtrl')
+        div(style='height: 400px')
+          canvas#bar.chart.chart-bar(ng-if='renderChart', chart-data='data', chart-labels='labels', chart-legend='true', width='400', height='400')
+        p.text-center.wow.fadeInDown
+          b Question :
+          | {{question_text}}
+        p.text-center.wow.fadeInDown
+          b Nombre de réponses :
+          |{{nb_answers}}
+    .row
