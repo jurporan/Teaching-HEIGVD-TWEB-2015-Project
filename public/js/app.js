@@ -79,36 +79,71 @@ northPoll.factory('pollManager', function($http) {
 
 northPoll.controller("PollCreationController", function($scope, $http)
 {
-    
+
 });
 
-northPoll.controller("AnswerCtrl", function ($scope, $http) {
-
-  $scope.question = "Quelle heure est-il?";
-  $scope.choices = [];
+northPoll.controller("AnswerCtrl", function ($scope, $http)
+{
   
-  $scope.nbQuestions = 4;
-  $scope.currentQuestion = 2;
-  $scope.availableChoices = 2;
-  $scope.nextOrSubmit = ($scope.currentQuestion < $scope.nbQuestions ? "Next" : "Submit");
-  $scope.choices.push({text : "12:00", selected : false});
-  $scope.choices.push({text : "13:00", selected : false});
-  $scope.choices.push({text : "14:00", selected : false});
-  
+  // Chargé dans une requête ajax, ici manuel pour les tests
   $scope.questions = [];
+  var q1 =
+  {
+      text : "Quelle heure est-il?",
+      choices_available : 2,
+      optional : false,
+      choices : [{id : 1, text : "12:00"}, {id : 2, text : "13:00"}, {id : 3, text : "14:00"}]
+  }
+  var q2 =
+  {
+      text : "Quelle temps fait-il?",
+      choices_available : 1,
+      optional : true,
+      choices : [{id : 1, text : "Beau"}, {id : 2, text : "Moche"}]
+  }
+  var q3 =
+  {
+      text : "1 + 3 = ...",
+      choices_available : 2,
+      optional : false,
+      choices : [{id : 1, text : "1"}, {id : 2, text : "3.14"}, {id : 3, text : "7"}, {id : 4, text : "yolo"}]
+  }
+  $scope.questions.push(q1);
+  $scope.questions.push(q2);
+  $scope.questions.push(q3);
+  //-----------------------------------------------
+  
+  $scope.currentQuestion = 0;
+  $scope.results = [];
   
   $scope.select = function(choice)
   {
-
-      if (choice.selected || (!choice.selected && $scope.availableChoices > 0))
+      if (choice.selected ||  $scope.remainingChoices > 0)
       {
-          $scope.availableChoices += (choice.selected ? 1 : -1)
+          $scope.remainingChoices += (choice.selected ? 1 : -1)
           choice.selected = !choice.selected;
       }
+      
+      $scope.disabled = !$scope.optional && $scope.remainingChoices == $scope.question.choices_available;
   }
   
   $scope.next = function()
   {
+      if ($scope.currentQuestion > 0)
+      {
+          
+      }
       
+      // Chargement des données de la question
+      $scope.question = $scope.questions[$scope.currentQuestion];
+      $scope.optional = $scope.questions[$scope.currentQuestion].optional;
+      $scope.currentQuestion++;
+      
+      // Mise à jour des variables de contrôle
+      $scope.remainingChoices = $scope.question.choices_available;
+      $scope.nextOrSubmit = ($scope.currentQuestion < $scope.questions.length ? "Next" : "Submit");
+      $scope.disabled = !$scope.optional && $scope.remainingChoices == $scope.question.choices_available;
   }
+  
+  $scope.next();
 });
