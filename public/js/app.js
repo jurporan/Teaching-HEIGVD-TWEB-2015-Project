@@ -131,18 +131,37 @@ northPoll.controller("AnswerCtrl", function ($scope, $http)
   {
       if ($scope.currentQuestion > 0)
       {
-          
+          var result = {};
+          result.question = $scope.question.text;
+          result.choices = [];
+          for (var i in $scope.question.choices)
+          {
+              var choice = $scope.question.choices[i];
+              if (choice.selected != undefined && choice.selected)
+              {
+                  result.choices.push(choice.text);
+              }
+          }
+          $scope.results.push(result);
       }
-      
-      // Chargement des données de la question
-      $scope.question = $scope.questions[$scope.currentQuestion];
-      $scope.optional = $scope.questions[$scope.currentQuestion].optional;
-      $scope.currentQuestion++;
-      
-      // Mise à jour des variables de contrôle
-      $scope.remainingChoices = $scope.question.choices_available;
-      $scope.nextOrSubmit = ($scope.currentQuestion < $scope.questions.length ? "Next" : "Submit");
-      $scope.disabled = !$scope.optional && $scope.remainingChoices == $scope.question.choices_available;
+
+      if ($scope.currentQuestion < $scope.questions.length)
+      {
+          // Chargement des données de la question
+          $scope.question = $scope.questions[$scope.currentQuestion];
+          $scope.optional = $scope.questions[$scope.currentQuestion].optional;
+          $scope.currentQuestion++;
+          
+          // Mise à jour des variables de contrôle
+          $scope.remainingChoices = $scope.question.choices_available;
+          $scope.nextOrSubmit = ($scope.currentQuestion < $scope.questions.length ? "Next" : "Submit");
+          $scope.disabled = !$scope.optional && $scope.remainingChoices == $scope.question.choices_available;
+      }
+      else
+      {
+          alert("Terminé");
+          console.log($scope.results);
+      }
   }
   
   $scope.next();
