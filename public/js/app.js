@@ -79,19 +79,19 @@ northPoll.factory('pollManager', function($http) {
 
 northPoll.controller("PollCreationController", function($scope, $http)
 {
-    
+
 });
 
 northPoll.controller("AnswerCtrl", function ($scope, $http) {
 
   $scope.question = "Quelle heure est-il?";
   $scope.choices = [];
-  
+
   $scope.availableChoices = 2;
   $scope.choices.push({text : "12:00", selected : false});
   $scope.choices.push({text : "13:00", selected : false});
   $scope.choices.push({text : "14:00", selected : false});
-  
+
   $scope.select = function(choice)
   {
 
