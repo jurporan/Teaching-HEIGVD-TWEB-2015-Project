@@ -17,7 +17,7 @@ northPoll.controller("BarCtrl", function ($scope, $http, $timeout) {
     console.log('rendering chart');
   });
 
-  $http.get('/api/polls/563376e632fc6d2c205744a2/instances/565773186039652c19587340/results/questions/564cc9b615f11a8c1e979702')
+/*  $http.get('/api/polls/563376e632fc6d2c205744a2/instances/565773186039652c19587340/results/questions/564cc9b615f11a8c1e979702')
     .then(function(response) {
       $scope.nb_answers = response.data.nb_answers;
       $scope.question_text = response.data.text;
@@ -27,7 +27,7 @@ northPoll.controller("BarCtrl", function ($scope, $http, $timeout) {
       });
     }, function(err) {
 
-    });
+    });*/
 
 });
 
@@ -94,6 +94,8 @@ northPoll.controller("AnswerCtrl", function ($scope, $http) {
   $scope.choices.push({text : "12:00", selected : false});
   $scope.choices.push({text : "13:00", selected : false});
   $scope.choices.push({text : "14:00", selected : false});
+  
+  $scope.questions = [];
   
   $scope.select = function(choice)
   {
