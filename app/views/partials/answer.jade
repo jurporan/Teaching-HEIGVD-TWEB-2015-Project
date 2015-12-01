@@ -3,4 +3,4 @@ div(ng-controller='AnswerCtrl')
     h4{{ question }}
     ul.list-group
       li.list-group-item(ng-repeat="choice in choices" ng-click="select(choice)" ng-class="{'list-group-item-success' : choice.selected}") {{ choice.text }}
-    
+    span.btn.btn-primary(role="button", ng-click="next()") {{ nextOrSubmit }}

@@ -90,6 +90,7 @@ northPoll.controller("AnswerCtrl", function ($scope, $http) {
   $scope.nbQuestions = 4;
   $scope.currentQuestion = 2;
   $scope.availableChoices = 2;
+  $scope.nextOrSubmit = ($scope.currentQuestion < $scope.nbQuestions ? "Next" : "Submit");
   $scope.choices.push({text : "12:00", selected : false});
   $scope.choices.push({text : "13:00", selected : false});
   $scope.choices.push({text : "14:00", selected : false});
@@ -102,5 +103,10 @@ northPoll.controller("AnswerCtrl", function ($scope, $http) {
           $scope.availableChoices += (choice.selected ? 1 : -1)
           choice.selected = !choice.selected;
       }
+  }
+  
+  $scope.next = function()
+  {
+      
   }
 });
