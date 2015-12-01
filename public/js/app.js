@@ -135,7 +135,7 @@ northPoll.controller("AnswerCtrl", function ($scope, $http)
       
       // Mise à jour des variables de contrôle
       if ($scope.question.remainingChoices == undefined) {$scope.question.remainingChoices = $scope.question.choices_available;}
-      $scope.nextOrSubmit = ($scope.currentQuestion < $scope.questions.length - 1 ? "Next" : "Submit");
+      $scope.nextOrSubmit = ($scope.currentQuestion < $scope.questions.length - 1 ? "Suivant" : "Envoyer");
       $scope.nextDisabled = !$scope.optional && $scope.question.remainingChoices == $scope.question.choices_available;
       $scope.prevDisabled = $scope.currentQuestion == 0;
   }
