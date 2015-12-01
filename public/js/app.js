@@ -123,8 +123,8 @@ northPoll.controller("AnswerCtrl", function ($scope, $http)
           $scope.question.remainingChoices += (choice.selected ? 1 : -1)
           choice.selected = !choice.selected;
       }
-      
-      $scope.nextDisabled = !$scope.optional && $scope.remainingChoices == $scope.question.choices_available;
+
+      $scope.nextDisabled = !$scope.optional && $scope.question.remainingChoices == $scope.question.choices_available;
   }
   
   $scope.load = function()
