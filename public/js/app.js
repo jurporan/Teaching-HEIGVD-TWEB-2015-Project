@@ -57,6 +57,9 @@ northPoll.controller("pollsController", function ($scope, $http) {
   $http.get("/api/polls/draft").then(function (response) {
     $scope.polls = $scope.polls.concat(response.data.polls);
   });
+  $http.get("/api/polls/closed").then(function (response) {
+    $scope.polls = $scope.polls.concat(response.data.polls);
+  });
 });
 
 northPoll.controller("PollCreationController", function ($scope, $http) {
