@@ -31,7 +31,7 @@ a {
 a:hover,
 a:focus {
   text-decoration: none;
-  color: ##000000;
+  color: #000000;
 }
 hr {
   border-top: 1px solid #000000;
@@ -204,7 +204,7 @@ ul.nostyle i {
   #main-menu.navbar-default .dropdown-menu > li.active,
   #main-menu.navbar-default .dropdown-menu > li.open,
   #main-menu.navbar-default .dropdown-menu > li:hover {
-    border-left-color: ##292C4E;
+    border-left-color: #292C4E;
   }
   #main-menu.navbar-default .dropdown-menu > li.active > a,
   #main-menu.navbar-default .dropdown-menu > li.open > a,
@@ -292,7 +292,7 @@ ul.nostyle i {
   margin-top: 40px;
 }
 #cta2 {
-  background: #242a33 url(../images/cta2/cta2-bg.jpg) no-repeat 50% 50%;
+  /*background: #242a33 url(../images/cta2/cta2-bg.jpg) no-repeat 50% 50%;*/
   background-size: cover;
   color: #fff;
   padding-top: 70px;

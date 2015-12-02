@@ -63,23 +63,6 @@ northPoll.controller("PollCreationController", function ($scope, $http) {
 
 });
 
-northPoll.controller("AnswerCtrl", function ($scope, $http) {
-
-  $scope.question = "Quelle heure est-il?";
-  $scope.choices = [];
-
-  $scope.availableChoices = 2;
-  $scope.choices.push({text: "12:00", selected: false});
-  $scope.choices.push({text: "13:00", selected: false});
-  $scope.choices.push({text: "14:00", selected: false});
-
-  $scope.select = function (choice) {
-
-    if (choice.selected || (!choice.selected && $scope.availableChoices > 0)) {
-      $scope.availableChoices += (choice.selected ? 1 : -1)
-      choice.selected = !choice.selected;
-    }
-=======
 northPoll.controller("AnswerCtrl", function ($scope, $http)
 {
 
@@ -175,7 +158,6 @@ northPoll.controller("AnswerCtrl", function ($scope, $http)
           alert("Terminé");
           console.log($scope.results);
       }
->>>>>>> 36d4b5afaa813a29fdc71e218ec4dcee8f16edde
   }
 
   $scope.next();
