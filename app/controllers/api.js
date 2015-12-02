@@ -10,31 +10,24 @@ var express = require('express'),
 // This function is useful to fetch a Poll object with just its ID
 function getPollById(id, callback) {
   var response = {};
-
-  // We perform a search
-  Poll.findOne({_id: id}, function (err, poll) {
-    if (err) throw err;
-    if (!poll) callback(null, 404);
-
-    // We set the properties of the Poll we are going to return
-    response.id = poll._id;
+  Poll.findById(id, function (err, poll) {
+    if (err) callback({reason: "Couldn't find the specified poll"}, null);
     response.name = poll.name;
     response.creator = poll.creator;
     response.creation_date = poll.creationDate;
     response.state = poll.state;
-
-    // We perform the count of questions and participations
-    Question.count({poll_id: id}, function (err, nb_quest) {
-      if (err) throw err;
-      response.nb_questions = nb_quest;
-      Participant.count({poll_id: id}, function (err, nb_part) {
-        if (err) throw err;
-        response.nb_participations = nb_part;
-        callback(response);
+    Question.count({poll_id: id}, function (err, nbQuestions) {
+      if (err) callback({reason: "Couldn't count questions in the poll"}, null);
+      response.nb_questions = nbQuestions;
+      Instance.count({poll_id: id}, function (err, nbInstances) {
+        if (err) callback({reason: "Couldn't count instances in the poll"}, null);
+        response.nb_instances = nbInstances;
+        callback(null, response);
       });
     });
   });
 }
+
 
 function getQuestionById(id, callback) {
   var question = {};
@@ -105,6 +98,133 @@ module.exports = function (app) {
 };
 
 // GET requests handlers
+router.get('/polls/stats', function (req, res) {
+
+  var response = {};
+
+  // Here, we only need to count the polls
+  Poll.count({state: "active"},
+    function (err, nb_open) {
+      if (err) return res.status(500).send("Couldn't count active Polls");
+
+      Poll.count({state: "closed"},
+        function (err, nb_closed) {
+          if (err) return res.status(500).send("Couldn't count closed Polls");
+
+          // We use the date provided in the URL
+          var sinceDate = new Date(req.query.since);
+          Poll.count({creationDate: {$gt: sinceDate}},
+            function (err, nb_recent) {
+              if (err) return res.status(500).send("Couldn't count since a certain date Polls");
+              response.nb_open = nb_open;
+              response.nb_closed = nb_closed;
+              response.nb_recent = nb_recent;
+
+              res.format(
+                {
+                  'application/json': function () {
+                    res.send(response);
+                  }
+                });
+
+            });
+        });
+    });
+});
+
+router.get('/polls/:pollid', function (req, res) {
+  var response = {};
+
+  if (req.params.pollid === 'draft' ||
+    req.params.pollid === 'open' ||
+    req.params.pollid === 'closed') {
+    response.polls = [];
+    // We search for every poll in the state :type
+    Poll.find({state: req.params.pollid}, function (err, polls) {
+      if (err) return res.status(500).send("Couldn't found any poll of this type");
+
+      // If there is none, we simply return the empty array
+      if (polls.length < 1) {
+        return res.send(response);
+      }
+
+      var inserted = 0;
+      // Otherwise, we get the details of every poll
+      polls.forEach(function (poll, idx, arr) {
+        getPollById(poll._id, function (err, resp) {
+          if (err) return res.status(500).send("Couldn't found any poll");
+          response.polls.push(resp);
+          inserted++;
+
+          // If we stored every poll available, we can return the result
+          if (inserted === arr.length) {
+            res.format({
+              'application/json': function () {
+                res.send(response);
+              }
+            });
+          }
+        });
+      });
+    });
+  } else {
+
+    Poll.findById(req.params.pollid, function (err, poll) {
+      console.log(err);
+      if (err) return res.status(500).send("Couldn't found the specified poll");
+      response.name = poll.name;
+      response.creator = poll.creator;
+      response.creation_date = poll.creationDate;
+      response.state = poll.state;
+      Question.count({poll_id: req.params.pollid}, function (err, nbQuestions) {
+        if (err) return res.status(500).send("Couldn't count questions in the poll");
+        response.nb_questions = nbQuestions;
+        Instance.count({poll_id: req.params.pollid}, function (err, nbInstances) {
+          if (err) return res.status(500).send("Couldn't count instances in the poll");
+          response.nb_instances = nbInstances;
+
+          res.format(
+            {
+              'application/json': function () {
+                res.send(response);
+              }
+            });
+        });
+      });
+    });
+  }
+});
+
+router.get("/polls/:pollid/questions", function (req, res) {
+  var response = {questions: []};
+  Question.find({poll_id: req.params.pollid}, function (err, questions) {
+    if (err) return res.status(500).send("Couldn'f find any questions");
+    questions.forEach(function (quest, idx, arr) {
+      getQuestionById(quest._id, function (err, question) {
+        if (err) return res.status(500).send(err.reason);
+        response.questions.push(question);
+        if (idx === arr.length - 1) {
+          res.format({
+            'application/json': function () {
+              res.send(response);
+            }
+          });
+        }
+      });
+    });
+  });
+});
+
+router.get('/polls/:pollid/questions/:questionid', function (req, res) {
+  res.format({
+    'application/json': function () {
+      getQuestionById(req.params.questionid, function (err, question) {
+        if (err) return res.status(500).send(err.reason);
+        res.send(question);
+      });
+    }
+  });
+});
 
 router.get('/polls/:pollid/instances/:instanceid/results/questions/:questionid', function (req, res) {
   var response = {};
@@ -184,36 +304,7 @@ router.get('/polls/:pollid/instances/:instanceid/results/questions/:questionid',
 
  });*/
 
-router.get('/polls/:pollid/questions/:questionid', function (req, res) {
-  res.format({
-    'application/json': function () {
-      getQuestionById(req.params.questionid, function (err, question) {
-        if (err) return res.status(500).send(err.reason);
-        res.send(question);
-      });
-    }
-  });
-});
 
-router.get("/polls/:pollid/questions", function (req, res) {
-  var response = {questions: []};
-  Question.find({poll_id: req.params.pollid}, function (err, questions) {
-    if (err) return res.status(500).send("Couldn'f find any questions");
-    questions.forEach(function (quest, idx, arr) {
-      getQuestionById(quest._id, function (err, question) {
-        if (err) return res.status(500).send(err.reason);
-        response.questions.push(question);
-        if (idx === arr.length - 1) {
-          res.format({
-            'application/json': function () {
-              res.send(response);
-            }
-          });
-        }
-      });
-    });
-  });
-});
 
 /*router.get('/polls/:type', function (req, res) {
  var response = {polls: []};
@@ -247,67 +338,7 @@ router.get("/polls/:pollid/questions", function (req, res) {
  })
  });*/
 
-router.get('/polls/:pollid', function (req, res) {
-  var response = {};
-  Poll.findById(req.params.pollid, function (err, poll) {
-    console.log(err);
-    if (err) return res.status(500).send("Couldn't found the specified poll");
-    response.name = poll.name;
-    response.creator = poll.creator;
-    response.creation_date = poll.creationDate;
-    response.state = poll.state;
-    Question.count({poll_id: req.params.pollid}, function (err, nbQuestions) {
-      if (err) return res.status(500).send("Couldn't count questions in the poll");
-      response.nb_questions = nbQuestions;
-      Instance.count({poll_id: req.params.pollid}, function (err, nbInstances) {
-        if (err) return res.status(500).send("Couldn't count instances in the poll");
-        response.nb_instances = nbInstances;
 
-        // Here, we just use our previously created function "getPollById"
-        res.format(
-          {
-            'application/json': function () {
-              res.send(response);
-            }
-          });
-      });
-    });
-  });
-});
-
-router.get('/polls', function (req, res) {
-
-  var response = {};
-
-  // Here, we only need to count the polls
-  Poll.count({state: "active"},
-    function (err, nb_open) {
-      if (err) return res.status(500).send("Couldn't count active Polls");
-
-      Poll.count({state: "closed"},
-        function (err, nb_closed) {
-          if (err) return res.status(500).send("Couldn't count closed Polls");
-
-          // We use the date provided in the URL
-          var sinceDate = new Date(req.query.since);
-          Poll.count({creationDate: {$gt: sinceDate}},
-            function (err, nb_recent) {
-              if (err) return res.status(500).send("Couldn't count since a certain date Polls");
-              response.nb_open = nb_open;
-              response.nb_closed = nb_closed;
-              response.nb_recent = nb_recent;
-
-              res.format(
-                {
-                  'application/json': function () {
-                    res.send(response);
-                  }
-                });
-
-            });
-        });
-    });
-});
 
 // POST requests handlers
 
@@ -461,8 +492,8 @@ router.post('/polls/:pollid/instances/:instanceid/results', function (req, res) 
 
   // Otherwise, we can store the data
   else {
-    Instance.findById(req.params.instanceid, function(err, inst) {
-      if(err) res.status(500).send("Couldn't find the specified instance.");
+    Instance.findById(req.params.instanceid, function (err, inst) {
+      if (err) res.status(500).send("Couldn't find the specified instance.");
       inst.participations = inst.participations.concat(data.results);
       inst.save();
       res.status(200).send();

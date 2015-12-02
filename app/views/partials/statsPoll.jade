@@ -5,9 +5,9 @@ section#poll
       div(ng-controller='BarCtrl')
         p.text-center.wow.fadeInDown
           b Question :
-          | {{question_text}}
+          |  {{question_text}}
         p.text-center.wow.fadeInDown
           b Nombre de réponses :
-          |{{nb_answers}}
+          |  {{nb_answers}}
         canvas#bar.chart.chart-bar(ng-if='renderChart', chart-data='data', chart-labels='labels', chart-legend='false')
     .row

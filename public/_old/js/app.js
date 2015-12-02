@@ -40,7 +40,7 @@ northPoll.controller("statController", function($http, $scope)
 // Ui-router
 northPoll.config(function ($stateProvider) {
   $stateProvider.state('polls', {
-    templateUrl: 'views/partials/poll.jade',
+    templateUrl: 'views/partials/statsPoll.jade',
     url: '/polls'
   });
 });

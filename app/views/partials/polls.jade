@@ -1,0 +1,43 @@
+// Created by jermoret on 02.12.2015.
+div(ng-controller='pollsController')
+  p Il y a {{ polls.length }} sondages existants.
+  table.table
+    thead
+      tr
+        th Nom
+        th Créateur
+        th Contrôles
+      tbody
+        tr(ng-repeat='poll in polls')
+          th {{poll.name}}
+          td {{poll.creator}}
+          td
+            span#polls_controls
+              button.btn.btn-primary(type="button", ng-if='poll.state=="open"') Participer
+              button.btn.btn-primary(type="button", disabled='true', ng-if='poll.state=="draft"') Participer
+              button.btn.btn-primary(type="button") Statistiques
+              button.btn.btn-primary(type="button", data-toggle='modal', data-target='#myModal') Modifier
+
+  //-Modal
+  #myModal.modal.fade(role='dialog')
+    .modal-dialog.modal-sm
+      // Modal content
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal') ×
+          h4.modal-title Entrer le mot de passe
+        .modal-body
+          form.form-inline(role='form')
+          form.form-inline(role='form')
+            .form-group
+              label(for='pwd') Password: &nbsp;
+              input#pwd.form-control(type='password')
+        .modal-footer
+          button.btn.btn-primary(type='button') Valider
+          button.btn.btn-default(type='button', data-dismiss='modal') Close
+  //ul
+    li(ng-repeat="poll in polls") {{ poll.name }} {{ poll.creator }}
+      button.btn.btn-primary(type="button") Participer
+      button.btn.btn-primary(type="button") Statistiques
+      button.btn.btn-primary(type="button") Modifier
+      a(ng-href="")
