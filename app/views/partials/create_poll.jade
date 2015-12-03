@@ -1,8 +1,50 @@
-div(ng-controller='PollCreationController', align='center')
-    form
-        |Nom du sondage :
-        input(type='text' name='pollName')
-        br
-        br
-        |Pseudonyme du créateur :
-        input(type='text', name='creatorName')
+div(ng-controller='PollCreationController')
+
+    form.form-horizontal
+        .form-group
+            label.control-label.col-xs-2(for='pollName') Nom du sondage*
+            .col-xs-10
+              input#pollName.form-control(type='text', placeholder='Sondage')
+
+          .form-group
+            label.control-label.col-xs-2(for='adminName') Pseudonyme*
+            .col-xs-10
+              input#adminName.form-control(type='text', placeholder='Nom')
+
+          .form-group
+            label.control-label.col-xs-2(for='adminPassword') Mot de passe administrateur*
+            .col-xs-10
+              input#adminPassword.form-control(type='password', placeholder='Mot de passe')
+
+          .form-group
+            label.control-label.col-xs-2(for='adminPasswordConfirmation') Confirmation du mot de passe*
+            .col-xs-10
+              input#adminPasswordConfirmation.form-control(type='password', placeholder='Confirmation mot de passe administrateur')
+
+          .form-group
+            label.control-label.col-xs-2(for='userPassword') Mot de passe utilisateur
+            .col-xs-10
+              input#userPassword.form-control(type='password', placeholder='Mot de passe utilisateur')
+
+          .form-group
+            label.control-label.col-xs-2(for='userPasswordConfirmation') Confirmation du mot de passe
+            .col-xs-10
+              input#userPasswordConfirmation.form-control(type='password', placeholder='Confirmation mot de passe utilisateur')
+              <p class="help-block">Les champs marqués d'un * sont obligatoires</p>
+          .form-group
+            .col-xs-offset-2.col-xs-10
+                .checkbox#pollOpen
+                    label
+                        input(type='checkbox')
+                        | Sondage ouvert
+          .form-group
+            .col-xs-offset-2.col-xs-10
+                .checkbox#resultsPublic
+                    label
+                        input(type='checkbox')
+                        | Résultats publics
+          .form-group
+            .col-xs-offset-2.col-xs-10
+                span.btn.btn-primary#actionPoll(type='submit') Créer Sondage
+            .col-xs-offset-2.col-xs-10
+                span.btn.btn-primary#deletePoll(type='submit') Supprimer Sondage
