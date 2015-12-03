@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
 var InstanceSchema = new Schema({
   participations: [{
     question: String,
-    choice: []
+    choices: []
   }],
   poll_id: String
 });
