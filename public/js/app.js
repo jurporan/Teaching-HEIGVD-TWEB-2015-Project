@@ -53,13 +53,31 @@ northPoll.controller("pollsController", function ($scope, $http) {
   $scope.polls = [];
   $http.get("/api/polls/open").then(function (response) {
     $scope.polls = $scope.polls.concat(response.data.polls);
+
+    $http.get("/api/polls/draft").then(function (response) {
+      var nb_draft = response.data.polls.length;
+      $scope.polls = $scope.polls.concat(response.data.polls);
+
+      $http.get("/api/polls/closed").then(function (response) {
+        $scope.polls = $scope.polls.concat(response.data.polls);
+      });
+
+      var inserted = 0;
+      $scope.polls.forEach(function(poll, idx, arr) {
+        poll.instances = [];
+        if(poll.state != 'draft') {
+          $http.get('/api/polls/' + poll.id + '/instances').then(function(resp) {
+            poll.instances = resp.data.instances;
+            inserted++;
+            if(inserted == arr.length - nb_draft) {
+              //console.log($scope.polls);
+            }
+          });
+        }
+      });
+    });
   });
-  $http.get("/api/polls/draft").then(function (response) {
-    $scope.polls = $scope.polls.concat(response.data.polls);
-  });
-  $http.get("/api/polls/closed").then(function (response) {
-    $scope.polls = $scope.polls.concat(response.data.polls);
-  });
+
 });
 
 northPoll.controller("PollCreationController", function ($scope, $http) {
@@ -140,10 +158,10 @@ northPoll.controller("AnswerCtrl", function ($scope, $http)
                 });
       }
   }
-  
+
   $scope.pollid = "56604247f27286df19f67841";
   $scope.instanceid = "566046ceb221645703243d74";
-  
+
   $http({
         url: "/api/polls/" + $scope.pollid + "/questions",
         method: "GET"

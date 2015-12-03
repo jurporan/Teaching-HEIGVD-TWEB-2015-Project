@@ -15,18 +15,13 @@ div(ng-controller='pollsController')
             span.label.label-danger(ng-if='poll.state=="closed"') Fermé
           td {{poll.creator}}
           td
-            span#polls_controls
-              button.btn.btn-primary(type="button", ng-if='poll.state=="open"') Participer
-              button.btn.btn-primary(type="button", disabled='true', ng-if='poll.state=="draft"') Participer
-              button.btn.btn-primary(type="button") Statistiques
-              button.btn.btn-primary(type="button", data-toggle='modal', data-target='#myModal') Modifier
-        tr
-          th Nom
-          th Contrôles
-        tr
-          td Instance 1
+            button.btn.btn-primary(type="button", data-toggle='modal', data-target='#myModal') Modifier
+        tr.clicker(ng-repeat='instance in poll.instances')
+          td {{instance.name}}
           td
-            button.btn.btn-primary(type="button", ng-if='poll.state=="open"') Participer
+            span#polls_controls
+              button.btn.btn-primary(type="button") Participer
+              button.btn.btn-primary(type="button") Statistiques
 
   //-Modal
   #myModal.modal.fade(role='dialog')
