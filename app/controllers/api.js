@@ -103,13 +103,13 @@ router.get('/polls/stats', function (req, res) {
   var response = {};
 
   // Here, we only need to count the polls
-  Poll.count({state: "active"},
+  Poll.count({state: "open"},
     function (err, nb_open) {
       if (err) return res.status(500).send("Couldn't count active Polls");
 
-      Poll.count({state: "closed"},
-        function (err, nb_closed) {
-          if (err) return res.status(500).send("Couldn't count closed Polls");
+      Poll.count(
+        function (err, nb_total) {
+          if (err) return res.status(500).send("Couldn't count Polls");
 
           // We use the date provided in the URL
           var sinceDate = new Date(req.query.since);
@@ -117,7 +117,7 @@ router.get('/polls/stats', function (req, res) {
             function (err, nb_recent) {
               if (err) return res.status(500).send("Couldn't count since a certain date Polls");
               response.nb_open = nb_open;
-              response.nb_closed = nb_closed;
+              response.nb_total = nb_total;
               response.nb_recent = nb_recent;
 
               res.format(
@@ -137,7 +137,8 @@ router.get('/polls/:pollid', function (req, res) {
 
   if (req.params.pollid === 'draft' ||
     req.params.pollid === 'open' ||
-    req.params.pollid === 'closed') {
+    req.params.pollid === 'closed')
+  {
     response.polls = [];
     // We search for every poll in the state :type
     Poll.find({state: req.params.pollid}, function (err, polls) {
@@ -183,12 +184,11 @@ router.get('/polls/:pollid', function (req, res) {
           if (err) return res.status(500).send("Couldn't count instances in the poll");
           response.nb_instances = nbInstances;
 
-          res.format(
-            {
-              'application/json': function () {
-                res.send(response);
-              }
-            });
+          res.format({
+            'application/json': function () {
+              res.send(response);
+            }
+          });
         });
       });
     });
@@ -197,22 +197,32 @@ router.get('/polls/:pollid', function (req, res) {
 
 router.get("/polls/:pollid/questions", function (req, res) {
   var response = {questions: []};
-  Question.find({poll_id: req.params.pollid}, function (err, questions) {
-    if (err) return res.status(500).send("Couldn'f find any questions");
-    questions.forEach(function (quest, idx, arr) {
-      getQuestionById(quest._id, function (err, question) {
-        if (err) return res.status(500).send(err.reason);
-        response.questions.push(question);
-        if (idx === arr.length - 1) {
-          res.format({
-            'application/json': function () {
-              res.send(response);
-            }
-          });
-        }
+  var expectedNbrResp;
+  Question.count({poll_id: req.params.pollid}, function(err, nbrQ) {
+    if(err) return res.status(500).send("Couldn't count number of questions");
+    expectedNbrResp = nbrQ;
+
+    var inserted = 0;
+    Question.find({poll_id: req.params.pollid}, function (err, questions) {
+      if (err) return res.status(500).send("Couldn'f find any questions");
+      questions.forEach(function (quest, idx, arr) {
+        getQuestionById(quest._id, function (err, question) {
+          if (err) return res.status(500).send(err.reason);
+          response.questions.push(question);
+          inserted++;
+          if (inserted === expectedNbrResp) {
+            res.format({
+              'application/json': function () {
+                res.send(response);
+              }
+            });
+          }
+        });
       });
     });
+
   });
+
 });
 
 router.get('/polls/:pollid/questions/:questionid', function (req, res) {
@@ -470,9 +480,16 @@ router.post('/polls/:pollid/instances', function (req, res) {
     participations: [],
     poll_id: req.params.pollid
   });
-  newInstance.save(function (err, save) {
-    if (err) res.status(500).send("Couldn't create this instance");
-    res.send({id: save.id});
+  Poll.findById(req.params.pollid, function(err, poll) {
+    if(err) return res.status(500).send("Couldn't find the specified poll.");
+    poll.state = 'open';
+    poll.save(function(err){
+      if(err) return res.status(500).send("Couldn't save the poll");
+      newInstance.save(function (err, save) {
+        if (err) res.status(500).send("Couldn't create this instance");
+        res.send({id: save.id});
+      });
+    })
   });
 });
 

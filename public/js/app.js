@@ -35,7 +35,7 @@ northPoll.controller("BarCtrl", function ($scope, $http, $timeout) {
 // Stat controller
 northPoll.controller("statController", function ($http, $scope) {
   $http.get("/api/polls/stats").then(function (response) {
-    $scope.total = response.data.nb_open + response.data.nb_closed;
+    $scope.total = response.data.nb_total;
     $scope.recent = response.data.nb_recent;
     $scope.open = response.data.nb_open;
   });
@@ -68,38 +68,6 @@ northPoll.controller("PollCreationController", function ($scope, $http) {
 
 northPoll.controller("AnswerCtrl", function ($scope, $http)
 {
-
-  // Chargé dans une requête ajax, ici manuel pour les tests
-  $scope.questions = [];
-  var q1 =
-  {
-      text : "Quelle heure est-il?",
-      choices_available : 2,
-      optional : false,
-      choices : [{id : 1, text : "12:00"}, {id : 2, text : "13:00"}, {id : 3, text : "14:00"}]
-  }
-  var q2 =
-  {
-      text : "Quelle temps fait-il?",
-      choices_available : 1,
-      optional : true,
-      choices : [{id : 1, text : "Beau"}, {id : 2, text : "Moche"}]
-  }
-  var q3 =
-  {
-      text : "1 + 3 = ...",
-      choices_available : 2,
-      optional : false,
-      choices : [{id : 1, text : "1"}, {id : 2, text : "3.14"}, {id : 3, text : "7"}, {id : 4, text : "yolo"}]
-  }
-  $scope.questions.push(q1);
-  $scope.questions.push(q2);
-  $scope.questions.push(q3);
-  //-----------------------------------------------
-
-  $scope.currentQuestion = -1;
-  $scope.results = [];
-
   $scope.select = function(choice)
   {
       if (choice.selected ||  $scope.question.remainingChoices > 0)
@@ -158,10 +126,32 @@ northPoll.controller("AnswerCtrl", function ($scope, $http)
               $scope.results.push(result);
           }
 
-          alert("Terminé");
           console.log($scope.results);
+          $http({
+                    url: "/api/polls/" + $scope.pollid + "/instances/" + $scope.instanceid + "/results",
+                    method: "POST",
+                    data : $scope.results
+                }).success(function(data, status, headers, config)
+                {
+                    alert("Envoyé");
+                }).error(function(data, status, headers, config)
+                {
+                    alert("Erreur lors de l'envoi");
+                });
       }
   }
-
-  $scope.next();
+  
+  $scope.pollid = "56604247f27286df19f67841";
+  $scope.instanceid = "566046ceb221645703243d74";
+  
+  $http({
+        url: "/api/polls/" + $scope.pollid + "/questions",
+        method: "GET"
+    }).success(function(data, status, headers, config)
+    {
+        $scope.questions = data.questions;
+        $scope.currentQuestion = -1;
+        $scope.results = [];
+        $scope.next();
+    });
 });

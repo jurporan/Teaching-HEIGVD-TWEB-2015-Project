@@ -1,14 +1,14 @@
 // Created by jermoret on 02.12.2015.
 div(ng-controller='pollsController')
   p Il y a {{ polls.length }} sondages existants.
-  table.table
+  table.table.table-hover
     thead
       tr
         th Nom
         th Créateur
         th Contrôles
-      tbody
-        tr(ng-repeat='poll in polls')
+      tbody(ng-repeat='poll in polls')
+        tr.clicker
           th {{poll.name}} &nbsp;
             span.label.label-success(ng-if='poll.state=="open"') Ouvert
             span.label.label-info(ng-if='poll.state=="draft"') Initialisé
@@ -20,6 +20,13 @@ div(ng-controller='pollsController')
               button.btn.btn-primary(type="button", disabled='true', ng-if='poll.state=="draft"') Participer
               button.btn.btn-primary(type="button") Statistiques
               button.btn.btn-primary(type="button", data-toggle='modal', data-target='#myModal') Modifier
+        tr
+          th Nom
+          th Contrôles
+        tr
+          td Instance 1
+          td
+            button.btn.btn-primary(type="button", ng-if='poll.state=="open"') Participer
 
   //-Modal
   #myModal.modal.fade(role='dialog')
