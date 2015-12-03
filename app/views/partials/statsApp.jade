@@ -1,16 +1,18 @@
 // Created by jermoret on 01.12.2015.
 h2(ng-controller='statController')
   span NorthPoll
-  |  Ask and answer !
+  |  Gardez vos réponses au frais !
   br
   br
-  span Statistiques
+
+  span {{ total }} 
+  | sondages 
+  span existants
   br
-  |  Total
-  span  {{ total }}
+  span  {{ recent }} 
+  | sondages 
+  span récents
   br
-  |  Recent
-  span  {{ recent }}
-  br
-  |  Open
-  span  {{ open }}
+  span  {{ open }} 
+  | sondages 
+  span ouverts
