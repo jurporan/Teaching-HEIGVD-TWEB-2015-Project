@@ -108,6 +108,7 @@ northPoll.controller("AnswerCtrl", function ($scope, $http)
       }
       else
       {
+          $scope.results = [];
           // Compilation des résultats
           for (var i in $scope.questions)
           {
@@ -130,9 +131,10 @@ northPoll.controller("AnswerCtrl", function ($scope, $http)
           $http({
                     url: "/api/polls/" + $scope.pollid + "/instances/" + $scope.instanceid + "/results",
                     method: "POST",
-                    data : $scope.results
+                    data : {results : $scope.results}
                 }).success(function(data, status, headers, config)
                 {
+                    console.log($scope.results);
                     alert("Envoyé");
                 }).error(function(data, status, headers, config)
                 {
@@ -141,8 +143,8 @@ northPoll.controller("AnswerCtrl", function ($scope, $http)
       }
   }
   
-  $scope.pollid = "56604247f27286df19f67841";
-  $scope.instanceid = "566046ceb221645703243d74";
+  $scope.pollid = "56604ec7ae06a2207f5914d6";
+  $scope.instanceid = "56605176bce6d34805f86426";
   
   $http({
         url: "/api/polls/" + $scope.pollid + "/questions",
