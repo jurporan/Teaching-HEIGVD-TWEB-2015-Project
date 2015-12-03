@@ -149,7 +149,6 @@ northPoll.controller("AnswerCtrl", function ($scope, $http)
         method: "GET"
     }).success(function(data, status, headers, config)
     {
-        alert(data.questions.length);
         $scope.questions = data.questions;
         $scope.currentQuestion = -1;
         $scope.results = [];
