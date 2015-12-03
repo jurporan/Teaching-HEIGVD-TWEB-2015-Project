@@ -62,7 +62,7 @@ northPoll.controller("pollsController", function ($scope, $http) {
   });
 });
 
-northPoll.controller("PollCreationController", function ($scope, $http) {
+northPoll.controller("PollController", function ($scope, $http) {
 
 });
 
@@ -140,10 +140,10 @@ northPoll.controller("AnswerCtrl", function ($scope, $http)
                 });
       }
   }
-  
+
   $scope.pollid = "56604247f27286df19f67841";
   $scope.instanceid = "566046ceb221645703243d74";
-  
+
   $http({
         url: "/api/polls/" + $scope.pollid + "/questions",
         method: "GET"
