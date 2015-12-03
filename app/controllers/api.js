@@ -197,22 +197,32 @@ router.get('/polls/:pollid', function (req, res) {
 
 router.get("/polls/:pollid/questions", function (req, res) {
   var response = {questions: []};
-  Question.find({poll_id: req.params.pollid}, function (err, questions) {
-    if (err) return res.status(500).send("Couldn'f find any questions");
-    questions.forEach(function (quest, idx, arr) {
-      getQuestionById(quest._id, function (err, question) {
-        if (err) return res.status(500).send(err.reason);
-        response.questions.push(question);
-        if (idx === arr.length - 1) {
-          res.format({
-            'application/json': function () {
-              res.send(response);
-            }
-          });
-        }
+  var expectedNbrResp;
+  Question.count({poll_id: req.params.pollid}, function(err, nbrQ) {
+    if(err) return res.status(500).send("Couldn't count number of questions");
+    expectedNbrResp = nbrQ;
+
+    var inserted = 0;
+    Question.find({poll_id: req.params.pollid}, function (err, questions) {
+      if (err) return res.status(500).send("Couldn'f find any questions");
+      questions.forEach(function (quest, idx, arr) {
+        getQuestionById(quest._id, function (err, question) {
+          if (err) return res.status(500).send(err.reason);
+          response.questions.push(question);
+          inserted++;
+          if (inserted === expectedNbrResp) {
+            res.format({
+              'application/json': function () {
+                res.send(response);
+              }
+            });
+          }
+        });
       });
     });
+
   });
+
 });
 
 router.get('/polls/:pollid/questions/:questionid', function (req, res) {
