@@ -147,13 +147,13 @@ Le serveur répond simplement un message contenant l'dentifiant de la question n
     }
 ```
 
-- **POST** ```/api/polls/<pollid>/instances``` : Crée une nouvelle instance d'un sondage. Le résultat contient simplement l'identifiant du sondage nouvellement créé: ```{id : <id>}```.
+- **POST** ```/api/polls/<pollid>/instances``` : Crée une nouvelle instance d'un sondage en spécifiant son nom ```{nom : "<nom de l'instance>"}```. Le résultat contient simplement l'identifiant du sondage nouvellement créé: ```{id : <id>}```.
 
 - **POST** ```/api/polls/<pollid>/instances/<instanceid>/results``` : Permet de créer une participation contenant les réponses à toutes les questions obligatoires du sondage sous la forme:
 
 ```
 {
-    results : [{question : "<texte de la question 1>", choice : "<choix>"}, ...]
+    results : [{question : "<texte de la question 1>", choices : ["<choix>", ...]}, ...]
 }
 ```
 
