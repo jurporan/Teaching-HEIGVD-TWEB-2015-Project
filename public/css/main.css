@@ -158,12 +158,13 @@ ul.nostyle i {
 .navbar.navbar-default .navbar-brand {
   height: auto;
   padding: 10px 0px 5px;
+
 }
 @media only screen and (min-width: 768px) {
   #main-menu.navbar-default {
-    background: rgba(255, 255, 255, 0.3);
-    -webkit-box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1);
-    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1);
+    background: rgba(210, 210, 210, 0.3);
+    -webkit-box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
   }
   #main-menu.navbar-default .navbar-nav > li > a {
     padding-top: 40px;
@@ -204,12 +205,12 @@ ul.nostyle i {
   #main-menu.navbar-default .dropdown-menu > li.active,
   #main-menu.navbar-default .dropdown-menu > li.open,
   #main-menu.navbar-default .dropdown-menu > li:hover {
-    border-left-color: #292C4E;
+    border-left-color: #000000;
   }
   #main-menu.navbar-default .dropdown-menu > li.active > a,
   #main-menu.navbar-default .dropdown-menu > li.open > a,
   #main-menu.navbar-default .dropdown-menu > li:hover > a {
-    color: #292C4E;
+    color: #000000;
     background-color: transparent;
   }
 }
@@ -238,7 +239,7 @@ ul.nostyle i {
   color: #fff;
 }
 #main-slider .slider-inner h2 > span {
-  color: #292C4E;
+  color: #000000;
 }
 #main-slider .slider-inner .btn {
   margin-top: 10px;
