@@ -103,13 +103,13 @@ router.get('/polls/stats', function (req, res) {
   var response = {};
 
   // Here, we only need to count the polls
-  Poll.count({state: "active"},
+  Poll.count({state: "open"},
     function (err, nb_open) {
       if (err) return res.status(500).send("Couldn't count active Polls");
 
-      Poll.count({state: "closed"},
-        function (err, nb_closed) {
-          if (err) return res.status(500).send("Couldn't count closed Polls");
+      Poll.count(
+        function (err, nb_total) {
+          if (err) return res.status(500).send("Couldn't count Polls");
 
           // We use the date provided in the URL
           var sinceDate = new Date(req.query.since);
@@ -117,7 +117,7 @@ router.get('/polls/stats', function (req, res) {
             function (err, nb_recent) {
               if (err) return res.status(500).send("Couldn't count since a certain date Polls");
               response.nb_open = nb_open;
-              response.nb_closed = nb_closed;
+              response.nb_total = nb_total;
               response.nb_recent = nb_recent;
 
               res.format(

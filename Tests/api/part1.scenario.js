@@ -87,7 +87,7 @@ scenario.step('create 3 questions in each poll', function(response) {
 
   var polls = response;
   var requests = new Array();
-  
+
   // We create 3 questions in each poll, so 12 requests
   for (var index in response)
   {
@@ -112,7 +112,7 @@ scenario.step('create 3 questions in each poll', function(response) {
 });
 
 scenario.step('get stats after insert', function(unused) {
-    
+
   // We fetch the current stats
   return this.get({
     url : '/poll',
@@ -123,10 +123,10 @@ scenario.step('get stats after insert', function(unused) {
 });
 
 scenario.step('check stats', function(data) {
-    
+
     // Now we can compare the stats before and after the insertion
     console.log("Before insert: " + stats.nb_recent + ", after insert: " + data.body.nb_recent);
-    
+
     if (data.body.nb_recent != (stats.nb_recent + pollData.length)) {
     throw new Error("Wrong number of polls");
   }
@@ -137,10 +137,10 @@ scenario.step('check stats', function(data) {
 });
 
 scenario.step('get stats for tomorrow', function(unused) {
-  
+
   // Here we try to get the number of apps that were created since a date in the future, should be empty
   tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  
+
   return this.get({
     url : "/poll?since=" + (tomorrow.getMonth() + 1) + "." + tomorrow.getUTCDate() + "." + tomorrow.getFullYear(),
     expect : {
@@ -150,7 +150,7 @@ scenario.step('get stats for tomorrow', function(unused) {
 });
 
 scenario.step('check tomorrow stats', function(data) {
-    
+
     // No apps have been created in the future
     if (data.body.nb_recent > 0) {
     throw new Error("Wrong number of polls");
@@ -171,24 +171,24 @@ return this.all([
 });
 
 scenario.step('check draft/open/closed', function(data) {
-    
+
     // We check the number of polls in each section, Both "open" and "closed" should be equal to the stats before the insertion since we didn't perform a PUT ton change the state of any poll
     console.log("Drafts: " + data[0].body.polls.length + ", should be " + (stats.nb_recent + pollData.length));
     console.log("Open: " + data[1].body.polls.length + ", should be " + stats.nb_open);
     console.log("Closed: " + data[2].body.polls.length + ", should be " + stats.nb_open);
-    
+
     // If the count don't match, this is an error
-    if (data[0].body.polls.length != (stats.nb_recent + pollData.length) || data[1].body.polls.length != stats.nb_open || data[2].body.polls.length != stats.nb_closed)
+    if (data[0].body.polls.length != (stats.nb_recent + pollData.length) || data[1].body.polls.length != stats.nb_open || data[2].body.polls.length != stats.nb_total)
     {
         throw new Error("Wrong poll number");
     }
-    
+
     // We check that the list contains the polls that we created before
     for (var index in insertedPolls)
     {
         var pollid = insertedPolls[index];
         var pollindex = -1;
-        
+
         // We search our polls in the list
         for (var pindex in data[0].body.polls)
         {
@@ -198,18 +198,18 @@ scenario.step('check draft/open/closed', function(data) {
                 break;
             }
         }
-        
+
         if ( pollindex == -1)
         {
             throw new Error("Poll " + pollid + "not found");
         }
     }
-    
+
     console.log("Found all " + insertedPolls.length + " polls");
 });
 
 scenario.step('get the questions of each polls', function(unused) {
-    
+
     // Here we are performing a request to fetch the questions and their choices within the polls
   var requests = _.map(insertedPolls, function(id) {
     return this.get({
@@ -223,7 +223,7 @@ scenario.step('get the questions of each polls', function(unused) {
 });
 
 scenario.step('check the number of questions of each polls', function(response) {
-    
+
     // We check that there are 3 questions
     for (var index in response)
     {
@@ -248,7 +248,7 @@ scenario.step('check the number of questions of each polls', function(response) 
             }
         }
     }
-    
+
     console.log("Found all " + questionData.length + " questions");
 });
 

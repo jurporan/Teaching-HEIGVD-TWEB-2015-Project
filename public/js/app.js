@@ -35,7 +35,7 @@ northPoll.controller("BarCtrl", function ($scope, $http, $timeout) {
 // Stat controller
 northPoll.controller("statController", function ($http, $scope) {
   $http.get("/api/polls/stats").then(function (response) {
-    $scope.total = response.data.nb_open + response.data.nb_closed;
+    $scope.total = response.data.nb_total;
     $scope.recent = response.data.nb_recent;
     $scope.open = response.data.nb_open;
   });

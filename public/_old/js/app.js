@@ -31,7 +31,7 @@ northPoll.controller("statController", function($http, $scope)
 {
     $http.get("/api/polls").then(function(response)
     {
-        $scope.total = response.data.nb_open + response.data.nb_closed;
+        $scope.total = response.data.nb_open + response.data.nb_total;
         $scope.recent = response.data.nb_recent;
         $scope.open = response.data.nb_open;
     });
@@ -72,7 +72,7 @@ northPoll.factory('pollManager', function($http) {
 
 northPoll.controller("statController", function($http, $scope) {
     $http.get("/api/poll").then(function(response){
-        $scope.total = response.data.nb_open + response.data.nb_closed;
+        $scope.total = response.data.nb_open + response.data.nb_total;
         $scope.recent = response.data.nb_recent;
         $scope.open = response.data.nb_open;
     }).then(function(response){
