@@ -137,7 +137,8 @@ router.get('/polls/:pollid', function (req, res) {
 
   if (req.params.pollid === 'draft' ||
     req.params.pollid === 'open' ||
-    req.params.pollid === 'closed') {
+    req.params.pollid === 'closed')
+  {
     response.polls = [];
     // We search for every poll in the state :type
     Poll.find({state: req.params.pollid}, function (err, polls) {
@@ -183,12 +184,11 @@ router.get('/polls/:pollid', function (req, res) {
           if (err) return res.status(500).send("Couldn't count instances in the poll");
           response.nb_instances = nbInstances;
 
-          res.format(
-            {
-              'application/json': function () {
-                res.send(response);
-              }
-            });
+          res.format({
+            'application/json': function () {
+              res.send(response);
+            }
+          });
         });
       });
     });
@@ -470,9 +470,16 @@ router.post('/polls/:pollid/instances', function (req, res) {
     participations: [],
     poll_id: req.params.pollid
   });
-  newInstance.save(function (err, save) {
-    if (err) res.status(500).send("Couldn't create this instance");
-    res.send({id: save.id});
+  Poll.findById(req.params.pollid, function(err, poll) {
+    if(err) return res.status(500).send("Couldn't find the specified poll.");
+    poll.state = 'open';
+    poll.save(function(err){
+      if(err) return res.status(500).send("Couldn't save the poll");
+      newInstance.save(function (err, save) {
+        if (err) res.status(500).send("Couldn't create this instance");
+        res.send({id: save.id});
+      });
+    })
   });
 });
 
