@@ -154,7 +154,7 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll
               result.choices = [];
               for (var j in question.choices)
               {
-                  var choice = $scope.question.choices[j];
+                  var choice = question.choices[j];
                   if (choice.selected != undefined && choice.selected)
                   {
                       result.choices.push(choice.text);
