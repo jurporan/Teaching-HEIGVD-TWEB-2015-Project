@@ -1,13 +1,9 @@
-section#poll
-  .container
-    .section-header
-      h2.section-title.text-center.wow.fadeInDown Stats for a question
-      div(ng-controller='BarCtrl')
-        p.text-center.wow.fadeInDown
-          b Question :
-          |  {{question_text}}
-        p.text-center.wow.fadeInDown
-          b Nombre de réponses :
-          |  {{nb_answers}}
-        canvas#bar.chart.chart-bar(ng-if='renderChart', chart-data='data', chart-labels='labels', chart-legend='false')
-    .row
+div(ng-controller='statsInstanceController')
+  h2.text-center Statistiques - {{instanceName}} - {{pollName}}
+  p.text-center.wow.fadeInDown
+    b Question :
+    |  {{question_text}}
+  p.text-center.wow.fadeInDown
+    b Nombre de réponses :
+    |  {{nb_answers}}
+  canvas#bar.chart.chart-bar(ng-if='renderChart', chart-data='data', chart-labels='labels', chart-legend='false')

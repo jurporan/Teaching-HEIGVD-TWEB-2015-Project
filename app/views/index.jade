@@ -14,7 +14,7 @@ body#home.homepage(ng-app='northPoll')
         .collapse.navbar-collapse.navbar-right
           ul.nav.navbar-nav
             li.scroll
-              a(href='#answer') Sondages
+              a(href='#answer', ui-sref='listPolls') Sondages
             li.scroll
               a(href='#ask') Créer un sondage
             li.scroll
@@ -34,7 +34,8 @@ body#home.homepage(ng-app='northPoll')
         .section-header
           h2.section-title.text-center.wow.fadeInDown Sondages
           p.text-center.wow.fadeInDown
-            include ./partials/polls.jade
+            div(ui-view)
+              include ./partials/polls.jade
         .row
 
     section#about
@@ -46,7 +47,5 @@ body#home.homepage(ng-app='northPoll')
             br
             |  et dolore magna aliqua. Ut enim ad minim veniam
         .row
-    include ./partials/statsPoll.jade
     include ./partials/create_poll.jade
-    include ./partials/answer.jade
     include ./includes/footer.jade
