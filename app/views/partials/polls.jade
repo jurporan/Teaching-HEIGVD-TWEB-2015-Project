@@ -1,46 +1,59 @@
 // Created by jermoret on 02.12.2015.
-h2.section-title.text-center.wow.fadeInDown Sondages
-div(ng-controller='pollsController')
-  p Il y a {{ polls.length }} sondages existants.
-  table.table.table-hover
-    thead
-      tr
-        th Nom
-        th Créateur
-        th Contrôles
-      tbody(ng-repeat='poll in polls')
-        tr.clicker
-          th {{poll.name}} &nbsp;
-            span.label.label-success(ng-if='poll.state=="open"') Ouvert
-            span.label.label-info(ng-if='poll.state=="draft"') Initialisé
-            span.label.label-danger(ng-if='poll.state=="closed"') Fermé
-          td {{poll.creator}}
-          td
-            button.btn.btn-primary(type="button", data-toggle='modal', data-target='#myModal') Modifier
-        tr.clicker(ng-repeat='instance in poll.instances')
-          td {{instance.name}}
-          td
-            span#polls_controls
-              button.btn.btn-primary(type="button", ui-sref='answerInstancePoll', ng-click='participateInInstance(instance, poll)') Participer
-              button.btn.btn-primary(type="button", ui-sref='statsInstancePoll', ng-click='statsOfAnInstance(instance, poll)') Statistiques
+section#main-slider
+  .owl-carousel
+    .item(style='background-image: url(images/slider/background4.jpg);')
+      .slider-inner
+        .container
+          .row
+            .col-sm-6
+              .carousel-content
+                include statsApp.jade
 
-  //-Modal
-  #myModal.modal.fade(role='dialog')
-    .modal-dialog.modal-sm
-      // Modal content
-      .modal-content
-        .modal-header
-          button.close(type='button', data-dismiss='modal') ×
-          h4.modal-title Entrer le mot de passe
-        .modal-body
-          form.form-inline(role='form')
-          form.form-inline(role='form')
-            .form-group
-              label(for='pwd') Password: &nbsp;
-              input#pwd.form-control(type='password')
-        .modal-footer
-          button.btn.btn-primary(type='button') Valider
-          button.btn.btn-default(type='button', data-dismiss='modal') Close
+section#answer
+  .container
+    .section-header
+      h2.section-title.text-center.wow.fadeInDown Sondages
+      div(ng-controller='pollsController')
+        p Il y a {{ polls.length }} sondages existants.
+        table.table.table-hover
+          thead
+            tr
+              th Nom
+              th Créateur
+              th Contrôles
+            tbody(ng-repeat='poll in polls')
+              tr.clicker
+                th {{poll.name}} &nbsp;
+                  span.label.label-success(ng-if='poll.state=="open"') Ouvert
+                  span.label.label-info(ng-if='poll.state=="draft"') Initialisé
+                  span.label.label-danger(ng-if='poll.state=="closed"') Fermé
+                td {{poll.creator}}
+                td
+                  button.btn.btn-primary(type="button", data-toggle='modal', data-target='#myModal') Modifier
+              tr.clicker(ng-repeat='instance in poll.instances')
+                td {{instance.name}}
+                td
+                  span#polls_controls
+                    button.btn.btn-primary(type="button", ui-sref='answerInstancePoll', ng-click='participateInInstance(instance, poll)') Participer
+                    button.btn.btn-primary(type="button", ui-sref='statsInstancePoll', ng-click='statsOfAnInstance(instance, poll)') Statistiques
+
+        //-Modal
+        #myModal.modal.fade(role='dialog')
+          .modal-dialog.modal-sm
+            // Modal content
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal') ×
+                h4.modal-title Entrer le mot de passe
+              .modal-body
+                form.form-inline(role='form')
+                form.form-inline(role='form')
+                  .form-group
+                    label(for='pwd') Password: &nbsp;
+                    input#pwd.form-control(type='password')
+              .modal-footer
+                button.btn.btn-primary(type='button') Valider
+                button.btn.btn-default(type='button', data-dismiss='modal') Close
   //ul
     li(ng-repeat="poll in polls") {{ poll.name }} {{ poll.creator }}
       button.btn.btn-primary(type="button") Participer
