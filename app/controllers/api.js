@@ -34,6 +34,7 @@ function getQuestionById(id, callback) {
   var question = {};
   Question.findById(id, function (err, quest) {
     if (err) return callback({reason: "Couldn't find the specified question"}, null);
+    question.id = quest._id;
     question.text = quest.text;
     question.choices_available = quest.choices_available;
     question.optional = quest.optional;
@@ -264,7 +265,7 @@ router.get('/polls/:pollid/instances/:instanceid/results/questions/:questionid',
   var response = {};
   var choices = [];
   Question.findById(req.params.questionid, function (err, question) {
-    if (err) return res.status(500).send("Couldn't find the specified question");
+    if (err || question === null) return res.status(500).send("Couldn't find the specified question");
     response.text = question.text;
     response.results = [];
     question.choices.forEach(function (choice, idx, arr) {
@@ -281,10 +282,12 @@ router.get('/polls/:pollid/instances/:instanceid/results/questions/:questionid',
         if (part.question === question.text) {
           nb_anwsers++;
           response.results.forEach(function (choice, idx, arr) {
-            var myChoice = part.choice;
-            if (choice.text === myChoice) {
-              choice.nb_chosen++;
-            }
+            var myChoices = part.choices;
+            myChoices.forEach(function(choiceText, idx, arr) {
+              if (choiceText === choice.text) {
+                choice.nb_chosen++;
+              }
+            });
           });
         }
         if (idx === arr.length - 1) {

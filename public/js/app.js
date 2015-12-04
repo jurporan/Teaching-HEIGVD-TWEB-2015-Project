@@ -18,9 +18,13 @@ northPoll.config(function ($stateProvider) {
     templateUrl: 'views/partials/statsPoll.jade',
     url: ''
   });
+  $stateProvider.state('createPoll', {
+    templateUrl: 'views/partials/create_poll.jade',
+    url: 'createPoll'
+  })
 });
 
-northPoll.factory('ActualInstanceOfPoll', function() {
+northPoll.factory('ActualInstanceOfPoll', function () {
   return {instance: '', poll: ''};
 });
 
@@ -39,32 +43,56 @@ northPoll.controller("statsInstanceController", function ($scope, $http, ActualI
   $scope.instanceName = ActualInstanceOfPoll.instance.name;
   $scope.pollName = ActualInstanceOfPoll.poll.name;
 
-  $http.get(
-    "/api/polls/" + ActualInstanceOfPoll.pollId +
-    "/instances/" + ActualInstanceOfPoll.instanceId +
-    "/results/questions/564cc791b2388e640fa39191"
-  ).then(function (response) {
-      $scope.nb_answers = res;
-      $scope.question_text;
+  $scope.questions = [];
+
+  $http.get("/api/polls/" + ActualInstanceOfPoll.poll.id + "/questions").then(function (response) {
+    response.data.questions.forEach(function (question, idx, arrResp) {
+      var nbChoices = 0;
+      var idxQuest = idx;
+      $scope.questions.push({
+        nb_answers:null,
+        question_text:question.text,
+        labels:[],
+        data:[],
+        percentage:[]
+      });
+
+      $http.get(
+        "/api/polls/" + ActualInstanceOfPoll.poll.id +
+        "/instances/" + ActualInstanceOfPoll.instance.id +
+        "/results/questions/" + question.id
+      )
+        .then(function (response) {
+          $scope.questions[idxQuest].nb_answers = response.data.nb_answers;
+
+          response.data.results.forEach(function (choice, idx, arr) {
+            $scope.questions[idxQuest].labels.push(choice.text);
+            $scope.questions[idxQuest].data.push(choice.nb_chosen);
+            nbChoices += choice.nb_chosen;
+            $scope.questions[idxQuest].percentage.push(choice.nb_chosen * 100);
+            /*if(idxQuest === arrResp.length - 1 && idx === arr.length - 1) {
+
+            }*/
+          });
+        });
+    });
   });
 
 
-  $scope.labels = [];
-  $scope.data = [[]];
 });
 
 northPoll.controller("pollsController", function ($scope, $http, ActualInstanceOfPoll) {
 
-  $scope.setActualInstanceOfPoll = function(inst, poll) {
+  $scope.setActualInstanceOfPoll = function (inst, poll) {
     ActualInstanceOfPoll.instance = inst;
     ActualInstanceOfPoll.poll = poll;
   }
 
-  $scope.participateInInstance = function(instance, poll) {
+  $scope.participateInInstance = function (instance, poll) {
     $scope.setActualInstanceOfPoll(instance, poll);
   }
 
-  $scope.statsOfAnInstance = function(instance, poll) {
+  $scope.statsOfAnInstance = function (instance, poll) {
     $scope.setActualInstanceOfPoll(instance, poll);
   }
 
@@ -81,13 +109,13 @@ northPoll.controller("pollsController", function ($scope, $http, ActualInstanceO
       });
 
       var inserted = 0;
-      $scope.polls.forEach(function(poll, idx, arr) {
+      $scope.polls.forEach(function (poll, idx, arr) {
         poll.instances = [];
-        if(poll.state != 'draft') {
-          $http.get('/api/polls/' + poll.id + '/instances').then(function(resp) {
+        if (poll.state != 'draft') {
+          $http.get('/api/polls/' + poll.id + '/instances').then(function (resp) {
             poll.instances = resp.data.instances;
             inserted++;
-            if(inserted == arr.length - nb_draft) {
+            if (inserted == arr.length - nb_draft) {
               //console.log($scope.polls);
             }
           });
@@ -102,81 +130,70 @@ northPoll.controller("PollController", function ($scope, $http) {
 
 });
 
-northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll)
-{
-  $scope.select = function(choice)
-  {
-      if (choice.selected ||  $scope.question.remainingChoices > 0)
-      {
-          $scope.question.remainingChoices += (choice.selected ? 1 : -1)
-          choice.selected = !choice.selected;
-      }
+northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll) {
+  $scope.select = function (choice) {
+    if (choice.selected || $scope.question.remainingChoices > 0) {
+      $scope.question.remainingChoices += (choice.selected ? 1 : -1)
+      choice.selected = !choice.selected;
+    }
 
-      $scope.nextDisabled = !$scope.optional && $scope.question.remainingChoices == $scope.question.choices_available;
+    $scope.nextDisabled = !$scope.optional && $scope.question.remainingChoices == $scope.question.choices_available;
   }
 
-  $scope.load = function()
-  {
-      // Chargement des données de la question
-      $scope.question = $scope.questions[$scope.currentQuestion];
-      $scope.optional = $scope.question.optional;
+  $scope.load = function () {
+    // Chargement des données de la question
+    $scope.question = $scope.questions[$scope.currentQuestion];
+    $scope.optional = $scope.question.optional;
 
-      // Mise à jour des variables de contrôle
-      if ($scope.question.remainingChoices == undefined) {$scope.question.remainingChoices = $scope.question.choices_available;}
-      $scope.nextOrSubmit = ($scope.currentQuestion < $scope.questions.length - 1 ? "Suivant" : "Envoyer");
-      $scope.nextDisabled = !$scope.optional && $scope.question.remainingChoices == $scope.question.choices_available;
-      $scope.prevDisabled = $scope.currentQuestion == 0;
+    // Mise à jour des variables de contrôle
+    if ($scope.question.remainingChoices == undefined) {
+      $scope.question.remainingChoices = $scope.question.choices_available;
+    }
+    $scope.nextOrSubmit = ($scope.currentQuestion < $scope.questions.length - 1 ? "Suivant" : "Envoyer");
+    $scope.nextDisabled = !$scope.optional && $scope.question.remainingChoices == $scope.question.choices_available;
+    $scope.prevDisabled = $scope.currentQuestion == 0;
   }
 
-  $scope.previous = function()
-  {
-      $scope.currentQuestion--;
+  $scope.previous = function () {
+    $scope.currentQuestion--;
+    $scope.load();
+  }
+
+  $scope.next = function () {
+
+    if ($scope.currentQuestion < $scope.questions.length - 1) {
+      $scope.currentQuestion++;
       $scope.load();
-  }
-
-  $scope.next = function()
-  {
-
-      if ($scope.currentQuestion < $scope.questions.length - 1)
-      {
-          $scope.currentQuestion++;
-          $scope.load();
-      }
-      else
-      {
-          $scope.results = [];
-          // Compilation des résultats
-          for (var i in $scope.questions)
-          {
-              var question = $scope.questions[i];
-              var result = {};
-              result.question = question.text;
-              result.choices = [];
-              for (var j in question.choices)
-              {
-                  var choice = question.choices[j];
-                  if (choice.selected != undefined && choice.selected)
-                  {
-                      result.choices.push(choice.text);
-                  }
-              }
-              $scope.results.push(result);
+    }
+    else {
+      $scope.results = [];
+      // Compilation des résultats
+      for (var i in $scope.questions) {
+        var question = $scope.questions[i];
+        var result = {};
+        result.question = question.text;
+        result.choices = [];
+        for (var j in question.choices) {
+          var choice = question.choices[j];
+          if (choice.selected != undefined && choice.selected) {
+            result.choices.push(choice.text);
           }
-
-          console.log($scope.results);
-          $http({
-                    url: "/api/polls/" + $scope.pollid + "/instances/" + $scope.instanceid + "/results",
-                    method: "POST",
-                    data : {results : $scope.results}
-                }).success(function(data, status, headers, config)
-                {
-                    console.log($scope.results);
-                    alert("Envoyé");
-                }).error(function(data, status, headers, config)
-                {
-                    alert("Erreur lors de l'envoi");
-                });
+        }
+        $scope.results.push(result);
       }
+
+      console.log($scope.results);
+      $http({
+        url: "/api/polls/" + $scope.pollid + "/instances/" + $scope.instanceid + "/results",
+        method: "POST",
+        data: {results: $scope.results}
+      }).success(function (data, status, headers, config) {
+        console.log($scope.results);
+        alert("Envoyé");
+      }).error(function (data, status, headers, config) {
+        alert("Erreur lors de l'envoi");
+      });
+    }
   }
 
 
@@ -184,13 +201,12 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll
   $scope.instanceid = ActualInstanceOfPoll.instance.id;
 
   $http({
-        url: "/api/polls/" + $scope.pollid + "/questions",
-        method: "GET"
-    }).success(function(data, status, headers, config)
-    {
-        $scope.questions = data.questions;
-        $scope.currentQuestion = -1;
-        $scope.results = [];
-        $scope.next();
-    });
+    url: "/api/polls/" + $scope.pollid + "/questions",
+    method: "GET"
+  }).success(function (data, status, headers, config) {
+    $scope.questions = data.questions;
+    $scope.currentQuestion = -1;
+    $scope.results = [];
+    $scope.next();
+  });
 });
