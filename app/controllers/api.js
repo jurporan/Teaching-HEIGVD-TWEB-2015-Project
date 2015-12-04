@@ -12,6 +12,7 @@ function getPollById(id, callback) {
   var response = {};
   Poll.findById(id, function (err, poll) {
     if (err) callback({reason: "Couldn't find the specified poll"}, null);
+    response.id = poll._id;
     response.name = poll.name;
     response.creator = poll.creator;
     response.creation_date = poll.creationDate;
@@ -233,6 +234,29 @@ router.get('/polls/:pollid/questions/:questionid', function (req, res) {
         res.send(question);
       });
     }
+  });
+});
+
+router.get('/polls/:pollid/instances', function (req, res) {
+  var response = {instances:[]};
+  Instance.find({poll_id:req.params.pollid}, function(err, instances) {
+    if(err) return res.status(500).send("Couldn't find any instances");
+    if(instances.length === 0) res.send(response);
+    instances.forEach(function(instance, idx, arr){
+      response.instances.push({id:instance._id, name:instance.name});
+      if(idx === arr.length - 1) {
+        return res.format({
+          'application/json': function () {
+            res.send(response);
+          }
+        });
+      }
+    });
+    /*return res.format({
+      'application/json': function () {
+        res.send(response);
+      }
+    });*/
   });
 });
 
@@ -477,6 +501,7 @@ router.post('/polls/:pollid/questions/:questionid/choices', function (req, res) 
 
 router.post('/polls/:pollid/instances', function (req, res) {
   var newInstance = new Instance({
+    name: req.body.name,
     participations: [],
     poll_id: req.params.pollid
   });

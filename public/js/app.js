@@ -4,36 +4,28 @@ var northPoll = angular.module('northPoll', [
   //'btford.socket-io'
 ]);
 
-// Angular chart JS
-northPoll.controller("BarCtrl", function ($scope, $http, $timeout) {
-
-  $scope.nb_answers;
-  $scope.question_text;
-  $scope.labels = [];
-  $scope.data = [[]];
-
-  $timeout(function () {
-    $scope.renderChart = true;
-    console.log('rendering chart');
+// Ui-router
+northPoll.config(function ($stateProvider) {
+  $stateProvider.state('listPolls', {
+    templateUrl: 'views/partials/polls.jade',
+    url: ''
   });
+  $stateProvider.state('answerInstancePoll', {
+    templateUrl: 'views/partials/answer.jade',
+    url: ''
+  });
+  $stateProvider.state('statsInstancePoll', {
+    templateUrl: 'views/partials/statsPoll.jade',
+    url: ''
+  });
+});
 
-/*  $http.get('/api/polls/563376e632fc6d2c205744a2/instances/565773186039652c19587340/results/questions/564cc9b615f11a8c1e979702')
-    .then(function(response) {
->>>>>>> 36d4b5afaa813a29fdc71e218ec4dcee8f16edde
-      $scope.nb_answers = response.data.nb_answers;
-      $scope.question_text = response.data.text;
-      response.data.results.forEach(function (choice, idx, arr) {
-        $scope.labels.push(choice.text);
-        $scope.data[0].push(choice.nb_chosen);
-      });
-    }, function (err) {
-
-    });*/
-
+northPoll.factory('ActualInstanceOfPoll', function() {
+  return {instance: '', poll: ''};
 });
 
 // Stat controller
-northPoll.controller("statController", function ($http, $scope) {
+northPoll.controller("statsAppController", function ($http, $scope) {
   $http.get("/api/polls/stats").then(function (response) {
     $scope.total = response.data.nb_total;
     $scope.recent = response.data.nb_recent;
@@ -41,32 +33,76 @@ northPoll.controller("statController", function ($http, $scope) {
   });
 });
 
-// Ui-router
-northPoll.config(function ($stateProvider) {
-  $stateProvider.state('polls', {
-    templateUrl: 'views/partials/statsPoll.jade',
-    url: '/polls'
+// Angular chart JS
+northPoll.controller("statsInstanceController", function ($scope, $http, ActualInstanceOfPoll) {
+
+  $scope.instanceName = ActualInstanceOfPoll.instance.name;
+  $scope.pollName = ActualInstanceOfPoll.poll.name;
+
+  $http.get(
+    "/api/polls/" + ActualInstanceOfPoll.pollId +
+    "/instances/" + ActualInstanceOfPoll.instanceId +
+    "/results/questions/564cc791b2388e640fa39191"
+  ).then(function (response) {
+      $scope.nb_answers = res;
+      $scope.question_text;
   });
+
+
+  $scope.labels = [];
+  $scope.data = [[]];
 });
 
-northPoll.controller("pollsController", function ($scope, $http) {
+northPoll.controller("pollsController", function ($scope, $http, ActualInstanceOfPoll) {
+
+  $scope.setActualInstanceOfPoll = function(inst, poll) {
+    ActualInstanceOfPoll.instance = inst;
+    ActualInstanceOfPoll.poll = poll;
+  }
+
+  $scope.participateInInstance = function(instance, poll) {
+    $scope.setActualInstanceOfPoll(instance, poll);
+  }
+
+  $scope.statsOfAnInstance = function(instance, poll) {
+    $scope.setActualInstanceOfPoll(instance, poll);
+  }
+
   $scope.polls = [];
   $http.get("/api/polls/open").then(function (response) {
     $scope.polls = $scope.polls.concat(response.data.polls);
+
+    $http.get("/api/polls/draft").then(function (response) {
+      var nb_draft = response.data.polls.length;
+      $scope.polls = $scope.polls.concat(response.data.polls);
+
+      $http.get("/api/polls/closed").then(function (response) {
+        $scope.polls = $scope.polls.concat(response.data.polls);
+      });
+
+      var inserted = 0;
+      $scope.polls.forEach(function(poll, idx, arr) {
+        poll.instances = [];
+        if(poll.state != 'draft') {
+          $http.get('/api/polls/' + poll.id + '/instances').then(function(resp) {
+            poll.instances = resp.data.instances;
+            inserted++;
+            if(inserted == arr.length - nb_draft) {
+              //console.log($scope.polls);
+            }
+          });
+        }
+      });
+    });
   });
-  $http.get("/api/polls/draft").then(function (response) {
-    $scope.polls = $scope.polls.concat(response.data.polls);
-  });
-  $http.get("/api/polls/closed").then(function (response) {
-    $scope.polls = $scope.polls.concat(response.data.polls);
-  });
+
 });
 
-northPoll.controller("PollCreationController", function ($scope, $http) {
+northPoll.controller("PollController", function ($scope, $http) {
 
 });
 
-northPoll.controller("AnswerCtrl", function ($scope, $http)
+northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll)
 {
   $scope.select = function(choice)
   {
@@ -118,7 +154,7 @@ northPoll.controller("AnswerCtrl", function ($scope, $http)
               result.choices = [];
               for (var j in question.choices)
               {
-                  var choice = $scope.question.choices[j];
+                  var choice = question.choices[j];
                   if (choice.selected != undefined && choice.selected)
                   {
                       result.choices.push(choice.text);
@@ -142,10 +178,11 @@ northPoll.controller("AnswerCtrl", function ($scope, $http)
                 });
       }
   }
-  
-  $scope.pollid = "56604ec7ae06a2207f5914d6";
-  $scope.instanceid = "56605176bce6d34805f86426";
-  
+
+
+  $scope.pollid = ActualInstanceOfPoll.poll.id;
+  $scope.instanceid = ActualInstanceOfPoll.instance.id;
+
   $http({
         url: "/api/polls/" + $scope.pollid + "/questions",
         method: "GET"
