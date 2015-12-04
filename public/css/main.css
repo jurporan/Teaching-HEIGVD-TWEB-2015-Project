@@ -53,7 +53,7 @@ hr {
 }
 .section-header .section-title {
   font-size: 44px;
-  color: #45B2D1;
+  color: #545454;
   text-transform: uppercase;
   position: relative;
   padding-top: 22px;
@@ -196,7 +196,7 @@ ul.nostyle i {
   }
   
   #main-menu.navbar-default .dropdown-menu > li > a {
-    border-top: 1px solid #404455;
+    border-top: 1px solid #8BA9C0;
     padding: 15px 0;
     color: #eeeeee;
   }
@@ -237,7 +237,7 @@ ul.nostyle i {
   font-size: 36px;
   line-height: 1;
   text-transform: uppercase;
-  color: #45B2D1;
+  color: #FFFFFF;
   width: 900px;
 }
 #main-slider .slider-inner h2 > span {
