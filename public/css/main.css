@@ -83,15 +83,29 @@ hr {
   border-width: 0;
   border-bottom-width: 3px;
   border-radius: 3px;
+  color: #545454
 }
 .btn.btn-primary {
-  background: #000000;
-  border-color: #000000;
+  background: #545454;
+  color: #FFFFFF;
+  border-radius: 3px;
+  border-width: 0px;
 }
 .btn.btn-primary:hover,
 .btn.btn-primary:focus {
   background: #000000;
 }
+
+
+.btn.btn-primary.btn-lg.btn-accueil {
+ margin-top: -100px;
+}
+
+.label {
+	
+
+}
+
 .column-title {
   margin-top: 0;
   padding-bottom: 55px;
@@ -233,7 +247,7 @@ ul.nostyle i {
   color: #fff;
 }
 #main-slider .slider-inner h2 {
-  margin-top: 180px;
+  margin-top: 300px;
   font-size: 36px;
   line-height: 1;
   text-transform: uppercase;
