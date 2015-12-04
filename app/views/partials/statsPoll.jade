@@ -1,13 +1,33 @@
-section#poll
-  .container
-    .section-header
-      h2.section-title.text-center.wow.fadeInDown Stats for a question
-      div(ng-controller='BarCtrl')
+h2.section-title.text-center.wow.fadeInDown Statistiques
+div(ng-controller='statsInstanceController')
+  h2.text-center {{pollName}}
+  h3.text-center {{instanceName}}
+  #myCarousel.carousel.slide(data-ride='carousel')
+    // Indicators
+    ol.carousel-indicators
+      li.active(data-target='#myCarousel', data-slide-to='0')
+      li(data-target='#myCarousel', data-slide-to='1')
+      li(data-target='#myCarousel', data-slide-to='2')
+      li(data-target='#myCarousel', data-slide-to='3')
+
+    // Wrapper for slides
+    .carousel-inner(role='listbox')
+      .item(ng-repeat='question in questions', ng-class='{active:$first}')
         p.text-center.wow.fadeInDown
           b Question :
-          |  {{question_text}}
+          | {{question.question_text}}
         p.text-center.wow.fadeInDown
           b Nombre de réponses :
-          |  {{nb_answers}}
-        canvas#bar.chart.chart-bar(ng-if='renderChart', chart-data='data', chart-labels='labels', chart-legend='false')
-    .row
+          | {{question.nb_answers}}
+        canvas#pie.chart.chart-pie(chart-data='question.data', chart-labels='question.labels', chart-legend='true')
+
+    // Left and right controls
+    a.left.carousel-control(href='#myCarousel', role='button', data-slide='prev')
+      span.glyphicon.glyphicon-chevron-left(aria-hidden='true')
+      span.sr-only Previous
+    a.right.carousel-control(href='#myCarousel', role='button', data-slide='next')
+      span.glyphicon.glyphicon-chevron-right(aria-hidden='true')
+      span.sr-only Next
+
+
+

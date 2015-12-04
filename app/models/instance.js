@@ -5,6 +5,7 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var InstanceSchema = new Schema({
+  name: String,
   participations: [{
     question: String,
     choices: []

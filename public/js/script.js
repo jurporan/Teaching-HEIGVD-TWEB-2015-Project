@@ -4,3 +4,7 @@
 $('.clicker').click(function(){
   $(this).nextUntil('.clicker').slideToggle('normal');
 });
+
+// Activate Carousel
+$("#myCarousel").carousel({interval: false});
+

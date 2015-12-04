@@ -12,6 +12,7 @@ function getPollById(id, callback) {
   var response = {};
   Poll.findById(id, function (err, poll) {
     if (err) callback({reason: "Couldn't find the specified poll"}, null);
+    response.id = poll._id;
     response.name = poll.name;
     response.creator = poll.creator;
     response.creation_date = poll.creationDate;
@@ -33,6 +34,7 @@ function getQuestionById(id, callback) {
   var question = {};
   Question.findById(id, function (err, quest) {
     if (err) return callback({reason: "Couldn't find the specified question"}, null);
+    question.id = quest._id;
     question.text = quest.text;
     question.choices_available = quest.choices_available;
     question.optional = quest.optional;
@@ -236,11 +238,34 @@ router.get('/polls/:pollid/questions/:questionid', function (req, res) {
   });
 });
 
+router.get('/polls/:pollid/instances', function (req, res) {
+  var response = {instances:[]};
+  Instance.find({poll_id:req.params.pollid}, function(err, instances) {
+    if(err) return res.status(500).send("Couldn't find any instances");
+    if(instances.length === 0) res.send(response);
+    instances.forEach(function(instance, idx, arr){
+      response.instances.push({id:instance._id, name:instance.name});
+      if(idx === arr.length - 1) {
+        return res.format({
+          'application/json': function () {
+            res.send(response);
+          }
+        });
+      }
+    });
+    /*return res.format({
+      'application/json': function () {
+        res.send(response);
+      }
+    });*/
+  });
+});
+
 router.get('/polls/:pollid/instances/:instanceid/results/questions/:questionid', function (req, res) {
   var response = {};
   var choices = [];
   Question.findById(req.params.questionid, function (err, question) {
-    if (err) return res.status(500).send("Couldn't find the specified question");
+    if (err || question === null) return res.status(500).send("Couldn't find the specified question");
     response.text = question.text;
     response.results = [];
     question.choices.forEach(function (choice, idx, arr) {
@@ -257,10 +282,12 @@ router.get('/polls/:pollid/instances/:instanceid/results/questions/:questionid',
         if (part.question === question.text) {
           nb_anwsers++;
           response.results.forEach(function (choice, idx, arr) {
-            var myChoice = part.choice;
-            if (choice.text === myChoice) {
-              choice.nb_chosen++;
-            }
+            var myChoices = part.choices;
+            myChoices.forEach(function(choiceText, idx, arr) {
+              if (choiceText === choice.text) {
+                choice.nb_chosen++;
+              }
+            });
           });
         }
         if (idx === arr.length - 1) {
@@ -477,6 +504,7 @@ router.post('/polls/:pollid/questions/:questionid/choices', function (req, res) 
 
 router.post('/polls/:pollid/instances', function (req, res) {
   var newInstance = new Instance({
+    name: req.body.name,
     participations: [],
     poll_id: req.params.pollid
   });
