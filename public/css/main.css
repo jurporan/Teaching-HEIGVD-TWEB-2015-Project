@@ -53,7 +53,7 @@ hr {
 }
 .section-header .section-title {
   font-size: 44px;
-  color: #000000;
+  color: #45B2D1;
   text-transform: uppercase;
   position: relative;
   padding-top: 22px;
@@ -237,11 +237,11 @@ ul.nostyle i {
   font-size: 36px;
   line-height: 1;
   text-transform: uppercase;
-  color: #fff;
+  color: #45B2D1;
   width: 900px;
 }
 #main-slider .slider-inner h2 > span {
-  color: #000000;
+  color: #545454;
 }
 
 #main-slider .slider-inner .btn {
@@ -322,7 +322,7 @@ ul.nostyle i {
   padding-top: 30px;
   padding-bottom: 30px;
   color: #fff;
-  background: #000000;
+  background: #545454;
 }
 #footer a {
   color: #fff;
