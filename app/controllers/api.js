@@ -508,6 +508,7 @@ router.post('/polls/:pollid/instances', function (req, res) {
   // We check that every mandatory field is there and is of the right type
   if (!(typeof req.body.name === "string")) {
     badData.push("name");
+    console.log("pourri " + req.body.name)
   }
   
   // If there are errors, we tell the client
@@ -515,7 +516,8 @@ router.post('/polls/:pollid/instances', function (req, res) {
     res.send(errorCode, {errors: badData});
   }
     
-  var newInstance = new Instance({
+  else {
+      var newInstance = new Instance({
     name: req.body.name,
     participations: [],
     poll_id: req.params.pollid
@@ -531,6 +533,7 @@ router.post('/polls/:pollid/instances', function (req, res) {
       });
     })
   });
+  }
 });
 
 router.post('/polls/:pollid/instances/:instanceid/results', function (req, res) {
