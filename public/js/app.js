@@ -154,7 +154,7 @@ northPoll.controller("PollController", function ($scope, $http) {
     $scope.instancesVisible = false;
     $scope.isPublic = false;
     $scope.questionAdded = false;
-    
+
     /* Variables to indicate if the fields in the form are valid or not. By defautl they are. When the user tries to post the form we will check the validity and change those variable accordingly. */
     $scope.pollNameValid = true;
     $scope.adminNameValid = true;
@@ -216,7 +216,7 @@ northPoll.controller("PollController", function ($scope, $http) {
     }
 
     $scope.addQuestion = function(){
-        console.log("text: " + $scope.questionText + " choices_available : " +  $scope.maxChoices + " optional : " + $scope.isOptional + " choices : " + $scope.choices);
+        $scope.choices.push({text : $scope.choiceText, correct : $scope.isCorrect});
         $http({
             url: "/api/polls/" + $scope.pollId + "/questions",
             method: "POST",
@@ -235,7 +235,7 @@ northPoll.controller("PollController", function ($scope, $http) {
         });
     }
 
-    $scope.addInstance = function(){        
+    $scope.addInstance = function(){
         $http({
             url: "/api/polls/" + $scope.pollId + "/instances",
             method: "POST",
