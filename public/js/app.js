@@ -70,9 +70,14 @@ northPoll.controller("statsInstanceController", function ($scope, $http, ActualI
             $scope.questions[idxQuest].data.push(choice.nb_chosen);
             nbChoices += choice.nb_chosen;
             $scope.questions[idxQuest].percentage.push(choice.nb_chosen * 100);
-            /*if(idxQuest === arrResp.length - 1 && idx === arr.length - 1) {
-
-            }*/
+            if(idxQuest === arrResp.length - 1 && idx === arr.length - 1) {
+              $scope.questions.forEach(function(question, idx, arr) {
+                question.percentage.forEach(function(percentageChoice, idx, arr) {
+                  question.percentage[idx] = percentageChoice / nbChoices;
+                  console.log($scope.questions);
+                });
+              });
+            }
           });
         });
     });
