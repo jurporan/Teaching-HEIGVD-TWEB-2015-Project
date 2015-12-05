@@ -508,7 +508,6 @@ router.post('/polls/:pollid/instances', function (req, res) {
   // We check that every mandatory field is there and is of the right type
   if (!(typeof req.body.name === "string")) {
     badData.push("name");
-    console.log("pourri " + req.body.name)
   }
   
   // If there are errors, we tell the client
