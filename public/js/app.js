@@ -1,7 +1,7 @@
 var northPoll = angular.module('northPoll', [
   'ui.router',
-  'chart.js'
-  //'btford.socket-io'
+  'chart.js',
+  'btford.socket-io'
 ]);
 
 // Ui-router
@@ -28,6 +28,10 @@ northPoll.factory('ActualInstanceOfPoll', function () {
   return {instance: '', poll: ''};
 });
 
+northPoll.factory('mySocket', function (socketFactory) {
+  return socketFactory();
+});
+
 // Stat controller
 northPoll.controller("statsAppController", function ($http, $scope) {
   $http.get("/api/polls/stats").then(function (response) {
@@ -38,12 +42,20 @@ northPoll.controller("statsAppController", function ($http, $scope) {
 });
 
 // Angular chart JS
-northPoll.controller("statsInstanceController", function ($scope, $http, ActualInstanceOfPoll) {
+northPoll.controller("statsInstanceController", function ($scope, $http, ActualInstanceOfPoll, mySocket) {
 
   $scope.instanceName = ActualInstanceOfPoll.instance.name;
   $scope.pollName = ActualInstanceOfPoll.poll.name;
 
   $scope.questions = [];
+
+  mySocket.forward('updateVotes', $scope);
+
+  $scope.$on('socket:updateVotes', function(ev, data) {
+    $scope.questions = data;
+  });
+
+  mySocket.emit('salut');
 
   $http.get("/api/polls/" + ActualInstanceOfPoll.poll.id + "/questions").then(function (response) {
     response.data.questions.forEach(function (question, idx, arrResp) {
@@ -135,7 +147,7 @@ northPoll.controller("PollController", function ($scope, $http) {
 
 });
 
-northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll) {
+northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll, mySocket) {
   $scope.select = function (choice) {
     if (choice.selected || $scope.question.remainingChoices > 0) {
       $scope.question.remainingChoices += (choice.selected ? 1 : -1)

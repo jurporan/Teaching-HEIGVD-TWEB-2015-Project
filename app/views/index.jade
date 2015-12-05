@@ -14,9 +14,9 @@ body#home.homepage(ng-app='northPoll')
         .collapse.navbar-collapse.navbar-right
           ul.nav.navbar-nav
             li.scroll
-              a(href='#answer', ui-sref='listPolls') Sondages
+              a(ui-sref='listPolls') Sondages
             li.scroll
-              a(href='#ask', ui-sref='createPoll') Créer un sondage
+              a(ui-sref='createPoll') Créer un sondage
             //li.scroll
               a(href='#about') A propos
     div(ui-view)
