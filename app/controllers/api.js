@@ -503,6 +503,18 @@ router.post('/polls/:pollid/questions/:questionid/choices', function (req, res) 
 });
 
 router.post('/polls/:pollid/instances', function (req, res) {
+  var badData = new Array();
+  
+  // We check that every mandatory field is there and is of the right type
+  if (!(typeof req.body.name === "string")) {
+    badData.push("name");
+  }
+  
+  // If there are errors, we tell the client
+  if (badData.length > 0) {
+    res.send(errorCode, {errors: badData});
+  }
+    
   var newInstance = new Instance({
     name: req.body.name,
     participations: [],
