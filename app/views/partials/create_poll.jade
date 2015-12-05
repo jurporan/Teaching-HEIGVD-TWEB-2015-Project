@@ -42,17 +42,11 @@ section#answer
                   .col-xs-offset-2.col-xs-10
                       .checkbox
                           label
-                              input(type='checkbox', ng-model='isOpen')
-                              | Sondage ouvert
-                .form-group
-                  .col-xs-offset-2.col-xs-10
-                      .checkbox
-                          label
                               input(type='checkbox', ng-model='isPublic')
                               | Résultats publics
                 .form-group
                   .col-xs-offset-2.col-xs-10
-                      span.btn.btn-primary#actionPoll(role='button', ng-click="pollAction()") {{ pollActionString }}
+                      span.btn.btn-primary#actionPoll(role='button', ng-disabled='pollActionDisabled', ng-click="pollAction()") {{ pollActionString }}
                   .col-xs-offset-2.col-xs-10
                       span.btn.btn-primary#deletePoll(role='button', ng-disabled='!deletePossible') Supprimer Sondage
                   .col-xs-offset-2.col-xs-10

@@ -146,12 +146,12 @@ northPoll.controller("pollsController", function ($scope, $http, ActualInstanceO
 northPoll.controller("PollController", function ($scope, $http) {
 
     $scope.pollActionString = "Créer le sondage";
+    $scope.pollActionDisabled = false;
     $scope.formVisible = true;
     $scope.questionVisible = false;
     $scope.questionAvailable = false;
     $scope.deletePossible = false;
     $scope.instancesVisible = false;
-    $scope.isOptional = false;
     $scope.isPublic = false;
     $scope.questionAdded = false;
 
@@ -178,6 +178,7 @@ northPoll.controller("PollController", function ($scope, $http) {
                 $scope.pollId = data.id;
                 // New actions are now available.
                 $scope.pollActionString = "Appliquer les modifications";
+                $scope.pollActionDisabled = true;
                 //$scope.deletePossible = true;
                 $scope.questionAvailable = true;
             }).error(function (data, status, headers, config) {
@@ -204,11 +205,14 @@ northPoll.controller("PollController", function ($scope, $http) {
     }
 
     $scope.choices = [];
+    $scope.isCorrect = false;
+    $scope.isOptional = false;
 
     $scope.addChoice = function() {
         $scope.choices.push({text : $scope.choiceText, correct : $scope.isCorrect});
         $scope.choiceText = "";
         $scope.isCorrect = false;
+        $scope.maxChoices = 1;
     }
 
     $scope.addQuestion = function(){
