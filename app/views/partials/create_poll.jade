@@ -1,50 +1,56 @@
 h2.section-title.text-center.wow.fadeInDown Créer un sondage
 div(ng-controller='PollController')
-    form.form-horizontal
-        .form-group
+    form.form-horizontal(ng-show='formVisible')
+        .form-group(ng-class="{'has-error' : !pollNameValid}")
             label.control-label.col-xs-2(for='pollName') Nom du sondage*
             .col-xs-10
-              input#pollName.form-control(type='text', placeholder='Sondage')
+              input#pollName.form-control(type='text', placeholder='Sondage', ng-model='pollName')
+              p.help-block(ng-hide='pollNameValid') Ce champ est obligatoire.
 
-          .form-group
+          .form-group(ng-class="{'has-error' : !adminNameValid}")
             label.control-label.col-xs-2(for='adminName') Pseudonyme*
             .col-xs-10
-              input#adminName.form-control(type='text', placeholder='Nom')
+              input#adminName.form-control(type='text', placeholder='Nom', ng-model='adminName')
+              p.help-block(ng-hide='adminNameValid') Ce champ est obligatoire.
 
-          .form-group
+          .form-group(ng-class="{'has-error' : !adminPasswordValid}")
             label.control-label.col-xs-2(for='adminPassword') Mot de passe administrateur*
             .col-xs-10
-              input#adminPassword.form-control(type='password', placeholder='Mot de passe')
+              input#adminPassword.form-control(type='password', placeholder='Mot de passe', ng-model='adminPassword')
+              p.help-block(ng-hide='adminPasswordValid') Ce mot de mot de passe doit correspondre au précédent.
 
-          .form-group
+          .form-group(ng-class="{'has-error' : !adminPasswordConfirmationValid}")
             label.control-label.col-xs-2(for='adminPasswordConfirmation') Confirmation du mot de passe*
             .col-xs-10
-              input#adminPasswordConfirmation.form-control(type='password', placeholder='Confirmation mot de passe administrateur')
+              input#adminPasswordConfirmation.form-control(type='password', placeholder='Confirmation mot de passe administrateur', ng-model='adminPaaswordConfirmationValid')
 
-          .form-group
+          .form-group(ng-class="{'has-error' : !userPasswordValid}")
             label.control-label.col-xs-2(for='userPassword') Mot de passe utilisateur
             .col-xs-10
-              input#userPassword.form-control(type='password', placeholder='Mot de passe utilisateur')
+              input#userPassword.form-control(type='password', placeholder='Mot de passe utilisateur', ng-model='userPassword')
 
-          .form-group
+          .form-group(ng-class="{'has-error' : !userPasswordConfirmationValid}")
             label.control-label.col-xs-2(for='userPasswordConfirmation') Confirmation du mot de passe
             .col-xs-10
-              input#userPasswordConfirmation.form-control(type='password', placeholder='Confirmation mot de passe utilisateur')
-              <p class="help-block">Les champs marqués d'un * sont obligatoires</p>
+              input#userPasswordConfirmation.form-control(type='password', placeholder='Confirmation mot de passe utilisateur', ng-model='userPasswordConfirmation')
+              p.help-block(ng-hide='userPasswordConfirmationValid') Ce mot de mot de passe doit correspondre au précédent.
+
           .form-group
             .col-xs-offset-2.col-xs-10
                 .checkbox#pollOpen
                     label
-                        input(type='checkbox')
+                        input(type='checkbox', ng-model='isOpen')
                         | Sondage ouvert
           .form-group
             .col-xs-offset-2.col-xs-10
                 .checkbox#resultsPublic
                     label
-                        input(type='checkbox')
+                        input(type='checkbox', ng-model='isPublic')
                         | Résultats publics
           .form-group
             .col-xs-offset-2.col-xs-10
-                span.btn.btn-primary#actionPoll(type='submit') Créer Sondage
+                span.btn.btn-primary#actionPoll(role='button', ng-click="pollAction()") {{ pollActionString }}
             .col-xs-offset-2.col-xs-10
-                span.btn.btn-primary#deletePoll(type='submit') Supprimer Sondage
+                span.btn.btn-primary#deletePoll(type='submit', ng-disabled='deletePossible') Supprimer Sondage
+            .col-xs-offset-2.col-xs-10
+                span.btn.btn-primary#deletePoll(type='submit') Créer questions
