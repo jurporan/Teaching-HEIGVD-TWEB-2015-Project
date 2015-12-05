@@ -144,7 +144,36 @@ northPoll.controller("pollsController", function ($scope, $http, ActualInstanceO
 });
 
 northPoll.controller("PollController", function ($scope, $http) {
+    $scope.pollActionString = "Créer le sondage";
+    $scope.formVisible = true;
+    $scope.questionVisible = false;
+    $scope.questionAvailable = false;
+    $scope.deletePossible = false;
+    $scope.pollNameValid = true;
+    $scope.adminNameValid = true;
+    $scope.adminPasswordValid = true;
+    $scope.adminPasswordConfirmationValid = true;
+    $scope.userPasswordValid = true;
+    $scope.userPasswordConfirmationValid = true;
+    $scope.pollId = "none";
 
+    $scope.pollAction = function() {
+        if ($scope.pollActionString == "Créer le sondage"){
+            $http({
+                url: "/api/polls/",
+                method: "POST",
+                data: {name: $scope.pollName, creator : $scope.adminName, admin_password : $scope.adminPassword, user_password : $scope.userPassword, public_results : $scope.isPublic}
+            }).success(function (data, status, headers, config) {
+                $scope.pollId = data.id;
+                $scope.pollActionString = "Appliquer les modifications";
+                $scope.deletePossible = true;
+                $scope.questionAvailable = true;
+            }).error(function (data, status, headers, config) {
+                console.log(data);
+                alert("Erreur lors de l'envoi");
+            });
+        }
+    }
 });
 
 northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll, mySocket) {
@@ -212,7 +241,6 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll
       });
     }
   }
-
 
   $scope.pollid = ActualInstanceOfPoll.poll.id;
   $scope.instanceid = ActualInstanceOfPoll.instance.id;
