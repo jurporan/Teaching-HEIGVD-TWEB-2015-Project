@@ -132,35 +132,103 @@ northPoll.controller("pollsController", function ($scope, $http, ActualInstanceO
 });
 
 northPoll.controller("PollController", function ($scope, $http) {
+
     $scope.pollActionString = "Créer le sondage";
     $scope.formVisible = true;
     $scope.questionVisible = false;
     $scope.questionAvailable = false;
     $scope.deletePossible = false;
+    $scope.instancesVisible = false;
+    $scope.isOptional = false;
+    $scope.isPublic = false;
+    $scope.questionAdded = false;
+
+    /* Variables to indicate if the fields in the form are valid or not. By defautl they are. When the user tries to post the form we will check the validity and change those variable accordingly. */
     $scope.pollNameValid = true;
     $scope.adminNameValid = true;
     $scope.adminPasswordValid = true;
     $scope.adminPasswordConfirmationValid = true;
     $scope.userPasswordValid = true;
     $scope.userPasswordConfirmationValid = true;
+
     $scope.pollId = "none";
 
+    /* If the user is creating is creating a poll, we post the new poll informations, in the other case we update the poll */
     $scope.pollAction = function() {
+
         if ($scope.pollActionString == "Créer le sondage"){
             $http({
                 url: "/api/polls/",
                 method: "POST",
                 data: {name: $scope.pollName, creator : $scope.adminName, admin_password : $scope.adminPassword, user_password : $scope.userPassword, public_results : $scope.isPublic}
             }).success(function (data, status, headers, config) {
+                // We retrieve the pollId.
                 $scope.pollId = data.id;
+                // New actions are now available.
                 $scope.pollActionString = "Appliquer les modifications";
-                $scope.deletePossible = true;
+                //$scope.deletePossible = true;
                 $scope.questionAvailable = true;
             }).error(function (data, status, headers, config) {
-                console.log(data);
                 alert("Erreur lors de l'envoi");
             });
         }
+
+        else
+        {
+            // TODO : Update form
+        }
+    }
+
+    $scope.createQuestion = function(){
+        $scope.formVisible = false;
+        $scope.questionVisible = true;
+        $scope.instancesVisible = false;
+    }
+
+    $scope.modifyPoll = function(){
+        $scope.formVisible = true;
+        $scope.questionVisible = false;
+        if($scope.questionAdded){}$scope.instancesVisible = true;}
+    }
+
+    $scope.choices = [];
+
+    $scope.addChoice = function() {
+        $scope.choices.push({text : $scope.choiceText, correct : $scope.isCorrect});
+        $scope.choiceText = "";
+        $scope.isCorrect = false;
+    }
+
+    $scope.addQuestion = function(){
+        console.log("text: " + $scope.questionText + " choices_available : " +  $scope.maxChoices + " optional : " + $scope.isOptional + " choices : " + $scope.choices);
+        $http({
+            url: "/api/polls/" + $scope.pollId + "/questions",
+            method: "POST",
+            data: {text: $scope.questionText, choices_available : $scope.maxChoices, optional : $scope.isOptional, choices : $scope.choices}
+        }).success(function (data, status, headers, config) {
+            $scope.choices = [];
+            $scope.choiceText = "";
+            $scope.isCorrect = false;
+            $scope.isOptional = false;
+            $scope.maxChoices = 1;
+            $scope.questionText = "";
+            $scope.questionAdded = true;
+            alert("Question ajoutée");
+        }).error(function (data, status, headers, config) {
+            alert("Erreur lors de l'envoi");
+        });
+    }
+
+    $scope.addInstance = function(){
+        $http({
+            url: "/api/polls/" + $scope.pollId + "/instances",
+            method: "POST",
+            data: {nom: $scope.instanceName}
+        }).success(function (data, status, headers, config) {
+            alert("Nouvelle instance créée");
+        }).error(function (data, status, headers, config) {
+            alert("Erreur lors de l'envoi");
+        });
     }
 });
 

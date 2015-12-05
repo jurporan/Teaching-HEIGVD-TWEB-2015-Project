@@ -40,13 +40,13 @@ section#answer
 
                 .form-group
                   .col-xs-offset-2.col-xs-10
-                      .checkbox#pollOpen
+                      .checkbox
                           label
                               input(type='checkbox', ng-model='isOpen')
                               | Sondage ouvert
                 .form-group
                   .col-xs-offset-2.col-xs-10
-                      .checkbox#resultsPublic
+                      .checkbox
                           label
                               input(type='checkbox', ng-model='isPublic')
                               | Résultats publics
@@ -54,6 +54,62 @@ section#answer
                   .col-xs-offset-2.col-xs-10
                       span.btn.btn-primary#actionPoll(role='button', ng-click="pollAction()") {{ pollActionString }}
                   .col-xs-offset-2.col-xs-10
-                      span.btn.btn-primary#deletePoll(type='submit', ng-disabled='deletePossible') Supprimer Sondage
+                      span.btn.btn-primary#deletePoll(role='button', ng-disabled='!deletePossible') Supprimer Sondage
                   .col-xs-offset-2.col-xs-10
-                      span.btn.btn-primary#deletePoll(type='submit') Créer questions
+                      span.btn.btn-primary#createQuestion(role='button', ng-disabled='!questionAvailable', ng-click='createQuestion()') Créer questions
+
+          form.form-horizontal(ng-show='instancesVisible')
+              .form-group
+                  label.control-label.col-xs-2 Nom de la nouvelle instance
+                  .col-xs-10
+                    input.form-control(type='text', placeholder='Nouvelle instance', ng-model='instanceName')
+              .form-group
+                .col-xs-offset-2.col-xs-10
+                    span.btn.btn-primary(role='button', ng-click="addInstance()") Ajouter une instance
+
+
+          form.form-horizontal(ng-show='questionVisible')
+              .form-group
+                  label.control-label.col-xs-2 Intitulé de la question
+                  .col-xs-10
+                    input.form-control(type='text', placeholder='Intitulé', ng-model='questionText')
+              .form-group
+                  label.control-label.col-xs-2(for='maxChoices') Nombre maximum de réponses
+                  .col-xs-10
+                    input#maxChoices.form-control(type='number', ng-model='maxChoices', max='choices.length > 0 ? choices.length : 1', min='1')
+              .form-group
+                .col-xs-offset-2.col-xs-10
+                    .checkbox
+                        label
+                            input(type='checkbox', ng-model='isOptional')
+                            | Question optionnelle
+              .form-group(ng-repeat='choice in choices')
+                  label.control-label.col-xs-2 Intitulé de la réponse
+                  .col-xs-10
+                    input.form-control(type='text', ng-model='choice.text')
+                    .checkbox
+                        label
+                            input(type='checkbox', ng-model='choice.correct')
+                            | Choix correcte
+              .form-group(ng-show='choices.length > 0')
+                .col-xs-offset-2.col-xs-10
+                  span.btn.btn-primary#actionPoll(role='button', ng-click='choices.pop()') Supprimer un choix
+
+              .form-group
+                  label.control-label.col-xs-2 Intitulé de la réponse
+                  .col-xs-10
+                    input.form-control(type='text', ng-model='choiceText', placeholder='Choix')
+                    .checkbox
+                        label
+                            input(type='checkbox', ng-model='isCorrect')
+                            | Choix correcte
+              .form-group
+                .col-xs-offset-2.col-xs-10
+                    span.btn.btn-primary(role='button', ng-click="addChoice()") Ajouter un choix
+
+              .form-group
+                  .col-xs-offset-2.col-xs-10
+                      span.btn.btn-primary(role='button', ng-click="addQuestion()") Ajouter la question au sondage
+              .form-group
+                  .col-xs-offset-2.col-xs-10
+                      span.btn.btn-primary#actionPoll(role='button', ng-click="modifyPoll()") Retour au sondage
