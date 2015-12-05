@@ -200,7 +200,7 @@ northPoll.controller("PollController", function ($scope, $http) {
     $scope.modifyPoll = function(){
         $scope.formVisible = true;
         $scope.questionVisible = false;
-        if($scope.questionAdded){}$scope.instancesVisible = true;}
+        if($scope.questionAdded){$scope.instancesVisible = true;}
     }
 
     $scope.choices = [];
