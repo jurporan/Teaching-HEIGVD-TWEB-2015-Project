@@ -1,4 +1,6 @@
 // Created by jermoret on 02.12.2015.
+
+// Partie slider "Statistiques"
 section#main-slider
   .owl-carousel
     .item(style='background-image: url(images/slider/background4.jpg);')
@@ -9,6 +11,7 @@ section#main-slider
               .carousel-content
                 include statsApp.jade
 
+// Partie contenu
 section#answer
   .container
     .section-header
@@ -24,6 +27,7 @@ section#answer
             tbody(ng-repeat='poll in polls')
               tr.clicker
                 th {{poll.name}} &nbsp;
+                  // Selection du badge selon l'état du sondage
                   span.label.label-success(ng-if='poll.state=="open"') Ouvert
                   span.label.label-info(ng-if='poll.state=="draft"') Initialisé
                   span.label.label-danger(ng-if='poll.state=="closed"') Fermé
@@ -37,7 +41,7 @@ section#answer
                     button.btn.btn-primary(type="button", ui-sref='answerInstancePoll', ng-click='participateInInstance(instance, poll)') Participer
                     button.btn.btn-primary(type="button", ui-sref='statsInstancePoll', ng-click='statsOfAnInstance(instance, poll)') Statistiques
 
-        //-Modal
+        // Modal pour le mot de passe
         #myModal.modal.fade(role='dialog')
           .modal-dialog.modal-sm
             // Modal content
@@ -54,9 +58,3 @@ section#answer
               .modal-footer
                 button.btn.btn-primary(type='button') Valider
                 button.btn.btn-default(type='button', data-dismiss='modal') Close
-  //ul
-    li(ng-repeat="poll in polls") {{ poll.name }} {{ poll.creator }}
-      button.btn.btn-primary(type="button") Participer
-      button.btn.btn-primary(type="button") Statistiques
-      button.btn.btn-primary(type="button") Modifier
-      a(ng-href="")

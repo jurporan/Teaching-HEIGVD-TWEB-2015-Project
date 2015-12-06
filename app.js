@@ -25,10 +25,6 @@ var questions = [];
 
 io.on('connection', function(socket) {
   console.log("A user has connected");
-  //socket.emit('updateVotes', questions);
-  socket.on('salut', function() {
-    console.log("Recu");
-  });
 });
 
 server.listen(config.port, function () {

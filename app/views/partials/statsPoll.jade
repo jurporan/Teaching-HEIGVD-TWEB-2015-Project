@@ -1,3 +1,4 @@
+// Created by jermoret on 01.12.2015.
 section#answer
   .container
     .section-header
@@ -6,6 +7,7 @@ section#answer
         h2.text-center {{pollName}}
         h3.text-center {{instanceName}}
         #myCarousel.carousel.slide(data-ride='carousel')
+
           // Indicators
           ol.carousel-indicators
             li.active(data-target='#myCarousel', data-slide-to='0')
@@ -23,7 +25,6 @@ section#answer
                 b Nombre de réponses :
                 | {{question.nb_answers}}
               canvas#pie.chart.chart-pie(chart-data='question.data', chart-labels='question.labels', chart-legend='true')
-              //p(ng-repeat='percentage in question.percentage') {{percentage}}
               p.text-center.wow.fadeInDown(ng-repeat='percentage in question.percentage track by $index')
                 b {{question.labels[$index]}} :
                 | &nbsp;{{percentage}} %
