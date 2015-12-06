@@ -9,8 +9,6 @@ Nous avons apporté quelques modifications au code de la phase 1 et avons corrig
 
 - Comme demandé, le projet a été angularisé et notre site est, une web-application sur une seule page, où les opérations s'effectuent avec le moins de rafraîchissements possibles 
 
-- Comme demandé, nous utilisons socket.io pour afficher dynamiquement les nouveaux résultats des sondages
-
 - Nous avons continué d'enrichir notre API en corrigeant certains petits bugs et en ajoutant des chemins.
 
 Interface
@@ -113,7 +111,7 @@ Ce bouton ouvre l'interface qui affiche les résultats par question, sous forme 
 
 Il est possible de passer à la question précédente/suivante en cliquant sur les flèches à gauche et à droite de la figure. Le style de graphique est à revoir, nous n'allons peut-être pas garder le "camembert" et le remplacer par un diagramme en barre, plébiscité par les statisticiens. D'autre part, le dégradé gris peu esthétique sera supprimé.
 
-Les résultats pour chaque question s'afficheront en temps réel grâce à socket.io . Lorsque l'on se trouve sur cette page, le diagramme s'actualise automatiquement et en direct dès qu'une nouvelle personne poste ses résultats.
+Les résultats pour chaque question s'afficheront en temps réel grâce à socket.io.
 
 Bilan par rapport aux maquettes
 -------------------------------
@@ -142,14 +140,20 @@ Dans la maquette, nous n'avions pas prévu le mécanisme des instances, c'est po
 
 ![Création actuelle](img/createPoll.png)
 
-À nouveau, avec l'introduction du mécanisme des instances, la case à cocher "sondage ouvert" n'a plus lieu d'être, de même que les liens "Exporter le sondage" et "Réinitialiser les réponses". Sinon, le formulaire reste un formulaire et, excepté un peu de mise en page à faire en phase 3, nous n'allons pas trop mnous éloigner de ce que nous avions prévu.
+À nouveau, avec l'introduction du mécanisme des instances, la case à cocher "sondage ouvert" n'a plus lieu d'être, de même que les liens "Exporter le sondage" et "Réinitialiser les réponses". Sinon, le formulaire reste un formulaire et, excepté un peu de mise en page à faire en phase 3, nous n'allons pas trop nous éloigner de ce que nous avions prévu.
 
 Travail restant dans la phase suivante
 ---------------
--Modifier un sondage : La page permettant de créer un sondage devra permettre de reprendre les données d'un sondage existant et d'effectuer des requêtes PUT et DELETE afin de les modifier ou d'effectuer une suppression. Il en est de même pour les questions. L'API REST devra bien évidemment prendre en charge toutes ces requêtes et reporter les changements dans la base de données.
+- **Modifier un sondage** : La page permettant de créer un sondage devra permettre de reprendre les données d'un sondage existant et d'effectuer des requêtes PUT et DELETE afin de les modifier ou d'effectuer une suppression. Il en est de même pour les questions. L'API REST devra bien évidemment prendre en charge toutes ces requêtes et reporter les changements dans la base de données.
 
--Lister/modifier les instances : L'interface de création/modification de sondage devra aussi permettre de lister les instances actuelles et permettre de les modifier. De même, il devra être possible d'ouvrir et fermer totalement un sondage.
+- **Lister/modifier les instances** : L'interface de création/modification de sondage devra aussi permettre de lister les instances actuelles et permettre de les modifier. De même, il devra être possible d'ouvrir et fermer totalement un sondage.
 
--Statut et erreurs : Actuellement, les *feedback* à l'utilisateur sont faits au moyen de fenêtres  jaillissantes (*popup*) ce qui est peu agréable. Nous allons mettre en place un champ de statut indiquant si une action s'est déroulée avec succès ou non.
+- **Statut et erreurs** : Actuellement, les *feedback* à l'utilisateur sont faits au moyen de fenêtres  jaillissantes (*popup*) ce qui est peu agréable. Nous allons mettre en place un champ de statut indiquant si une action s'est déroulée avec succès ou non.
 
-- Amélioration de l'interface : Nous allons ajouter un champ de recherche et mettre en place un mécanisme de pagination, deux mécanismes indispensables lorsque notre plateforme sera utilisée dans le monde entier! Nous allons globalement nettoyer notre interface et la rendre la plus intuitive possible, tout en gardant à l'esprit qu'aucun d'entre nous n'a de connaissances en web.
+- **Transfert de données entre les pages** : Actuellement, pour exemple, lorsqu’on clique sur le bouton **statistiques** pour une instance. Angular se charge de récupérer l’id de l’instance qu’il stocke dans une factory. Ui-router change ensuite le contenu de sa div selon son nouvel état « statistiques ». Le contrôleur Angular de la nouvelle page se charge finalement de récupérer l’id de l’instance depuis la factory. Cette manière de transfert de données s’avère être mauvaise car lorsqu’un utilisateur rafraichit sa page courante la factory Angular est réinitialisée, ce qui a pour conséquence la perte de l’id de l’instance. Notre page, par exemple, statistiques d’une instance, ignore pour quelle instance elle doit afficher les statistiques. Il nous semble préférable de transférer l’id à travers un paramètre de requête dans l’url. Nous analyserons la meilleure façon de faire durant la dernière phase.
+
+- **Mise à jour dynamique des statistiques** : Actuellement, l'utilisateur en train de consulter les statistiques d'une instance doit rafraichir à chaque fois sa page pour obtenir les dernières mises à jour. Il serait préférable que lorsqu’un utilisateur termine et confirme sa participation à une instance, le serveur se charge lui-même d’envoyer une requête au client qui lui enverra une requête de mise à jour au serveur, tout cela sans l’intervention manuelle de l’utilisateur. Cette fonctionnalité peut être réalisée aisément à l’aide de *socket.io*. À noter qu’actuellement *socket.io* est intégré dans notre projet mais sa seule fonctionnalité est d’afficher sur la console côté serveur « A user has connected » validant le bon fonctionnement de la communication client-serveur. 
+
+- **Correction d'un bug à l'affichage de la page d'accueil** : Lorsque nous rafraichissons la page principale du site, la bannière de statistiques s’affiche correctement. Mais lorsque l’on se déplace sur **Créer un sondage** et qu’on revient sur sondages, la bannière ne s’affiche plus. Pourtant, lors d’un rafraichissement de la page principale, notre div *ui-view* ne fait que inclure notre fichier jade contenant la bannière et les sondages ; même fichier jade qui est affiché par ui-router lorsqu’on clique sur le lien **sondages**.
+
+- **Amélioration de l'interface** : Nous allons ajouter un champ de recherche et mettre en place un mécanisme de pagination, deux mécanismes indispensables lorsque notre plateforme sera utilisée dans le monde entier! Nous allons globalement nettoyer notre interface et la rendre la plus intuitive possible, tout en gardant à l'esprit qu'aucun d'entre nous n'a de connaissances en web.
