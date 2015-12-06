@@ -18,6 +18,8 @@ Welcome to the home of the TWEB Project. This is where you will find information
 
 - [Link to our documentation folder](Documentation) (also available on Github Pages)
 
+- [Link to the report of phase 2](Documentation/Rapport Phase 2.md)
+
 ## How to use this repo
 
 ### What should we do with this repo?
