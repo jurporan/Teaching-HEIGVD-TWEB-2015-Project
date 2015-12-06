@@ -43,7 +43,7 @@ Ainsi nous gérons les deux problèmes susmentionnés:
 
 ![Deux instances d'un sondage](img/2instances.png)
 
-Nous avons donc modifié notre  [API REST](Rest.md) en conséquence afin de gérer tout ce mécanisme.
+Nous avons donc modifié notre  [API REST](REST.md) en conséquence afin de gérer tout ce mécanisme.
 
 Liste des sondages
 ------------------
