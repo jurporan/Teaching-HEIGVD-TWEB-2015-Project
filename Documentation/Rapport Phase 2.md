@@ -5,9 +5,9 @@ Corrections
 -----------
 Nous avons apporté quelques modifications au code de la phase 1 et avons corrigé quelques problèmes:
 
-- Les statistiques ont été corrigées, elles n'étaient ni fausses ni mal calculées, mais ne correspondaient pas ce que l'on pourrait intuitivement s'attendre
+- Les statistiques ont été corrigées, elles n'étaient ni fausses ni mal calculées, mais ne correspondaient pas à ce que l'on pourrait intuitivement s'attendre
 
-- Comme demandé, le projet a été angularisé et notre site est, comme prévu, une web-application sur une seule page, où les opérations s'effectuent sans rafraîchissement
+- Comme demandé, le projet a été angularisé et notre site est, une web-application sur une seule page, où les opérations s'effectuent avec le moins de rafraîchissements possibles 
 
 - Comme demandé, nous utilisons socket.io pour afficher dynamiquement les nouveaux résultats des sondages
 
@@ -24,18 +24,18 @@ Notre ancien thème étant très sobre, nous avons décidé de faire une refonte
 ![Interface actuelle](img/current.png)
 
 
-Notre nouveau thème, même s'il reste sobre, est plus fourni que le précédent et possède un thème de couleurs proche du monochrome. L'exemple d'utilisation de base étant dans le thème de l'hiver et de la neige, nous avons repris cette idée, d'où nous tirons le nom **NorthPoll**.
+Notre nouveau thème, même s'il reste sobre, est plus fourni que le précédent et possède un thème de couleurs proche du monochrome. L'exemple d'utilisation de base étant dans le thème de l'hiver et de la neige, nous avons repris cette idée, d'où nous tirons le nom **NorthPoll**. Il reste malheureusement encore des détails plus ou moins importants à corriger, ce que nous faisons au fur et à mesure de l'avancement du projet.
 
 Instances
 ---------
 
 Nous avons mieux réfléchi au fonctionnement de notre application et avons introduit la notion d'*instance* de sondage.
 
-Notre première intention, dans la phase 1, était de simplement définir qu'un sondage était ouvert ou fermé. Cependant, nous ne nous étions pas demandé ce qu'il adviendrait des résultats déjà existants si un sondage était fermé, modifié, puis réouvert. En effet, les anciens résultats n'auraient plus eu de sens, les questions et leurs choix ayant pu être complètement modifiés entre temps.
+Notre première intention, dans la phase 1, était de simplement pouvoir définir qu'un sondage était ouvert ou fermé. Cependant, nous ne nous étions pas demandé ce qu'il adviendrait des résultats déjà existants si un sondage était fermé, modifié, puis réouvert. En effet, les anciens résultats n'auraient plus eu de sens, les questions et leurs choix ayant pu être complètement modifiés entre temps.
 
-D'autre part, la simple notion d'être ouvert ou fermé, nous empêchait de lancer plusieurs fois le sondage afin de comparer les résultats, comme par exemple créer un sondage et faire participer deux classes parallèles pour en comparer les résultats. Nous avions alors éventuellement pensé qu'il serait possible de copier un sondage ou l'exporter.
+D'autre part, la simple notion d'être ouvert ou fermé nous empêchait de lancer plusieurs fois le sondage afin d'en comparer les résultats, comme par exemple créer un sondage et y faire participer deux classes parallèles. Nous avions alors éventuellement pensé qu'il serait possible de copier un sondage ou l'exporter.
 
-Dans cette phase 2, après réflexion, nous avons décidé d'agir différemment. Nous nous basons sur les mêmes schémas qu'un langage orienté objet: un sondage est une classe, et celui-ci peut être *instancié* plusieurs fois, en parallèle s'il le faut. D'autre part, chaque instance étant indépendante des autres, les nouvelles instances, créées après modification du sondage, peuvent posséder des questions/choix différents des instances ayant été créées dans une ancienne version du sondage.
+Dans cette phase 2, nous avons donc décidé d'agir différemment. Nous nous basons sur les mêmes schémas qu'un langage orienté objet: un sondage est une classe, et celui-ci peut être *instancié* plusieurs fois, en parallèle s'il le faut. D'autre part, chaque instance étant indépendante des autres, les nouvelles instances, créées après modification du sondage, peuvent posséder des questions/choix différents des instances ayant été créées dans une ancienne version du sondage.
 
 Ainsi nous gérons les deux problèmes susmentionnés:
 
@@ -61,9 +61,9 @@ Cette liste affiche tous les sondages, quel que soit leur état, et indique, au 
 
 - *Fermé* : Le sondage est fermé, les instances sont vérouillées et les résultats sont figés.
 
-En dessous du nom d'un sondage sont affichées les instances existantes, s'il y en a. C'est dans cette zone qu'il est possible d'y participer en cliquant sur "Participer" et d'afficher les statistiques en temps réel en cliquant sur "Statistiques".
+En dessous du nom d'un sondage sont affichées les instances existantes, s'il y en a. C'est dans cette zone qu'il est possible d'y participer en cliquant sur "Participer" ou d'afficher les statistiques en temps réel en cliquant sur "Statistiques".
 
-Le bouton "Modifier" permettra (en phase 3), en saisissant le mot de passe associé au sondage, de le modifier: modifier ses propriétés, gérer les questions et leurs choix, gérer les instances. La page affichée est la même que pour la création, où les champs sont déjà pré-remplis
+Le bouton "Modifier" permettra (en phase 3), en saisissant le mot de passe associé au sondage, de le modifier: modifier ses propriétés, gérer les questions et leurs choix, gérer les instances. La page affichée est la même que pour la création, où les champs sont déjà pré-remplis.
 
 
 Création de sondages
@@ -77,20 +77,20 @@ Une fois toutes les propriétés saisies, il suffit de cliquer sur le bouton "Cr
 
 ![Création d'une question](img/createQuestion.png)
 
-Ce formulaire permet de créer une question et les choix qui y sont associés. Une question peut être optionnelle (il n'est pas nécessaire d'y répondre pour soumettre les résultats) et permettent de sélectionner plusieurs choix simultanément. Marquer un choix comme étant correct ou non est enregistré côté serveur, mais n'est pas utilisé pour le moment.
+Ce formulaire permet de créer une question et les choix qui y sont associés. Une question peut être optionnelle (il n'est pas nécessaire d'y répondre pour soumettre les résultats), et/ou avoir plusieurs choix choix corrects possible, pouvant être sélectionnés simultanément. Un choix peut être marqué comme étant correct ou non et est enregistré côté serveur, mais n'est pas utilisé pour le moment.
 
 Répondre à un sondage
 ---------------------
 
-Lorsqu'un sondage est ouvert et que l'on clique sur "Participer", les quesitons sont chargées via l'API REST et l'interface de réponse apparaît directement à la première question:
+Lorsqu'un sondage est ouvert et que l'on clique sur "Participer", les questions sont chargées via l'API REST et l'interface de réponse apparaît directement à la première question:   (HEUUUUUUU Y AVAIT PAS EVENTUELLEMENT UN MOT DE PASSE????)
 
 ![Répondre à une question](img/q1.png)
 
-L'entête de la question affiche la progression dans le sondage (question actuelle / nombre de questions) et un label coloré affiche le nombre de choix qu'il est possible de sélectionner simultanément pour la question affichée et indique si la question est obligatoire ou optionelle.
+L'entête de la question affiche la progression dans le sondage (question actuelle / nombre de questions) et un label coloré affiche le nombre de choix qu'il est possible de sélectionner simultanément pour la question en cours, et si elle est obligatoire ou optionelle.
 
 Y répondre est très simple, il suffit de cliquer sur le choix désiré et le/les choix sélectionnés s'affichent en vert clair.
 
-Lorsqu'un ou plusieurs choix sont sélectionnés, il est possible de posser à la question suivante. Cependant, il est possible de "sauter" une question sans y répondre si celle-ci n'est pas obligatoire:
+Lorsqu'un ou plusieurs choix sont sélectionnés, il est possible de passer à la question suivante. Cependant, il est possible de "sauter" une question sans y répondre si celle-ci n'est pas obligatoire:
 
 ![Question optionelle](img/q2.png)
 
@@ -100,14 +100,14 @@ Enfin, le support des choix multiples coule de source, il suffit d'en sélection
 
 ![Plusieurs choix possibles](img/q3.png)
 
-À noter que le bouton "Suivant" a été renommé en "Envoyer", cette question étant la dernière du sondage. Le clic sur ce bouton envoie immédiatement les données au serveur.
+A la dernière question du sondage, le bouton "Suivant" a été renommé en "Envoyer". Un clic sur ce bouton envoie immédiatement les données au serveur.
 
 Visualiser les résultats
 ------------------------
 
 Enfin, lorsque l'on clique sur le bouton "Statistiques" d'un sondage, il est possible d'en obtenir les résultats. Un sondage peut être public à la consultation ou non, le cas échéant, seul l'administrateur peut visualiser les résultats.
 
-L'activation de ce bouton ouvre l'interface qui affiche les résultats par question, sous forme d'un "camembert":
+Ce bouton ouvre l'interface qui affiche les résultats par question, sous forme d'un "camembert":
 
 ![Résultats](img/stats.png)
 
@@ -133,7 +133,7 @@ Comme indiqué précédemment, nous avons finalement opté pour un thème plus s
 
 ![Liste actuelle](img/list.png)
 
-Dans la maquette, nous n'avions pas prévu le mécanisme des instances, c'est pourquoi la liste des sondages paraît plus compacte. Que ce soit a maquette ou l'interface actuelle, nous avons réussi à afficher les sondages de manière claire et simple d'utilisation. À noter que le design de notre site n'est pas final, il est tout à fait possible que nous options pour les mêmes types d'icônes que dans la maquette.
+Dans la maquette, nous n'avions pas prévu le mécanisme des instances, c'est pourquoi la liste des sondages paraît plus compacte. Que ce soit la maquette ou l'interface actuelle, nous avons réussi à afficher les sondages de manière claire et simple d'utilisation. À noter que le design de notre site n'est pas final, il est tout à fait possible que nous options pour les mêmes types d'icônes que dans la maquette.
 
 **Création d'un sondage**
 
@@ -148,7 +148,7 @@ Travail restant dans la phase suivante
 ---------------
 -Modifier un sondage : La page permettant de créer un sondage devra permettre de reprendre les données d'un sondage existant et d'effectuer des requêtes PUT et DELETE afin de les modifier ou d'effectuer une suppression. Il en est de même pour les questions. L'API REST devra bien évidemment prendre en charge toutes ces requêtes et reporter les changements dans la base de données.
 
--Lister/modifier les instances : L'interface de création/modification de sondage devra aussi permettre de lister les instances actuelles devra permettre de les modifier, c'est à dire de les ouvrir ou les fermer. De même, il devra être possible d'ouvrir et fermer totalement un sondage.
+-Lister/modifier les instances : L'interface de création/modification de sondage devra aussi permettre de lister les instances actuelles et permettre de les modifier. De même, il devra être possible d'ouvrir et fermer totalement un sondage.
 
 -Statut et erreurs : Actuellement, les *feedback* à l'utilisateur sont faits au moyen de fenêtres  jaillissantes (*popup*) ce qui est peu agréable. Nous allons mettre en place un champ de statut indiquant si une action s'est déroulée avec succès ou non.
 
