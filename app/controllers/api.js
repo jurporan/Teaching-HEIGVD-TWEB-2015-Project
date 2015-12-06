@@ -1,5 +1,4 @@
 // We include everything we need, the express framework, mongoose and the models
-
 var express = require('express'),
   router = express.Router(),
   mongoose = require('mongoose'),
@@ -29,7 +28,7 @@ function getPollById(id, callback) {
   });
 }
 
-
+// Used to fetch a question by its id
 function getQuestionById(id, callback) {
   var question = {};
   Question.findById(id, function (err, quest) {
@@ -86,7 +85,6 @@ function getQuestionsByPoll(id, callback) {
           }
         });
       });
-
       response.push(question);
     });
   });
@@ -253,11 +251,6 @@ router.get('/polls/:pollid/instances', function (req, res) {
         });
       }
     });
-    /*return res.format({
-      'application/json': function () {
-        res.send(response);
-      }
-    });*/
   });
 });
 
@@ -302,80 +295,6 @@ router.get('/polls/:pollid/instances/:instanceid/results/questions/:questionid',
     });
   });
 });
-// we perform a search for the quesiton, we don't really need the poll id, but we respect the REST syntax
-/*Question.findOne({_id: req.params.questionid}, function (err, quest) {
- if (err) throw err;
-
- response.text = quest.text;
- response.nb_answers = 0;
- response.results = [];
-
- // We look for every choices associated to this question
- Choice.find({question_id: req.params.questionid}, function (err, choices) {
- if (err) throw err;
-
- choices.forEach(function (choice, idx, arr) {
- Answer.count({choice_id: choice._id}, function (err, nbr) {
- if (err) throw err;
- response.nb_answers += nbr;
- response.results.push({
- id: choice._id,
- text: choice.text,
- correct: choice.correct,
- nb_chosen: nbr
- });
-
- // If we have stored all the data, we can return the results
- if (idx === arr.length - 1) {
- res.format(
- {
- 'application/json': function () {
- res.send(response);
- }
- });
- }
- })
- });
- });
- });
-
- });*/
-
-
-
-/*router.get('/polls/:type', function (req, res) {
- var response = {polls: []};
- var inserted = 0;
-
- // We search for every poll in the state :type
- Poll.find({state: req.params.type}, function (err, polls) {
- if (err) throw err;
-
- // If there is none, we simply return the empty array
- if (polls.length < 1) return res.send(response);
-
- // Otherwise, we get the details of every poll
- polls.forEach(function (poll, idx, arr) {
- getPollById(poll._id, function (resp, err) {
- if (err) throw err;
- response.polls.push(resp);
- inserted++;
-
- // If we stored every poll available, we can return the result
- if (inserted === arr.length) {
- res.format(
- {
- 'application/json': function () {
- res.send(response);
- }
- });
- }
- });
- });
- })
- });*/
-
-
 
 // POST requests handlers
 
@@ -504,17 +423,17 @@ router.post('/polls/:pollid/questions/:questionid/choices', function (req, res) 
 
 router.post('/polls/:pollid/instances', function (req, res) {
   var badData = new Array();
-  
+
   // We check that every mandatory field is there and is of the right type
   if (!(typeof req.body.name === "string")) {
     badData.push("name");
   }
-  
+
   // If there are errors, we tell the client
   if (badData.length > 0) {
     res.send(errorCode, {errors: badData});
   }
-    
+
   else {
       var newInstance = new Instance({
     name: req.body.name,
@@ -560,6 +479,8 @@ router.post('/polls/:pollid/instances/:instanceid/results', function (req, res) 
   }
 });
 
+// PUT requests handlers
+
 router.put('/poll/:pollid', function (req, res) {
   Poll.findOne({_id: req.params.pollid}, function (err, poll) {
     if (err) throw  err;
@@ -598,6 +519,8 @@ router.put('/poll/:pollid/question/:questionid/choice/:choiceid', function (req,
     poll.save();
   });
 });
+
+// DELETE requests handler
 
 router.delete('/poll/:pollid', function (req, res) {
   Poll.findById(req.params.pollid, function (err, poll) {
