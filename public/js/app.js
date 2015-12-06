@@ -157,6 +157,9 @@ northPoll.controller("pollsController", function ($scope, $http, ActualInstanceO
   });
 });
 
+/* This angular controller is used in the creation and modificaation process of
+a poll. For now only the creation process is done. The update process will have
+to wait for the next step.*/
 northPoll.controller("PollController", function ($scope, $http) {
 
   $scope.pollActionString = "Créer le sondage";
@@ -169,7 +172,8 @@ northPoll.controller("PollController", function ($scope, $http) {
   $scope.isPublic = false;
   $scope.questionAdded = false;
 
-  /* Variables to indicate if the fields in the form are valid or not. By defautl they are. When the user tries to post the form we will check the validity and change those variable accordingly. */
+  /* Variables use to indicate if the fields in the form are valid or not. By defautl they are. When the user tries to post the form we will check the validity and change those variable accordingly. Those verifications are not
+  done yet.*/
   $scope.pollNameValid = true;
   $scope.adminNameValid = true;
   $scope.adminPasswordValid = true;
@@ -177,9 +181,11 @@ northPoll.controller("PollController", function ($scope, $http) {
   $scope.userPasswordValid = true;
   $scope.userPasswordConfirmationValid = true;
 
+  /* The current pollID. When creating a new poll this is undefined and will be
+      set when the poll is posted.*/
   $scope.pollId = "none";
 
-  /* If the user is creating is creating a poll, we post the new poll informations, in the other case we update the poll */
+  /* If the user is creating  a poll, we post the new poll informations, in the other case we update the poll. The update is not implemented yet.*/
   $scope.pollAction = function () {
 
     if ($scope.pollActionString == "Créer le sondage") {
@@ -199,7 +205,6 @@ northPoll.controller("PollController", function ($scope, $http) {
         // New actions are now available.
         $scope.pollActionString = "Appliquer les modifications";
         $scope.pollActionDisabled = true;
-        //$scope.deletePossible = true;
         $scope.questionAvailable = true;
       }).error(function (data, status, headers, config) {
         alert("Erreur lors de l'envoi");
@@ -211,22 +216,29 @@ northPoll.controller("PollController", function ($scope, $http) {
     }
   }
 
+  /* When the user wishes to add questions to the poll, we change the view to
+     display the question creation form. */
   $scope.createQuestion = function () {
     $scope.formVisible = false;
     $scope.questionVisible = true;
     $scope.instancesVisible = false;
   }
 
+  /* Changes the UI when the user wished to return to the main form. */
   $scope.modifyPoll = function () {
     $scope.formVisible = true;
     $scope.questionVisible = false;
-    //if($scope.questionAdded){$scope.instancesVisible = true;}
   }
 
+  /* Array used to add choices to the form. When a choice is added a new
+     field will be added to the UI.*/
   $scope.choices = [];
+  /* Initialization of the creation form checkbox. If they are not it could
+     cause errors if they are not checked by the user. */
   $scope.isCorrect = false;
   $scope.isOptional = false;
 
+  // Add the choice in the lower part of the UI to the array and renitialize the fields.
   $scope.addChoice = function () {
     $scope.choices.push({text: $scope.choiceText, correct: $scope.isCorrect});
     $scope.choiceText = "";
@@ -234,6 +246,8 @@ northPoll.controller("PollController", function ($scope, $http) {
     $scope.maxChoices = 1;
   }
 
+  /* Add the question to the poll. If an error is encountered an alert is displayed.
+     Upon success the fields are renitialized and an alret is also displayed. */
   $scope.addQuestion = function () {
     $scope.choices.push({text: $scope.choiceText, correct: $scope.isCorrect});
     $http({
@@ -259,6 +273,7 @@ northPoll.controller("PollController", function ($scope, $http) {
     });
   }
 
+  // Adds an instance to the poll.
   $scope.addInstance = function () {
     $http({
       url: "/api/polls/" + $scope.pollId + "/instances",
