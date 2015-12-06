@@ -82,10 +82,74 @@ Ce formulaire permet de créer une question et les choix qui y sont associés. U
 Répondre à un sondage
 ---------------------
 
+Lorsqu'un sondage est ouvert et que l'on clique sur "Participer", les quesitons sont chargées via l'API REST et l'interface de réponse apparaît directement à la première question:
+
+![Répondre à une question](img/q1.png)
+
+L'entête de la question affiche la progression dans le sondage (question actuelle / nombre de questions) et un label coloré affiche le nombre de choix qu'il est possible de sélectionner simultanément pour la question affichée et indique si la question est obligatoire ou optionelle.
+
+Y répondre est très simple, il suffit de cliquer sur le choix désiré et le/les choix sélectionnés s'affichent en vert clair.
+
+Lorsqu'un ou plusieurs choix sont sélectionnés, il est possible de posser à la question suivante. Cependant, il est possible de "sauter" une question sans y répondre si celle-ci n'est pas obligatoire:
+
+![Question optionelle](img/q2.png)
+
+Ici, aucun choix n'est sélectionné, mais le bouton pour passer à la question suivante est activé. À noter aussi que le bouton "Précédent" permet de revenir à la question précédente, pour laquelle les choix sélectionnés ont été mémorisés. Il est ainsi possible de naviguer en toute aisance dans le questionnaire.
+
+Enfin, le support des choix multiples coule de source, il suffit d'en sélectionner plusieurs:
+
+![Plusieurs choix possibles](img/q3.png)
+
+À noter que le bouton "Suivant" a été renommé en "Envoyer", cette question étant la dernière du sondage. Le clic sur ce bouton envoie immédiatement les données au serveur.
+
 Visualiser les résultats
 ------------------------
 
-Travail restant
+Enfin, lorsque l'on clique sur le bouton "Statistiques" d'un sondage, il est possible d'en obtenir les résultats. Un sondage peut être public à la consultation ou non, le cas échéant, seul l'administrateur peut visualiser les résultats.
+
+L'activation de ce bouton ouvre l'interface qui affiche les résultats par question, sous forme d'un "camembert":
+
+![Résultats](img/stats.png)
+
+Il est possible de passer à la question précédente/suivante en cliquant sur les flèches à gauche et à droite de la figure. Le style de graphique est à revoir, nous n'allons peut-être pas garder le "camembert" et le remplacer par un diagramme en barre, plébiscité par les statisticiens. D'autre part, le dégradé gris peu esthétique sera supprimé.
+
+Les résultats pour chaque question s'afficheront en temps réel grâce à socket.io . Lorsque l'on se trouve sur cette page, le diagramme s'actualise automatiquement et en direct dès qu'une nouvelle personne poste ses résultats.
+
+Bilan par rapport aux maquettes
+-------------------------------
+Qu'en est-il de notre projet actuel par rapport aux maquettes que nous avions prévues? Le voici en images:
+
+**Page d'accueil**
+![Maquette de la page d'accueil](img/titreR.png)
+
+
+![Page d'accueil actuelle](img/current.png)
+
+Comme indiqué précédemment, nous avons finalement opté pour un thème plus sobre que celui prévu, ce qui n'est pas un mal, l'ancien étant un peu chargé visuellement.
+
+**Liste des sondages**
+![Maquette de la liste](img/sondagesR.png)
+
+
+![Liste actuelle](img/list.png)
+
+Dans la maquette, nous n'avions pas prévu le mécanisme des instances, c'est pourquoi la liste des sondages paraît plus compacte. Que ce soit a maquette ou l'interface actuelle, nous avons réussi à afficher les sondages de manière claire et simple d'utilisation. À noter que le design de notre site n'est pas final, il est tout à fait possible que nous options pour les mêmes types d'icônes que dans la maquette.
+
+**Création d'un sondage**
+
+![Maquette de la création](img/editionR.png)
+
+
+![Création actuelle](img/createPoll.png)
+
+À nouveau, avec l'introduction du mécanisme des instances, la case à cocher "sondage ouvert" n'a plus lieu d'être, de même que les liens "Exporter le sondage" et "Réinitialiser les réponses". Sinon, le formulaire reste un formulaire et, excepté un peu de mise en page à faire en phase 3, nous n'allons pas trop mnous éloigner de ce que nous avions prévu.
+
+Travail restant dans la phase suivante
 ---------------
--Modifier un sondage
--Lister/modifier les instances
+-Modifier un sondage : La page permettant de créer un sondage devra permettre de reprendre les données d'un sondage existant et d'effectuer des requêtes PUT et DELETE afin de les modifier ou d'effectuer une suppression. Il en est de même pour les questions. L'API REST devra bien évidemment prendre en charge toutes ces requêtes et reporter les changements dans la base de données.
+
+-Lister/modifier les instances : L'interface de création/modification de sondage devra aussi permettre de lister les instances actuelles devra permettre de les modifier, c'est à dire de les ouvrir ou les fermer. De même, il devra être possible d'ouvrir et fermer totalement un sondage.
+
+-Statut et erreurs : Actuellement, les *feedback* à l'utilisateur sont faits au moyen de fenêtres  jaillissantes (*popup*) ce qui est peu agréable. Nous allons mettre en place un champ de statut indiquant si une action s'est déroulée avec succès ou non.
+
+- Amélioration de l'interface : Nous allons ajouter un champ de recherche et mettre en place un mécanisme de pagination, deux mécanismes indispensables lorsque notre plateforme sera utilisée dans le monde entier! Nous allons globalement nettoyer notre interface et la rendre la plus intuitive possible, tout en gardant à l'esprit qu'aucun d'entre nous n'a de connaissances en web.
