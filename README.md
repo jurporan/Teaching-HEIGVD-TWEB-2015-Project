@@ -12,7 +12,7 @@ Welcome to the home of the TWEB Project. This is where you will find information
 ## Results
 ### Part 1
 
-- [Link to the deployed project on Heroku](https://qpolls-tweb-2015-project.herokuapp.com/)
+- [Link to the deployed project on Heroku](https://northpoll-tweb-2015-project.herokuapp.com/)
 
 - [Link to our product page on Github Pages](http://jurporan.github.io/Teaching-HEIGVD-TWEB-2015-Project/)
 
