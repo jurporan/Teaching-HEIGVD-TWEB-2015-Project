@@ -27,8 +27,8 @@ var config = {
       name: 'teaching-heigvd-tweb-2015-project'
     },
     port: process.env.PORT,
-    //db: process.env.MONGOLAB_URI
-    db: 'mongodb://jermoret:_Ma$t3rQ#b0rd@ds045454.mongolab.com:45454/heroku_scf8b718'
+    db: process.env.MONGOLAB_URI
+    //db: 'mongodb://jermoret:_Ma$t3rQ#b0rd@ds045454.mongolab.com:45454/heroku_scf8b718'
   }
 };
 
