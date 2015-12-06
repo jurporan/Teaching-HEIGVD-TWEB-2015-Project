@@ -248,22 +248,31 @@ northPoll.controller("PollController", function ($scope, $http) {
     }
 });
 
+// This angular controller will handle the response process. It is responsible of everything related to the answer fragment of the page.
 northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll, mySocket) {
+    
+  // This function handles the click on a choice
   $scope.select = function (choice) {
+    
+    // If the choice can be selected or is currently selected
     if (choice.selected || $scope.question.remainingChoices > 0) {
+      
+      // We toggle the choice on or off
       $scope.question.remainingChoices += (choice.selected ? 1 : -1)
       choice.selected = !choice.selected;
     }
-
+    
+    // Will enable or disable the "Next" button
     $scope.nextDisabled = !$scope.optional && $scope.question.remainingChoices == $scope.question.choices_available;
   }
-
+  
+  // This function will refresh the answer view (question, choice, etc) each time the user changes question
   $scope.load = function () {
-    // Chargement des données de la question
+    // Loading the question and its parameters
     $scope.question = $scope.questions[$scope.currentQuestion];
     $scope.optional = $scope.question.optional;
 
-    // Mise à jour des variables de contrôle
+    // We update the control variables that enable/disable interface controls
     if ($scope.question.remainingChoices == undefined) {
       $scope.question.remainingChoices = $scope.question.choices_available;
     }
@@ -271,26 +280,35 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll
     $scope.nextDisabled = !$scope.optional && $scope.question.remainingChoices == $scope.question.choices_available;
     $scope.prevDisabled = $scope.currentQuestion == 0;
   }
-
+  
+  // This function is called when the user clicks on "Previous" button, we simply decrement the counter and refresh the view
   $scope.previous = function () {
     $scope.currentQuestion--;
     $scope.load();
   }
-
+  
+  // This function is called when the user clicks on "Next" button
   $scope.next = function () {
-
+    
+    // If there are more quesrtions to answer, we simply increment the counter and load the next one
     if ($scope.currentQuestion < $scope.questions.length - 1) {
       $scope.currentQuestion++;
       $scope.load();
     }
+    
+    // Otherwise, we have to send the data to the server
     else {
+      // Result array
       $scope.results = [];
-      // Compilation des résultats
+      
+      // We can now walk through the questions and pack the answers on the array
       for (var i in $scope.questions) {
         var question = $scope.questions[i];
         var result = {};
         result.question = question.text;
         result.choices = [];
+        
+        // We store each selected choice
         for (var j in question.choices) {
           var choice = question.choices[j];
           if (choice.selected != undefined && choice.selected) {
@@ -299,8 +317,8 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll
         }
         $scope.results.push(result);
       }
-
-      console.log($scope.results);
+      
+      // We can now send the HTTP request to submit the answers
       $http({
         url: "/api/polls/" + $scope.pollid + "/instances/" + $scope.instanceid + "/results",
         method: "POST",
@@ -313,14 +331,17 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll
       });
     }
   }
-
+  
+  // initialization, we need to get all the question of the selected choice, so we proceed an HTTP request to get them
   $scope.pollid = ActualInstanceOfPoll.poll.id;
   $scope.instanceid = ActualInstanceOfPoll.instance.id;
-
+  
   $http({
     url: "/api/polls/" + $scope.pollid + "/questions",
     method: "GET"
   }).success(function (data, status, headers, config) {
+    
+    // On success, we store the data and the answer process can begin
     $scope.questions = data.questions;
     $scope.currentQuestion = -1;
     $scope.results = [];
