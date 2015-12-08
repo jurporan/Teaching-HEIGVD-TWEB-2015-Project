@@ -38,6 +38,12 @@ northPoll.controller("statsAppController", function ($http, $scope) {
 });
 
 // Angular chart JS
+northPoll.controller("carouselController", function ($scope) {
+
+    $scope.isHidden = true;
+});
+
+
 northPoll.controller("statsInstanceController", function ($scope, $http, ActualInstanceOfPoll) {
 
   $scope.instanceName = ActualInstanceOfPoll.instance.name;
