@@ -1,6 +1,9 @@
 include ./includes/head.jade
+
 body#home.homepage(ng-app='northPoll')
   header#header
+
+    // Barre de navigation
     nav#main-menu.navbar.navbar-default.navbar-fixed-top(role='banner')
       .container
         .navbar-header
@@ -9,48 +12,21 @@ body#home.homepage(ng-app='northPoll')
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          a.navbar-brand(href='#main-slider')
+
+          // a.navbar-brand(href='#main-slider')
+          a.navbar-brand(ui-sref='listPolls')
+
             img(src='images/logo2.png', alt='logo')
         .collapse.navbar-collapse.navbar-right
           ul.nav.navbar-nav
             li.scroll
-              a(href='#answer', ui-sref='listPolls') Sondages
+              a(ui-sref='listPolls') Sondages
             li.scroll
-              a(href='#ask', ui-sref='createPoll') Créer un sondage
-            li.scroll
-              a(href='#about') A propos
-    
 
-            
-    section#main-slider
-      .owl-carousel
-        .item(style='background-image: url(images/slider/background4.jpg);')
-          .slider-inner
-            .container 
-              .row
-                .col-sm-6
-                   .carousel-content
-                      include ./partials/statsApp.jade
+              a(ui-sref='createPoll') Créer un sondage
 
-    section#answer   
-      .container
-        .section-header
-          div(ui-view)
-            include ./partials/polls.jade
-        .row
+    // Div de contenu ui-router
+    div(ui-view)
+      include ./partials/polls.jade
 
-    //section#about(ng-controller='carouselController', ng-hide='isHidden')
-    section#about
-      .container
-        .section-header
-          h2.section-title.text-center.wow.fadeInDown A propos
-          p.text-center.wow.fadeInDown
-            | Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-            br
-            |  et dolore magna aliqua. Ut enim ad minim veniam
-        .row
-        
-    include ./includes/footer.jade
-    
-    
-  
+  include ./includes/footer.jade

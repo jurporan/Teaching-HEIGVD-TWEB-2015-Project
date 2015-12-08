@@ -5,7 +5,7 @@ jQuery(function($) {'use strict';
 		Scroll();
 	});
 
-	$('.navbar-collapse ul li a').on('click', function() {  
+	$('.navbar-collapse ul li a').on('click', function() {
 		$('html, body').animate({scrollTop: $(this.hash).offset().top - 5}, 1000);
 		return false;
 	});
@@ -18,14 +18,17 @@ jQuery(function($) {'use strict';
 		var rangeTop    =   200;
 		var rangeBottom =   500;
 		$('.navbar-collapse').find('.scroll a').each(function(){
-			contentTop.push( $( $(this).attr('href') ).offset().top);
-			contentBottom.push( $( $(this).attr('href') ).offset().top + $( $(this).attr('href') ).height() );
+      var link = $( $(this).attr('href') );
+      if (link.length) {
+        contentTop.push(link.offset().top);
+        contentBottom.push(link.offset().top + $($(this).attr('href')).height());
+      }
 		})
 		$.each( contentTop, function(i){
 			if ( winTop > contentTop[i] - rangeTop ){
 				$('.navbar-collapse li.scroll')
 				.removeClass('active')
-				.eq(i).addClass('active');			
+				.eq(i).addClass('active');
 			}
 		})
 	};
@@ -47,16 +50,16 @@ jQuery(function($) {'use strict';
 
 	//Slider
 	$(document).ready(function() {
-		
+
 		var time = 7; // time in seconds
 
 	 	var $progressBar,
-	      $bar, 
-	      $elem, 
-	      isPause, 
+	      $bar,
+	      $elem,
+	      isPause,
 	      tick,
 	      percentTime;
-	 
+
 	    //Init the carousel
 	    $("#main-slider").find('.owl-carousel').owlCarousel({
 	      slideSpeed : 500,
@@ -73,16 +76,16 @@ jQuery(function($) {'use strict';
 	      autoHeight : true,
 	      transitionStyle : "fadeUp"
 	    });
-	    
-	 
+
+
 	    //Init progressBar where elem is $("#owl-demo")
 	    function progressBar(elem){
 	      $elem = elem;
 	      //start counting
 	      start();
-	    } 
-	 
-	 
+	    }
+
+
 	    function start() {
 	      //reset timer
 	      percentTime = 0;
@@ -90,7 +93,7 @@ jQuery(function($) {'use strict';
 	      //run interval every 0.01 second
 	      tick = setInterval(interval, 10);
 	    };
-	 
+
 	    function interval() {
 	      if(isPause === false){
 	        percentTime += 1 / time;
@@ -99,17 +102,17 @@ jQuery(function($) {'use strict';
 	         });
 	        //if percentTime is equal or greater than 100
 	        if(percentTime >= 100){
-	          //slide to next item 
+	          //slide to next item
 	          $elem.trigger('owl.next')
 	        }
 	      }
 	    }
-	 
-	    //pause while dragging 
+
+	    //pause while dragging
 	    function pauseOnDragging(){
 	      isPause = true;
 	    }
-	 
+
 	    //moved callback
 	    function moved(){
 	      //clear interval
@@ -117,7 +120,7 @@ jQuery(function($) {'use strict';
 	      //start again
 	      start();
 	    }
-	});  
+	});
 
 	//Initiat WOW JS
 	new WOW().init();
@@ -136,7 +139,7 @@ jQuery(function($) {'use strict';
 		});
 
 
-		
+
 	});
 
 

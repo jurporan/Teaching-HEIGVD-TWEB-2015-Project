@@ -1,10 +1,7 @@
 /**
  * Created by jermoret on 03.12.2015.
  */
-$('.clicker').click(function(){
-  $(this).nextUntil('.clicker').slideToggle('normal');
-});
 
-// Activate Carousel
+// Désactivation du mode diaporama (passage automatique à la prochaine cellule) sur le carousel
 $("#myCarousel").carousel({interval: false});
 

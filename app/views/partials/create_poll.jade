@@ -1,50 +1,111 @@
-h2.section-title.text-center.wow.fadeInDown Créer un sondage
-div(ng-controller='PollController')
-    form.form-horizontal
-        .form-group
-            label.control-label.col-xs-2(for='pollName') Nom du sondage*
-            .col-xs-10
-              input#pollName.form-control(type='text', placeholder='Sondage')
+section#answer
+  .container
+    .section-header
+      h2.section-title.text-center.wow.fadeInDown Créer un sondage
+      div(ng-controller='PollController')
+          form.form-horizontal(ng-show='formVisible')
+              .form-group(ng-class="{'has-error' : !pollNameValid}")
+                  label.control-label.col-xs-2(for='pollName') Nom du sondage*
+                  .col-xs-10
+                    input#pollName.form-control(type='text', placeholder='Sondage', ng-model='pollName')
+                    p.help-block(ng-hide='pollNameValid') Ce champ est obligatoire.
 
-          .form-group
-            label.control-label.col-xs-2(for='adminName') Pseudonyme*
-            .col-xs-10
-              input#adminName.form-control(type='text', placeholder='Nom')
+                .form-group(ng-class="{'has-error' : !adminNameValid}")
+                  label.control-label.col-xs-2(for='adminName') Pseudonyme*
+                  .col-xs-10
+                    input#adminName.form-control(type='text', placeholder='Nom', ng-model='adminName')
+                    p.help-block(ng-hide='adminNameValid') Ce champ est obligatoire.
 
-          .form-group
-            label.control-label.col-xs-2(for='adminPassword') Mot de passe administrateur*
-            .col-xs-10
-              input#adminPassword.form-control(type='password', placeholder='Mot de passe')
+                .form-group(ng-class="{'has-error' : !adminPasswordValid}")
+                  label.control-label.col-xs-2(for='adminPassword') Mot de passe administrateur*
+                  .col-xs-10
+                    input#adminPassword.form-control(type='password', placeholder='Mot de passe', ng-model='adminPassword')
+                    p.help-block(ng-hide='adminPasswordValid') Ce mot de mot de passe doit correspondre au précédent.
 
-          .form-group
-            label.control-label.col-xs-2(for='adminPasswordConfirmation') Confirmation du mot de passe*
-            .col-xs-10
-              input#adminPasswordConfirmation.form-control(type='password', placeholder='Confirmation mot de passe administrateur')
+                .form-group(ng-class="{'has-error' : !adminPasswordConfirmationValid}")
+                  label.control-label.col-xs-2(for='adminPasswordConfirmation') Confirmation du mot de passe*
+                  .col-xs-10
+                    input#adminPasswordConfirmation.form-control(type='password', placeholder='Confirmation mot de passe administrateur', ng-model='adminPaaswordConfirmationValid')
 
-          .form-group
-            label.control-label.col-xs-2(for='userPassword') Mot de passe utilisateur
-            .col-xs-10
-              input#userPassword.form-control(type='password', placeholder='Mot de passe utilisateur')
+                .form-group(ng-class="{'has-error' : !userPasswordValid}")
+                  label.control-label.col-xs-2(for='userPassword') Mot de passe utilisateur
+                  .col-xs-10
+                    input#userPassword.form-control(type='password', placeholder='Mot de passe utilisateur', ng-model='userPassword')
 
-          .form-group
-            label.control-label.col-xs-2(for='userPasswordConfirmation') Confirmation du mot de passe
-            .col-xs-10
-              input#userPasswordConfirmation.form-control(type='password', placeholder='Confirmation mot de passe utilisateur')
-              <p class="help-block">Les champs marqués d'un * sont obligatoires</p>
-          .form-group
-            .col-xs-offset-2.col-xs-10
-                .checkbox#pollOpen
-                    label
-                        input(type='checkbox')
-                        | Sondage ouvert
-          .form-group
-            .col-xs-offset-2.col-xs-10
-                .checkbox#resultsPublic
-                    label
-                        input(type='checkbox')
-                        | Résultats publics
-          .form-group
-            .col-xs-offset-2.col-xs-10
-                span.btn.btn-primary#actionPoll(type='submit') Créer Sondage
-            .col-xs-offset-2.col-xs-10
-                span.btn.btn-primary#deletePoll(type='submit') Supprimer Sondage
+                .form-group(ng-class="{'has-error' : !userPasswordConfirmationValid}")
+                  label.control-label.col-xs-2(for='userPasswordConfirmation') Confirmation du mot de passe
+                  .col-xs-10
+                    input#userPasswordConfirmation.form-control(type='password', placeholder='Confirmation mot de passe utilisateur', ng-model='userPasswordConfirmation')
+                    p.help-block(ng-hide='userPasswordConfirmationValid') Ce mot de mot de passe doit correspondre au précédent.
+
+                .form-group
+                  .col-xs-offset-2.col-xs-10
+                      .checkbox
+                          label
+                              input(type='checkbox', ng-model='isPublic')
+                              | Résultats publics
+                .form-group
+                  .col-xs-offset-2.col-xs-10
+                      span.btn.btn-primary#actionPoll(role='button', ng-disabled='pollActionDisabled', ng-click="pollAction()") {{ pollActionString }}
+                  .col-xs-offset-2.col-xs-10
+                      span.btn.btn-primary#deletePoll(role='button', ng-disabled='!deletePossible') Supprimer Sondage
+                  .col-xs-offset-2.col-xs-10
+                      span.btn.btn-primary#createInstance(role='button', ng-disabled='!questionAdded', ng-click="instancesVisible = true") Lancer le sondage
+                  .col-xs-offset-2.col-xs-10
+                      span.btn.btn-primary#createQuestion(role='button', ng-disabled='!questionAvailable', ng-click='createQuestion()') Créer questions
+        
+          form.form-horizontal(ng-show='instancesVisible')
+              .form-group
+                  label.control-label.col-xs-2 Nom de la nouvelle instance
+                  .col-xs-10
+                    input.form-control(type='text', placeholder='Nouvelle instance', ng-model='instanceName')
+              .form-group
+                .col-xs-offset-2.col-xs-10
+                    span.btn.btn-primary(role='button', ng-click="addInstance()") Ajouter une instance
+
+
+          form.form-horizontal(ng-show='questionVisible')
+              .form-group
+                  label.control-label.col-xs-2 Intitulé de la question
+                  .col-xs-10
+                    input.form-control(type='text', placeholder='Intitulé', ng-model='questionText')
+              .form-group
+                  label.control-label.col-xs-2(for='maxChoices') Nombre maximum de réponses
+                  .col-xs-10
+                    input#maxChoices.form-control(type='number', ng-model='maxChoices', max='choices.length > 0 ? choices.length : 1', min='1')
+              .form-group
+                .col-xs-offset-2.col-xs-10
+                    .checkbox
+                        label
+                            input(type='checkbox', ng-model='isOptional')
+                            | Question optionnelle
+              .form-group(ng-repeat='choice in choices')
+                  label.control-label.col-xs-2 Intitulé de la réponse
+                  .col-xs-10
+                    input.form-control(type='text', ng-model='choice.text')
+                    .checkbox
+                        label
+                            input(type='checkbox', ng-model='choice.correct')
+                            | Choix correct
+              .form-group(ng-show='choices.length > 0')
+                .col-xs-offset-2.col-xs-10
+                  span.btn.btn-primary#actionPoll(role='button', ng-click='choices.pop()') Supprimer un choix
+
+              .form-group
+                  label.control-label.col-xs-2 Intitulé de la réponse
+                  .col-xs-10
+                    input.form-control(type='text', ng-model='choiceText', placeholder='Choix')
+                    .checkbox
+                        label
+                            input(type='checkbox', ng-model='isCorrect')
+                            | Choix correcte
+              .form-group
+                .col-xs-offset-2.col-xs-10
+                    span.btn.btn-primary(role='button', ng-click="addChoice()") Ajouter un choix
+
+              .form-group
+                  .col-xs-offset-2.col-xs-10
+                      span.btn.btn-primary(role='button', ng-click="addQuestion()") Ajouter la question au sondage
+              .form-group
+                  .col-xs-offset-2.col-xs-10
+                      span.btn.btn-primary#actionPoll(role='button', ng-click="modifyPoll()") Retour au sondage
