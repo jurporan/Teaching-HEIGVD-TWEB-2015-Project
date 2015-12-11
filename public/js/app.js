@@ -149,17 +149,17 @@ northPoll.controller("pollsController", function ($scope, $http, ActualInstanceO
       // Finally we get all closed polls
       $http.get("/api/polls/closed").then(function (response) {
         $scope.polls = $scope.polls.concat(response.data.polls);
-      });
 
-      // Iterate on each poll
-      $scope.polls.forEach(function (poll, idx, arr) {
-        if (poll.state != 'draft') { // There is no instances for draft poll
+        // Iterate on each poll
+        $scope.polls.forEach(function (poll, idx, arr) {
+          if (poll.state != 'draft') { // There is no instances for draft poll
 
-          // Get instances for the actual poll
-          $http.get('/api/polls/' + poll.id + '/instances').then(function (resp) {
-            poll.instances = resp.data.instances;
-          });
-        }
+            // Get instances for the actual poll
+            $http.get('/api/polls/' + poll.id + '/instances').then(function (resp) {
+              poll.instances = resp.data.instances;
+            });
+          }
+        });
       });
     });
   });
