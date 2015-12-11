@@ -108,6 +108,28 @@ northPoll.controller("statsInstanceController", function ($scope, $http, ActualI
         });
     });
   });
+
+  mySocket.forward('updateChart', $scope);
+
+  $scope.$on('socket:updateChart', function (ev, data) {
+    if (data[0].question === $scope.questions[0].question_text) {
+      console.log("C'est pareil je mets a jour");
+      $scope.questions.forEach(function (question, idx, arr) {
+        question.nb_answers = question.nb_answers + data[idx].choices.length;
+
+        data[idx].choices.forEach(function (choice, idx, arr) {
+          question.labels.some(function (label, idxScp, arrScp) {
+            if (label === choice) {
+              question.data[idxScp]++;
+              return true;
+            }
+          });
+        });
+
+        console.log($scope.questions[0].data);
+      });
+    }
+  });
 });
 
 // List of polls controller
@@ -159,8 +181,8 @@ northPoll.controller("pollsController", function ($scope, $http, ActualInstanceO
 });
 
 /* This angular controller is used in the creation and modificaation process of
-a poll. For now only the creation process is done. The update process will have
-to wait for the next step.*/
+ a poll. For now only the creation process is done. The update process will have
+ to wait for the next step.*/
 northPoll.controller("PollController", function ($scope, $http) {
 
   $scope.pollActionString = "Créer le sondage";
@@ -174,7 +196,7 @@ northPoll.controller("PollController", function ($scope, $http) {
   $scope.questionAdded = false;
 
   /* Variables use to indicate if the fields in the form are valid or not. By defautl they are. When the user tries to post the form we will check the validity and change those variable accordingly. Those verifications are not
-  done yet.*/
+   done yet.*/
   $scope.pollNameValid = true;
   $scope.adminNameValid = true;
   $scope.adminPasswordValid = true;
@@ -183,7 +205,7 @@ northPoll.controller("PollController", function ($scope, $http) {
   $scope.userPasswordConfirmationValid = true;
 
   /* The current pollID. When creating a new poll this is undefined and will be
-      set when the poll is posted.*/
+   set when the poll is posted.*/
   $scope.pollId = "none";
 
   /* If the user is creating  a poll, we post the new poll informations, in the other case we update the poll. The update is not implemented yet.*/
@@ -218,7 +240,7 @@ northPoll.controller("PollController", function ($scope, $http) {
   }
 
   /* When the user wishes to add questions to the poll, we change the view to
-     display the question creation form. */
+   display the question creation form. */
   $scope.createQuestion = function () {
     $scope.formVisible = false;
     $scope.questionVisible = true;
@@ -232,10 +254,10 @@ northPoll.controller("PollController", function ($scope, $http) {
   }
 
   /* Array used to add choices to the form. When a choice is added a new
-     field will be added to the UI.*/
+   field will be added to the UI.*/
   $scope.choices = [];
   /* Initialization of the creation form checkbox. If they are not it could
-     cause errors if they are not checked by the user. */
+   cause errors if they are not checked by the user. */
   $scope.isCorrect = false;
   $scope.isOptional = false;
 
@@ -248,7 +270,7 @@ northPoll.controller("PollController", function ($scope, $http) {
   }
 
   /* Add the question to the poll. If an error is encountered an alert is displayed.
-     Upon success the fields are renitialized and an alret is also displayed. */
+   Upon success the fields are renitialized and an alret is also displayed. */
   $scope.addQuestion = function () {
     $scope.choices.push({text: $scope.choiceText, correct: $scope.isCorrect});
     $http({
@@ -357,6 +379,8 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll
         }
         $scope.results.push(result);
       }
+
+      mySocket.emit('updateChart', $scope.results);
 
       // We can now send the HTTP request to submit the answers
       $http({

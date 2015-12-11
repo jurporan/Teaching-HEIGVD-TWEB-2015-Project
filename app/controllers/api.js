@@ -92,9 +92,14 @@ function getQuestionsByPoll(id, callback) {
 
 // Simple constant for the errorCode we will use when the client sends wrong data. The client shouldn't make fun of us, so we send him an "I am a teapot" error.
 var errorCode = 418;
+var sockets = [];
 
-module.exports = function (app) {
+module.exports = function (app, io) {
   app.use('/api', router);
+
+  io.on('connection', function(socket) {
+    sockets.push(socket);
+  });
 };
 
 // GET requests handlers
@@ -472,6 +477,12 @@ router.post('/polls/:pollid/instances/:instanceid/results', function (req, res) 
   else {
     Instance.findById(req.params.instanceid, function (err, inst) {
       if (err) res.status(500).send("Couldn't find the specified instance.");
+
+      sockets.forEach(function(socket, idx, arr) {
+        console.log("J'envois a un blaireau");
+        socket.emit('updateChart', data.results);
+      });
+
       inst.participations = inst.participations.concat(data.results);
       inst.save();
       res.status(200).send();
