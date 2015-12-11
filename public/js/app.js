@@ -8,19 +8,19 @@ var northPoll = angular.module('northPoll', [
 northPoll.config(function ($stateProvider) {
   $stateProvider.state('listPolls', {
     templateUrl: 'views/partials/polls.jade',
-    url: ''
+    url: '/'
   });
   $stateProvider.state('answerInstancePoll', {
     templateUrl: 'views/partials/answer.jade',
-    url: ''
+    url: '/answer'
   });
   $stateProvider.state('statsInstancePoll', {
     templateUrl: 'views/partials/statsPoll.jade',
-    url: ''
+    url: '/stats'
   });
   $stateProvider.state('createPoll', {
     templateUrl: 'views/partials/create_poll.jade',
-    url: 'createPoll'
+    url: '/createPoll'
   })
 });
 
@@ -32,6 +32,13 @@ northPoll.factory('ActualInstanceOfPoll', function () {
 // This factory is necessary to use socket.io in our controllers
 northPoll.factory('mySocket', function (socketFactory) {
   return socketFactory();
+});
+
+
+northPoll.controller("carouselController", function ($scope, $state) {
+    $scope.currentState = $state.current;
+ 
+    
 });
 
 // Stats of the app controller

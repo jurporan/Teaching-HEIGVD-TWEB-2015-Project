@@ -1,18 +1,31 @@
 // Created by jermoret on 02.12.2015.
 
-// Partie slider "Statistiques"
+include statsApp.jade
+
 section#main-slider
   .owl-carousel
-    .item(style='background-image: url(images/slider/background4.jpg);')
+    .item(style='background-image: url(images/slider/background4.jpg);') 
       .slider-inner
-        .container
+        .container 
           .row
             .col-sm-6
-              .carousel-content
-                include statsApp.jade
+               .carousel-content
+                  include statsApp.jade
+
+
+// Partie slider "Statistiques"
+//section#main-slider
+ // .owl-carousel
+//    .item(style='background-image: url(images/slider/background4.jpg);')
+//      .slider-inner
+//        .container
+//          .row
+//            .col-sm-6
+//              .carousel-content
+//                include statsApp.jade
 
 // Partie contenu
-section#answer
+section
   .container
     .section-header
       h2.section-title.text-center.wow.fadeInDown Sondages
@@ -58,3 +71,14 @@ section#answer
               .modal-footer
                 button.btn.btn-primary(type='button') Valider
                 button.btn.btn-default(type='button', data-dismiss='modal') Close
+                
+section#about
+  .container
+    .section-header
+      h2.section-title.text-center.wow.fadeInDown A propos
+      p.text-center.wow.fadeInDown
+        bon
+        | Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+        br
+        |  et dolore magna aliqua. Ut enim ad minim veniam
+    .row

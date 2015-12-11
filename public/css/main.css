@@ -267,6 +267,11 @@ ul.nostyle i {
   padding: 0px;
 }
 
+/* Il faut donner une taille minimum à la page pour que le footer reste en placef! */
+#answer {
+ height: 700px;
+ margin-top: 120px;
+}
 
 .divider {
   margin-top: 50px;
@@ -291,7 +296,7 @@ ul.nostyle i {
 }
 .nav.main-tab {
   background: #eee;
-  border-bottom: 3px solid #292C4E;
+  border-bottom: 3px solid #545454;
   border-radius: 3px 3px 0 0;
 }
 .nav.main-tab > li > a {
@@ -352,9 +357,4 @@ ul.nostyle i {
 #footer ul > li {
   display: inline-block;
   margin: 0 7.5px;
-}
-
-.form-control {
-  box-shadow: none;
-  -webkit-box-shadow: none;
 }
