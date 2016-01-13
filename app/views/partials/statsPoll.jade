@@ -27,7 +27,7 @@ section
               canvas#pie.chart.chart-pie(chart-data='question.data', chart-labels='question.labels', chart-legend='true')
               p.text-center.wow.fadeInDown(ng-repeat='percentage in question.percentage track by $index')
                 b {{question.labels[$index]}} :
-                | &nbsp;{{percentage}} %
+                | &nbsp;{{percentage | number:2}} %
 
           // Left and right controls
           a.left.carousel-control(href='#myCarousel', role='button', data-slide='prev')

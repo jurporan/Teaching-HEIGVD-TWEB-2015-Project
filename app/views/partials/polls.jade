@@ -4,9 +4,9 @@ include statsApp.jade
 
 section#main-slider
   .owl-carousel
-    .item(style='background-image: url(images/slider/background4.jpg);') 
+    .item(style='background-image: url(images/slider/background4.jpg);')
       .slider-inner
-        .container 
+        .container
           .row
             .col-sm-6
                .carousel-content
@@ -46,32 +46,15 @@ section
                   span.label.label-danger(ng-if='poll.state=="closed"') Fermé
                 td {{poll.creator}}
                 td
-                  button.btn.btn-primary(type="button", data-toggle='modal', data-target='#myModal') Modifier
+                  button.btn.btn-primary(type="button", ng-click='openModal(poll.admin_password)') Modifier
               tr.clicker(ng-repeat='instance in poll.instances')
                 td {{instance.name}}
                 td
                   span#polls_controls
-                    button.btn.btn-primary(type="button", ui-sref='answerInstancePoll', ng-click='participateInInstance(instance, poll)') Participer
-                    button.btn.btn-primary(type="button", ui-sref='statsInstancePoll', ng-click='statsOfAnInstance(instance, poll)') Statistiques
+                    button.btn.btn-primary(type="button", ui-sref='answerInstancePoll({instId:instance.id, pollId:poll.id})') Participer
+                    button.btn.btn-primary(type="button", ui-sref='statsInstancePoll({instId:instance.id, pollId:poll.id})') Statistiques
 
-        // Modal pour le mot de passe
-        #myModal.modal.fade(role='dialog')
-          .modal-dialog.modal-sm
-            // Modal content
-            .modal-content
-              .modal-header
-                button.close(type='button', data-dismiss='modal') ×
-                h4.modal-title Entrer le mot de passe
-              .modal-body
-                form.form-inline(role='form')
-                form.form-inline(role='form')
-                  .form-group
-                    label(for='pwd') Password: &nbsp;
-                    input#pwd.form-control(type='password')
-              .modal-footer
-                button.btn.btn-primary(type='button') Valider
-                button.btn.btn-default(type='button', data-dismiss='modal') Close
-                
+
 section#about
   .container
     .section-header

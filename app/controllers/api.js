@@ -16,6 +16,7 @@ function getPollById(id, callback) {
     response.creator = poll.creator;
     response.creation_date = poll.creationDate;
     response.state = poll.state;
+    response.admin_password = poll.admin_password;
     Question.count({poll_id: id}, function (err, nbQuestions) {
       if (err) callback({reason: "Couldn't count questions in the poll"}, null);
       response.nb_questions = nbQuestions;
@@ -254,6 +255,22 @@ router.get('/polls/:pollid/instances', function (req, res) {
             res.send(response);
           }
         });
+      }
+    });
+  });
+});
+
+router.get('/polls/:pollid/instances/:instanceId', function (req, res) {
+  var response = {};
+
+  Instance.findById(req.params.instanceId, function(err, inst) {
+    if (err) return res.status(500).send("Couldn't find the specified instance.");
+    response.name = inst.name;
+    response.participations = inst.participations;
+
+    res.format({
+      'application/json': function () {
+        res.send(response);
       }
     });
   });

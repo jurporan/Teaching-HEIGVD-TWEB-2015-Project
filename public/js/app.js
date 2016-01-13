@@ -1,7 +1,8 @@
 var northPoll = angular.module('northPoll', [
   'ui.router',
   'chart.js',
-  'btford.socket-io'
+  'btford.socket-io',
+  'ui.bootstrap'
 ]);
 
 // Ui-router
@@ -12,11 +13,11 @@ northPoll.config(function ($stateProvider) {
   });
   $stateProvider.state('answerInstancePoll', {
     templateUrl: 'views/partials/answer.jade',
-    url: '/answer'
+    url: '/answer/:pollId/instance/:instId'
   });
   $stateProvider.state('statsInstancePoll', {
     templateUrl: 'views/partials/statsPoll.jade',
-    url: '/stats'
+    url: '/stats/:pollId/instance/:instId'
   });
   $stateProvider.state('createPoll', {
     templateUrl: 'views/partials/create_poll.jade',
@@ -36,9 +37,7 @@ northPoll.factory('mySocket', function (socketFactory) {
 
 
 northPoll.controller("carouselController", function ($scope, $state) {
-    $scope.currentState = $state.current;
- 
-    
+  $scope.currentState = $state.current;
 });
 
 // Stats of the app controller
@@ -52,111 +51,123 @@ northPoll.controller("statsAppController", function ($http, $scope) {
 
 
 // Stats of an instance controller
-northPoll.controller("statsInstanceController", function ($scope, $http, ActualInstanceOfPoll, mySocket) {
-
-  // mySocket is actually not used, it will be in the third phase
+northPoll.controller("statsInstanceController", function ($scope, $http, mySocket, $stateParams) {
 
   // Fetch names of actual instance and poll
-  $scope.instanceName = ActualInstanceOfPoll.instance.name;
-  $scope.pollName = ActualInstanceOfPoll.poll.name;
+  $scope.instanceId = $stateParams.instId;
+  $scope.pollId = $stateParams.pollId;
 
-  $scope.questions = [];
+  $http.get("/api/polls/" + $scope.pollId).then(function(response) {
+    $scope.pollName = response.data.name;
 
-  // http request to get all questions in the selected poll
-  $http.get("/api/polls/" + ActualInstanceOfPoll.poll.id + "/questions").then(function (response) {
-
-    // Iterate on questions
-    response.data.questions.forEach(function (question, idxQuest, arrResp) {
-
-      var nbChoices = 0; // Total number of choices
-
-      // Creation of an object
-      $scope.questions.push({
-        nb_answers: null,
-        question_text: question.text,
-        labels: [],
-        data: [],
-        percentage: []
-      });
-
-      // http request to get results of the actual question in the actual instance
-      $http.get(
-        "/api/polls/" + ActualInstanceOfPoll.poll.id +
-        "/instances/" + ActualInstanceOfPoll.instance.id +
-        "/results/questions/" + question.id
-      )
-        .then(function (response) {
-
-          // Complete number of answers in the object of the array questions
-          $scope.questions[idxQuest].nb_answers = response.data.nb_answers;
-
-          // Iterate on every choice in the question of the actual instance
-          response.data.results.forEach(function (choice, idx, arr) {
-
-            // Complete choice's field in the object of the array questions
-            $scope.questions[idxQuest].labels.push(choice.text);
-            $scope.questions[idxQuest].data.push(choice.nb_chosen);
-
-            nbChoices += choice.nb_chosen; // Increment total number of choices
-
-            // Push the partial percentage, we'll divide later when we'll have the total number of choices
-            $scope.questions[idxQuest].percentage.push(choice.nb_chosen * 100);
-
-            // Ensure that this is the latest iteration
-            if (idxQuest === arrResp.length - 1 && idx === arr.length - 1) {
-              $scope.questions.forEach(function (question, idx, arr) {
-                question.percentage.forEach(function (percentageChoice, idx, arr) {
-                  // Divide each partial percentage to have correct percentage
-                  question.percentage[idx] = percentageChoice / nbChoices;
-                });
-              });
-            }
-          });
-        });
+    $http.get("/api/polls/" + $scope.pollId + "/instances/" + $scope.instanceId).then(function(response) {
+      $scope.instanceName = response.data.name;
+      $scope.everthingsVerified();
+    }, function(response) {
+      $scope.pollName = response.data;
     });
+
+  }, function(response) {
+    $scope.pollName = response.data;
   });
 
-  mySocket.forward('updateChart', $scope);
+  // Continue if everthings is verified
+  $scope.everthingsVerified = function() {
 
-  $scope.$on('socket:updateChart', function (ev, data) {
-    if (data[0].question === $scope.questions[0].question_text) {
-      console.log("C'est pareil je mets a jour");
-      $scope.questions.forEach(function (question, idx, arr) {
-        question.nb_answers = question.nb_answers + data[idx].choices.length;
+    $scope.questions = [];
 
-        data[idx].choices.forEach(function (choice, idx, arr) {
-          question.labels.some(function (label, idxScp, arrScp) {
-            if (label === choice) {
-              question.data[idxScp]++;
-              return true;
+    // http request to get all questions in the selected poll
+    $http.get("/api/polls/" + $scope.pollId + "/questions").then(function (response) {
+
+      // Iterate on questions
+      response.data.questions.forEach(function (question, idxQuest, arrResp) {
+
+        var nbChoices = 0; // Total number of choices
+
+        // Creation of an object
+        $scope.questions.push({
+          nb_answers: null,
+          question_text: question.text,
+          labels: [],
+          data: [],
+          percentage: []
+        });
+
+        $scope.calculatePercentageForQuestion = function (question, idQuest) {
+          question.percentage.forEach(function (percentageChoice, idx, arr) {
+            question.percentage[idx] = question.data[idx] / question.nb_answers * 100;
+            if (idx === arr.length - 1) {
+              $scope.questions[idQuest] = question;
+            }
+          });
+        }
+
+        // http request to get results of the actual question in the actual instance
+        $http.get(
+          "/api/polls/" + $scope.pollId +
+          "/instances/" + $scope.instanceId +
+          "/results/questions/" + question.id
+        )
+          .then(function (response) {
+
+            // Complete number of answers in the object of the array questions
+            $scope.questions[idxQuest].nb_answers = response.data.nb_answers;
+
+            // Iterate on every choice in the question of the actual instance
+            response.data.results.forEach(function (choice, idx, arr) {
+
+              // Complete choice's field in the object of the array questions
+              $scope.questions[idxQuest].labels.push(choice.text);
+              $scope.questions[idxQuest].data.push(choice.nb_chosen);
+
+              nbChoices += choice.nb_chosen; // Increment total number of choices
+
+              // Push the partial percentage, we'll divide later when we'll have the total number of choices
+              $scope.questions[idxQuest].percentage.push(-1);
+
+              // Ensure that this is the latest iteration
+              if (idxQuest === arrResp.length - 1 && idx === arr.length - 1) {
+                $scope.questions.forEach(function (question, idx, arr) {
+                  $scope.calculatePercentageForQuestion(question, idx);
+                });
+              }
+            });
+          });
+      });
+    });
+
+    mySocket.forward('updateChart', $scope);
+
+    $scope.$on('socket:updateChart', function (ev, data) {
+      if (data[0].question === $scope.questions[0].question_text) {
+        console.log("C'est pareil je mets a jour");
+        $scope.questions.forEach(function (question, idxQuest, arr) {
+          question.nb_answers = question.nb_answers + data[idxQuest].choices.length;
+
+          data[idxQuest].choices.forEach(function (choice, idx, arr) {
+            question.labels.some(function (label, idxScp, arrScp) {
+              if (label === choice) {
+                question.data[idxScp]++;
+                return true;
+              }
+            });
+            if (idx === arr.length - 1) {
+              $scope.calculatePercentageForQuestion(question, idxQuest);
+              /*question.percentage.forEach(function (percentageChoice, idx, arr) {
+               question.percentage[idx] = question.data[idx] / question.nb_answers * 100;
+               });*/
             }
           });
         });
-
-        console.log($scope.questions[0].data);
-      });
-    }
-  });
+      }
+    });
+  }
 });
 
 // List of polls controller
-northPoll.controller("pollsController", function ($scope, $http, ActualInstanceOfPoll) {
+northPoll.controller("pollsController", function ($scope, $http, $stateParams, $uibModal) {
 
-  // Setter for the factory ActualInstanceOfPoll
-  $scope.setActualInstanceOfPoll = function (inst, poll) {
-    ActualInstanceOfPoll.instance = inst;
-    ActualInstanceOfPoll.poll = poll;
-  }
-
-  // Function called when we click on particpate button
-  $scope.participateInInstance = function (instance, poll) {
-    $scope.setActualInstanceOfPoll(instance, poll);
-  }
-
-  // Function called when we click on stats button
-  $scope.statsOfAnInstance = function (instance, poll) {
-    $scope.setActualInstanceOfPoll(instance, poll);
-  }
+  $scope.showModal = false;
 
   $scope.polls = [];
 
@@ -185,6 +196,50 @@ northPoll.controller("pollsController", function ($scope, $http, ActualInstanceO
       });
     });
   });
+
+  $scope.openModal = function (pass) {
+    var modalInstance = $uibModal.open({
+      size: 'sm',
+      templateUrl: 'views/partials/modalPassword.jade',
+      controller: 'ModalInstanceCtrl',
+      resolve: {
+        passRequired: function () {
+          return pass;
+        }
+      }
+    });
+  };
+
+});
+
+northPoll.controller("ModalInstanceCtrl", function($scope, $uibModalInstance, passRequired, $uibModal) {
+  $scope.passRequired = passRequired;
+  $scope.ok = function () {
+    if($scope.pass === passRequired) {
+      // OKKKKKKKKKKK
+      $uibModalInstance.close('ok');
+    } else {
+      // Password failed
+      var modalInstance = $uibModal.open({
+        templateUrl: 'views/partials/modalErrorPassword.jade',
+        controller: 'ErrorPasswordCtrl',
+        backdrop: true,
+        keyboard: true,
+        backdropClick: true,
+        size: 'lg'
+      });
+    }
+  };
+
+  $scope.cancel = function () {
+    $uibModalInstance.dismiss('cancel');
+  };
+});
+
+northPoll.controller("ErrorPasswordCtrl", function($scope, $uibModalInstance) {
+  $scope.close = function(){
+    $uibModalInstance.close();
+  };
 });
 
 /* This angular controller is used in the creation and modificaation process of
@@ -318,7 +373,10 @@ northPoll.controller("PollController", function ($scope, $http) {
 });
 
 // This angular controller will handle the response process. It is responsible of everything related to the answer fragment of the page.
-northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll, mySocket) {
+northPoll.controller("AnswerCtrl", function ($scope, $http, mySocket, $stateParams) {
+
+  console.log("stat");
+  console.log($stateParams);
 
   // This function handles the click on a choice
   $scope.select = function (choice) {
@@ -404,8 +462,8 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, ActualInstanceOfPoll
   }
 
   // initialization, we need to get all the question of the selected choice, so we proceed an HTTP request to get them
-  $scope.pollid = ActualInstanceOfPoll.poll.id;
-  $scope.instanceid = ActualInstanceOfPoll.instance.id;
+  $scope.pollid = $stateParams.pollId;
+  $scope.instanceid = $stateParams.instId;
 
   $http({
     url: "/api/polls/" + $scope.pollid + "/questions",
