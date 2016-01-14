@@ -59,6 +59,10 @@ northPoll.controller("statsInstanceController", function ($scope, $http, mySocke
 
   $http.get("/api/polls/" + $scope.pollId).then(function(response) {
     $scope.pollName = response.data.name;
+    if(response.data.public_results === false) {
+      $scope.pollName = "Stats are private";
+      return;
+    }
 
     $http.get("/api/polls/" + $scope.pollId + "/instances/" + $scope.instanceId).then(function(response) {
       $scope.instanceName = response.data.name;
@@ -197,7 +201,7 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
     });
   });
 
-  $scope.openModal = function (pass) {
+  $scope.openModal = function (pass, pollId, instId) {
     var modalInstance = $uibModal.open({
       size: 'sm',
       templateUrl: 'views/partials/modalPassword.jade',
@@ -205,6 +209,12 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
       resolve: {
         passRequired: function () {
           return pass;
+        },
+        pollId: function () {
+          return pollId;
+        },
+        instId: function () {
+          return instId;
         }
       }
     });
@@ -212,12 +222,11 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
 
 });
 
-northPoll.controller("ModalInstanceCtrl", function($scope, $uibModalInstance, passRequired, $uibModal) {
-  $scope.passRequired = passRequired;
+northPoll.controller("ModalInstanceCtrl", function($scope, $uibModalInstance, passRequired, pollId, instId, $uibModal, $state) {
   $scope.ok = function () {
     if($scope.pass === passRequired) {
-      // OKKKKKKKKKKK
       $uibModalInstance.close('ok');
+      $state.go('answerInstancePoll', {instId:instId, pollId:pollId});
     } else {
       // Password failed
       var modalInstance = $uibModal.open({
@@ -374,9 +383,6 @@ northPoll.controller("PollController", function ($scope, $http) {
 
 // This angular controller will handle the response process. It is responsible of everything related to the answer fragment of the page.
 northPoll.controller("AnswerCtrl", function ($scope, $http, mySocket, $stateParams) {
-
-  console.log("stat");
-  console.log($stateParams);
 
   // This function handles the click on a choice
   $scope.select = function (choice) {
