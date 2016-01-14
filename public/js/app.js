@@ -22,12 +22,11 @@ northPoll.config(function ($stateProvider) {
   $stateProvider.state('createPoll', {
     templateUrl: 'views/partials/create_poll.jade',
     url: '/createPoll'
+  });
+  $stateProvider.state('editPoll', {
+    templateUrl: 'views/partials/create_poll.jade',
+    url: '/editPoll/:pollId'
   })
-});
-
-// This factory is used to transmit between controllers an object which contain the object instance and his linked poll
-northPoll.factory('ActualInstanceOfPoll', function () {
-  return {instance: '', poll: ''};
 });
 
 // This factory is necessary to use socket.io in our controllers
@@ -57,26 +56,26 @@ northPoll.controller("statsInstanceController", function ($scope, $http, mySocke
   $scope.instanceId = $stateParams.instId;
   $scope.pollId = $stateParams.pollId;
 
-  $http.get("/api/polls/" + $scope.pollId).then(function(response) {
+  $http.get("/api/polls/" + $scope.pollId).then(function (response) {
     $scope.pollName = response.data.name;
-    if(response.data.public_results === false) {
+    if (response.data.public_results === false) {
       $scope.pollName = "Stats are private";
       return;
     }
 
-    $http.get("/api/polls/" + $scope.pollId + "/instances/" + $scope.instanceId).then(function(response) {
+    $http.get("/api/polls/" + $scope.pollId + "/instances/" + $scope.instanceId).then(function (response) {
       $scope.instanceName = response.data.name;
       $scope.everthingsVerified();
-    }, function(response) {
+    }, function (response) {
       $scope.pollName = response.data;
     });
 
-  }, function(response) {
+  }, function (response) {
     $scope.pollName = response.data;
   });
 
   // Continue if everthings is verified
-  $scope.everthingsVerified = function() {
+  $scope.everthingsVerified = function () {
 
     $scope.questions = [];
 
@@ -201,7 +200,7 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
     });
   });
 
-  $scope.openModal = function (pass, pollId, instId) {
+  $scope.openModal = function (pass, pollId, instId, action) {
     var modalInstance = $uibModal.open({
       size: 'sm',
       templateUrl: 'views/partials/modalPassword.jade',
@@ -215,6 +214,9 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
         },
         instId: function () {
           return instId;
+        },
+        action: function () {
+          return action;
         }
       }
     });
@@ -222,11 +224,12 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
 
 });
 
-northPoll.controller("ModalInstanceCtrl", function($scope, $uibModalInstance, passRequired, pollId, instId, $uibModal, $state) {
+northPoll.controller("ModalInstanceCtrl", function ($scope, $uibModalInstance, passRequired, pollId,
+                                                    instId, $uibModal, $state, action) {
   $scope.ok = function () {
-    if($scope.pass === passRequired) {
+    if ($scope.pass === passRequired) {
       $uibModalInstance.close('ok');
-      $state.go('answerInstancePoll', {instId:instId, pollId:pollId});
+      $state.go(action, {instId: instId, pollId: pollId});
     } else {
       // Password failed
       var modalInstance = $uibModal.open({
@@ -245,8 +248,8 @@ northPoll.controller("ModalInstanceCtrl", function($scope, $uibModalInstance, pa
   };
 });
 
-northPoll.controller("ErrorPasswordCtrl", function($scope, $uibModalInstance) {
-  $scope.close = function(){
+northPoll.controller("ErrorPasswordCtrl", function ($scope, $uibModalInstance) {
+  $scope.close = function () {
     $uibModalInstance.close();
   };
 });
@@ -254,9 +257,23 @@ northPoll.controller("ErrorPasswordCtrl", function($scope, $uibModalInstance) {
 /* This angular controller is used in the creation and modificaation process of
  a poll. For now only the creation process is done. The update process will have
  to wait for the next step.*/
-northPoll.controller("PollController", function ($scope, $http) {
+northPoll.controller("PollController", function ($scope, $http, $state, $stateParams) {
 
   $scope.pollActionString = "Créer le sondage";
+
+  if ($state.current.name === "editPoll") {
+    $scope.pollActionString = "Modifier le sondage";
+
+    $http.get("/api/polls/" + $stateParams.pollId).then(function (response) {
+      $scope.pollName = response.data.name;
+      $scope.adminName = response.data.creator;
+      $scope.adminPassword = response.data.admin_password;
+      $scope.userPassword = response.data.user_password;
+      $scope.isPublic = response.data.public_results;
+      console.log("Passer");
+    });
+  }
+
   $scope.pollActionDisabled = false;
   $scope.formVisible = true;
   $scope.questionVisible = false;
