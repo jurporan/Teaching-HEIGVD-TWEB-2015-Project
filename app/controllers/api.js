@@ -19,7 +19,7 @@ function getPollById(id, callback, passRequired, pass) {
     response.creator = poll.creator;
     response.creation_date = poll.creationDate;
     response.state = poll.state;
-    if(passRequired) {
+    if (passRequired) {
       response.admin_password = poll.admin_password;
       response.user_password = poll.user_password;
     }
@@ -150,8 +150,7 @@ router.get('/polls/:pollid', function (req, res) {
 
   if (req.params.pollid === 'draft' ||
     req.params.pollid === 'open' ||
-    req.params.pollid === 'closed')
-  {
+    req.params.pollid === 'closed') {
     response.polls = [];
     // We search for every poll in the state :type
     Poll.find({state: req.params.pollid}, function (err, polls) {
@@ -185,21 +184,31 @@ router.get('/polls/:pollid', function (req, res) {
       });
     });
   } else {
+    var noPass = req.query.noPass;
+    if (noPass) {
 
-    var pass = req.query.pass;
-    if(pass === undefined) {
-      return res.status(401).send("You must specify a password to access to this ressource.");
+      getPollById(req.params.pollid, function (err, poll) {
+        if (err) return res.status(500).send(err.reason);
+
+        res.format({
+          'application/json': function () {
+            res.send(poll);
+          }
+        });
+      }, false);
+
+    } else {
+
+      getPollById(req.params.pollid, function (err, poll) {
+        if (err) return res.status(500).send(err.reason);
+
+        res.format({
+          'application/json': function () {
+            res.send(poll);
+          }
+        });
+      }, true, pass);
     }
-
-    getPollById(req.params.pollid, function (err, poll) {
-      if (err) return res.status(500).send(err.reason);
-
-      res.format({
-        'application/json': function () {
-          res.send(poll);
-        }
-      });
-    }, true, pass);
   }
 
   /*Poll.findById(req.params.pollid, function (err, poll) {

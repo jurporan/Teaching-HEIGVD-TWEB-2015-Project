@@ -65,7 +65,7 @@ northPoll.controller("statsInstanceController", function ($scope, $http, mySocke
   $scope.instanceId = $stateParams.instId;
   $scope.pollId = $stateParams.pollId;
 
-  $http.get("/api/polls/" + $scope.pollId).then(function (response) {
+  $http.get("/api/polls/" + $scope.pollId + "?noPass=true").then(function (response) {
     $scope.pollName = response.data.name;
     if (response.data.public_results === false) {
       $scope.pollName = "Stats are private";
