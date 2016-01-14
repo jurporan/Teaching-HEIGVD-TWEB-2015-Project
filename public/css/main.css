@@ -363,3 +363,8 @@ ul.nostyle i {
 cursor: pointer;
 background-color: rgba(0, 145, 255, 0.15);
 }
+
+.deleteInstance
+{
+color: #ffffff;
+}

@@ -417,6 +417,13 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       alert("Erreur lors de l'envoi");
     });
   }
+  
+  $scope.deleteInstance = function(id) {
+      //
+  }
+  
+  $scope.instances = [{name: "hello", id: 3}, {name: "hello", id: 5}];
+  //$scope.instances = [];
 });
 
 // This angular controller will handle the response process. It is responsible of everything related to the answer fragment of the page.
