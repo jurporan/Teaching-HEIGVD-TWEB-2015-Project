@@ -209,11 +209,24 @@ northPoll.controller("PollController", function ($scope, $http) {
       }).error(function (data, status, headers, config) {
         alert("Erreur lors de l'envoi");
       });
-    }
+  }
 
     else {
       // TODO : Update form
     }
+  }
+
+  /* We remove the poll. */
+  $scope.deletePoll = function () {
+      $http({
+          url : "/api/polls/" + $scope.pollId,
+          method: "DELETE",
+          data: {}
+      }).success(function (data, status, headers, config) {
+          alert("Le sondage a été supprimé.");
+      }).error(function (data, status, headers, config) {
+          alert("Le sondage n'a pas put être supprimé.")
+      });
   }
 
   /* When the user wishes to add questions to the poll, we change the view to
