@@ -7,14 +7,14 @@ var northPoll = angular.module('northPoll', [
 
 // Ui-router
 northPoll.config(function ($stateProvider, $urlRouterProvider) {
-	
+
 	$urlRouterProvider.otherwise('/');
-	
+
   $stateProvider.state('welcome', {
     templateUrl: 'views/partials/welcome.jade',
     url: '/'
   });
-  
+
   $stateProvider.state('listPolls', {
     templateUrl: 'views/partials/polls.jade',
     url: '/polls'
@@ -33,7 +33,7 @@ northPoll.config(function ($stateProvider, $urlRouterProvider) {
   });
   $stateProvider.state('editPoll', {
     templateUrl: 'views/partials/create_poll.jade',
-    url: '/editPoll/:pollId'
+    url: '/editPoll/:pollId?pass'
   })
 });
 
@@ -208,15 +208,12 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
     });
   });
 
-  $scope.openModal = function (pass, pollId, instId, action) {
+  $scope.openModal = function (pollId, instId, action) {
     var modalInstance = $uibModal.open({
       size: 'sm',
       templateUrl: 'views/partials/modalPassword.jade',
       controller: 'ModalInstanceCtrl',
       resolve: {
-        passRequired: function () {
-          return pass;
-        },
         pollId: function () {
           return pollId;
         },
@@ -232,14 +229,13 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
 
 });
 
-northPoll.controller("ModalInstanceCtrl", function ($scope, $uibModalInstance, passRequired, pollId,
+northPoll.controller("ModalInstanceCtrl", function ($scope, $uibModalInstance, pollId, $http,
                                                     instId, $uibModal, $state, action) {
   $scope.ok = function () {
-    if ($scope.pass === passRequired) {
+    $http.get("/api/polls/" + pollId + "?pass=" + $scope.pass).then(function (response) {
       $uibModalInstance.close('ok');
-      $state.go(action, {instId: instId, pollId: pollId});
-    } else {
-      // Password failed
+      $state.go(action, {instId: instId, pollId: pollId, pass:$scope.pass});
+    },function(response) {
       var modalInstance = $uibModal.open({
         templateUrl: 'views/partials/modalErrorPassword.jade',
         controller: 'ErrorPasswordCtrl',
@@ -248,7 +244,14 @@ northPoll.controller("ModalInstanceCtrl", function ($scope, $uibModalInstance, p
         backdropClick: true,
         size: 'lg'
       });
-    }
+    });
+    /*if ($scope.pass === passRequired) {
+      $uibModalInstance.close('ok');
+      $state.go(action, {instId: instId, pollId: pollId});
+    } else {
+      // Password failed
+
+    }*/
   };
 
   $scope.cancel = function () {
@@ -265,20 +268,30 @@ northPoll.controller("ErrorPasswordCtrl", function ($scope, $uibModalInstance) {
 /* This angular controller is used in the creation and modificaation process of
  a poll. For now only the creation process is done. The update process will have
  to wait for the next step.*/
-northPoll.controller("PollController", function ($scope, $http, $state, $stateParams) {
+northPoll.controller("PollController", function ($scope, $http, $state, $stateParams, $uibModal) {
 
   $scope.pollActionString = "Créer le sondage";
 
   if ($state.current.name === "editPoll") {
     $scope.pollActionString = "Modifier le sondage";
 
-    $http.get("/api/polls/" + $stateParams.pollId).then(function (response) {
+    $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass).then(function (response) {
       $scope.pollName = response.data.name;
       $scope.adminName = response.data.creator;
       $scope.adminPassword = response.data.admin_password;
       $scope.userPassword = response.data.user_password;
       $scope.isPublic = response.data.public_results;
       console.log("Passer");
+    }, function() {
+      var modalInstance = $uibModal.open({
+        templateUrl: 'views/partials/modalErrorPassword.jade',
+        controller: 'ErrorPasswordCtrl',
+        backdrop: true,
+        keyboard: true,
+        backdropClick: true,
+        size: 'lg'
+      });
+      $state.go('listPolls');
     });
   }
 
