@@ -6,10 +6,18 @@ var northPoll = angular.module('northPoll', [
 ]);
 
 // Ui-router
-northPoll.config(function ($stateProvider) {
+northPoll.config(function ($stateProvider, $urlRouterProvider) {
+	
+	$urlRouterProvider.otherwise('/');
+	
+  $stateProvider.state('welcome', {
+    templateUrl: 'views/partials/welcome.jade',
+    url: '/'
+  });
+  
   $stateProvider.state('listPolls', {
     templateUrl: 'views/partials/polls.jade',
-    url: '/'
+    url: '/polls'
   });
   $stateProvider.state('answerInstancePoll', {
     templateUrl: 'views/partials/answer.jade',
