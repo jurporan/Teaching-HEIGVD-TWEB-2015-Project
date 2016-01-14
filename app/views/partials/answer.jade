@@ -7,6 +7,6 @@ section
           h4{{ question.text }}
           span.label.label-info (Question {{ (optional ? "optionnelle" : "obligatoire") }}, {{ question.choices_available }} réponses possibles)
           ul.list-group
-            li.list-group-item(ng-repeat="choice in question.choices" ng-click="select(choice)" ng-class="{'list-group-item-success' : choice.selected != undefined && choice.selected}") {{ choice.text }}
+            li.choice.list-group-item(ng-repeat="choice in question.choices" ng-click="select(choice)" ng-class="{'list-group-item-success' : choice.selected != undefined && choice.selected}") {{ choice.text }}
           span.btn.btn-primary(role="button", ng-click="previous()", ng-disabled="prevDisabled") Précédent
           span.btn.btn-primary(role="button", ng-click="next()", ng-disabled="nextDisabled") {{ nextOrSubmit }}
