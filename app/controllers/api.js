@@ -592,6 +592,15 @@ router.delete('/poll/:pollid/question/:questionid', function (req, res) {
   });
 });
 
+router.delete('/poll/:pollid/instances/:instanceid', function (req, res) {
+  Instance.remove({instance_id: req.params.instanceid}, function (err) {
+    if (err) res.status(500).send("Couldn't delete instance.");
+    Instance.findByIdAndRemove(req.params.instanceid, function (err) {
+      res.send();
+    });
+  });
+});
+
 router.delete('/poll/:pollid/question/:questionid/choice/:choiceid', function (req, res) {
   Choice.findByIdAndRemove(req.params.choiceid, function (err) {
     if (err)throw err;

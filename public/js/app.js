@@ -268,17 +268,28 @@ northPoll.controller("ErrorPasswordCtrl", function ($scope, $uibModalInstance) {
 northPoll.controller("PollController", function ($scope, $http, $state, $stateParams) {
 
   $scope.pollActionString = "Créer le sondage";
+  
+  /* The current pollID. When creating a new poll this is undefined and will be
+   set when the poll is posted.*/
+  $scope.pollId = "none";
+  
+  instances = [];
 
   if ($state.current.name === "editPoll") {
     $scope.pollActionString = "Modifier le sondage";
-
-    $http.get("/api/polls/" + $stateParams.pollId).then(function (response) {
+    $scope.pollId = $stateParams.pollId;
+    
+    $http.get("/api/polls/" + $scope.pollId).then(function (response) {
       $scope.pollName = response.data.name;
       $scope.adminName = response.data.creator;
       $scope.adminPassword = response.data.admin_password;
       $scope.userPassword = response.data.user_password;
       $scope.isPublic = response.data.public_results;
       console.log("Passer");
+    });
+    
+    $http.get("/api/polls/" + $scope.pollId + "/instances").then(function(response){
+      $scope.instances = response.data.instances;
     });
   }
 
@@ -299,10 +310,6 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.adminPasswordConfirmationValid = true;
   $scope.userPasswordValid = true;
   $scope.userPasswordConfirmationValid = true;
-
-  /* The current pollID. When creating a new poll this is undefined and will be
-   set when the poll is posted.*/
-  $scope.pollId = "none";
 
   /* If the user is creating  a poll, we post the new poll informations, in the other case we update the poll. The update is not implemented yet.*/
   $scope.pollAction = function () {
@@ -419,11 +426,10 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   }
   
   $scope.deleteInstance = function(id) {
-      //
+      $http.delete("/api/polls/" + $scope.pollId + "/instances/").then(function(response){
+      $scope.instances = response.data.instances;
+    });
   }
-  
-  $scope.instances = [{name: "hello", id: 3}, {name: "hello", id: 5}];
-  //$scope.instances = [];
 });
 
 // This angular controller will handle the response process. It is responsible of everything related to the answer fragment of the page.
