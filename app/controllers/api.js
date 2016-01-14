@@ -7,10 +7,13 @@ var express = require('express'),
   Instance = mongoose.model('Instance');
 
 // This function is useful to fetch a Poll object with just its ID
-function getPollById(id, callback) {
+function getPollById(id, callback, pass) {
   var response = {};
   Poll.findById(id, function (err, poll) {
     if (err) callback({reason: "Couldn't find the specified poll"}, null);
+    if (pass !== poll.admin_password) {
+      callback({reason: "You specify the wrong password"}, null);
+    }
     response.id = poll._id;
     response.name = poll.name;
     response.creator = poll.creator;
@@ -145,7 +148,8 @@ router.get('/polls/:pollid', function (req, res) {
 
   if (req.params.pollid === 'draft' ||
     req.params.pollid === 'open' ||
-    req.params.pollid === 'closed') {
+    req.params.pollid === 'closed')
+  {
     response.polls = [];
     // We search for every poll in the state :type
     Poll.find({state: req.params.pollid}, function (err, polls) {
@@ -176,8 +180,14 @@ router.get('/polls/:pollid', function (req, res) {
       });
     });
   } else {
-    getPollById(req.params.pollid, function (err, poll) {
-      if (err) return res.status(500).send("Couldn't found the specified poll");
+
+    var pass = req.query.pass;
+    if(pass === undefined) {
+      return res.status(401).send("You must specify a password to access to this ressource.");
+    }
+
+    getPollById(req.params.pollid, function (err, poll, pass) {
+      if (err) return res.status(500).send(err.reason);
 
       res.format({
         'application/json': function () {
