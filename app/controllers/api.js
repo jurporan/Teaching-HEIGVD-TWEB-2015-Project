@@ -17,6 +17,7 @@ function getPollById(id, callback) {
     response.creation_date = poll.creationDate;
     response.state = poll.state;
     response.admin_password = poll.admin_password;
+    response.user_password = poll.user_password;
     Question.count({poll_id: id}, function (err, nbQuestions) {
       if (err) callback({reason: "Couldn't count questions in the poll"}, null);
       response.nb_questions = nbQuestions;
