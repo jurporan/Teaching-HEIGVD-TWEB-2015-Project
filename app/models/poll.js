@@ -10,7 +10,8 @@ var PollSchema = new Schema({
   creator: String,
   admin_password: String,
   user_password: String,
-  state: String
+  state: String,
+  public_results: Boolean
 });
 
 mongoose.model('Poll', PollSchema);

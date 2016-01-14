@@ -12,17 +12,27 @@ body#home.homepage(ng-app='northPoll')
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          a.navbar-brand(ui-sref='listPolls')
+
+          a.navbar-brand(href='#main-slider')
+
             img(src='images/logo2.png', alt='logo')
         .collapse.navbar-collapse.navbar-right
           ul.nav.navbar-nav
             li.scroll
               a(ui-sref='listPolls') Sondages
             li.scroll
-              a(ui-sref='createPoll') Créer un sondage
 
-    // Div de contenu ui-router
-    div(ui-view)
-      include ./partials/polls.jade
+              a(href='#ask', ui-sref='createPoll') Créer un sondage
+            li.scroll
+              a(href='#about') A propos
+     
+    section#answer   
+      .container
+        .section-header
+          div(ui-view)
+        .row
 
-  include ./includes/footer.jade
+    include ./includes/footer.jade
+    
+  
+

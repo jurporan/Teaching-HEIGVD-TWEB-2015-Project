@@ -19,13 +19,7 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
-require('./config/express')(app, config);
-
-var questions = [];
-
-io.on('connection', function(socket) {
-  console.log("A user has connected");
-});
+require('./config/express')(app, config, io);
 
 server.listen(config.port, function () {
   console.log('Express server listening on port ' + config.port);

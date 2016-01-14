@@ -8,7 +8,7 @@ var bodyParser = require('body-parser');
 var compress = require('compression');
 var methodOverride = require('method-override');
 
-module.exports = function(app, config) {
+module.exports = function(app, config, io) {
   var env = process.env.NODE_ENV || 'development';
   app.locals.ENV = env;
   app.locals.ENV_DEVELOPMENT = env == 'development';
@@ -28,7 +28,7 @@ module.exports = function(app, config) {
 
   var controllers = glob.sync(config.root + '/app/controllers/*.js');
   controllers.forEach(function (controller) {
-    require(controller)(app);
+    require(controller)(app, io);
   });
 
   // Affichage des JADE correspondant
