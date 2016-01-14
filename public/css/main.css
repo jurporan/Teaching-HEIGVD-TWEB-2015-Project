@@ -358,3 +358,8 @@ ul.nostyle i {
   display: inline-block;
   margin: 0 7.5px;
 }
+.choice:hover
+{
+cursor: pointer;
+background-color: rgba(0, 145, 255, 0.15);
+}
