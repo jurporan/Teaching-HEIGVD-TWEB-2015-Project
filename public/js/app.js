@@ -291,6 +291,16 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.create = $state.current.name === "createPoll";
   $scope.edit = $state.current.name === "editPoll";
 
+  if (!$scope.edit)
+  {
+      alert ("Pouet");
+  }
+
+  if ($scope.create)
+  {
+      alert ("Fougère")
+  }
+
   /* The current pollID. When creating a new poll this is undefined and will be
    set when the poll is posted.*/
   $scope.pollId = "none";
@@ -426,7 +436,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.manageQuestions = function() {
     $state.go('manageQuestions', {pollId: $scope.pollId, pass: $scope.adminPassword});
   }
-  
+
   $scope.manageInstances = function() {
     $state.go('manageInstances', {pollId: $scope.pollId, pass: $scope.adminPassword});
   }
@@ -612,11 +622,11 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, mySocket, $statePara
 northPoll.controller("manageInstCtrl", function($scope, $http, $stateParams) {
     $scope.instances = [];
     $scope.pollId = $stateParams.pollId;
-    
+
   $http.get("/api/polls/" + $scope.pollId + "/instances").then(function(response){
       $scope.instances = response.data.instances;
     });
-    
+
   // Adds an instance to the poll.
   $scope.addInstance = function () {
     $http({
@@ -632,7 +642,7 @@ northPoll.controller("manageInstCtrl", function($scope, $http, $stateParams) {
       alert("Erreur lors de l'envoi");
     });
   }
-  
+
   $scope.deleteInstance = function(id) {
       $http({
       url: "/api/polls/" + $scope.pollId + "/instances/" + id,
