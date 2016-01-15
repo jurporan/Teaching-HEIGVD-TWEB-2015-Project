@@ -45,6 +45,7 @@ section
                           label
                               input(type='checkbox', ng-model='isPublic')
                               | Résultats publics
+
                 .form-group
                   .col-xs-offset-2.col-xs-10
                       span.btn.btn-primary#actionPoll(role='button', ng-show='create', ng-click="createPoll()") Créer un sondage
@@ -55,7 +56,7 @@ section
                   .col-xs-offset-2.col-xs-10
                       span.btn.btn-primary#createInstance(role='button', ng-disabled='!questionAdded', ng-click="instancesVisible = true") Lancer le sondage
                   .col-xs-offset-2.col-xs-10
-                      span.btn.btn-primary#createQuestion(role='button', ng-disabled='!questionAvailable', ng-click='createQuestion()') Créer questions
+                      span.btn.btn-primary#createQuestion(role='button', ng-disabled='!questionAvailable', ng-click='createQuestion()') Créer les questions
 
           form.form-horizontal(ng-show='instancesVisible')
               .form-group
