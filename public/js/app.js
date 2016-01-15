@@ -440,7 +440,9 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       method: "POST",
       data: {name: $scope.instanceName}
     }).success(function (data, status, headers, config) {
-      alert("Nouvelle instance créée");
+      $http.get("/api/polls/" + $scope.pollId + "/instances").then(function(response){
+      $scope.instances = response.data.instances;
+    });
     }).error(function (data, status, headers, config) {
       alert("Erreur lors de l'envoi");
     });
