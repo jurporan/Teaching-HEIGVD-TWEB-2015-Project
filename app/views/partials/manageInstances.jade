@@ -1,0 +1,21 @@
+div(ng-controller='manageInstCtrl')
+  h3.section-title.text-center.wow.fadeInDown Instances existantes
+  h4.text-center.wow.fadeInDown(ng-if="instances.length < 1") Aucune instance n'existe pour ce sondage
+  table.table.table-hover(ng-if="instances.length > 0")
+    thead
+      tr
+        th Nom
+        th Contrôles
+      tbody(ng-repeat='instance in instances')
+        tr.clicker
+          th {{ instance.name }}
+          td
+            span.btn.btn-danger.instance(role="button", ng-click="deleteInstance(instance.id)") Supprimer
+  form.form-horizontal
+      .form-group
+          label.control-label.col-xs-3 Nom de la nouvelle instance
+          .col-xs-6
+            input.form-control(type='text', placeholder='Nouvelle instance', ng-model='instanceName')
+          .col-xs-3
+            span.btn.btn-success.instance(role='button', ng-click="addInstance()") Ajouter une instance
+  span.btn.btn-primary(role='button', ng-click="backToPoll()") Retour au sondage

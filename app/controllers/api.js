@@ -7,18 +7,26 @@ var express = require('express'),
   Instance = mongoose.model('Instance');
 
 // This function is useful to fetch a Poll object with just its ID
-function getPollById(id, callback) {
+function getPollById(id, callback, passRequired, pass) {
   var response = {};
   Poll.findById(id, function (err, poll) {
     if (err) callback({reason: "Couldn't find the specified poll"}, null);
+    if (passRequired && pass !== poll.admin_password) {
+      return callback({reason: "You specify the wrong password"}, null);
+    }
     response.id = poll._id;
     response.name = poll.name;
     response.creator = poll.creator;
     response.creation_date = poll.creationDate;
     response.state = poll.state;
-    response.admin_password = poll.admin_password;
-    response.user_password = poll.user_password;
+
+    if (passRequired) {
+      response.admin_password = poll.admin_password;
+      response.user_password = poll.user_password;
+    }
+
     response.public_results = poll.public_results;
+
     Question.count({poll_id: id}, function (err, nbQuestions) {
       if (err) callback({reason: "Couldn't count questions in the poll"}, null);
       response.nb_questions = nbQuestions;
@@ -172,40 +180,35 @@ router.get('/polls/:pollid', function (req, res) {
               }
             });
           }
-        });
+        }, false);
       });
     });
   } else {
-    getPollById(req.params.pollid, function (err, poll) {
-      if (err) return res.status(500).send("Couldn't found the specified poll");
+    var noPass = req.query.noPass;
+    if (noPass) {
+      console.log("noPass");
+      getPollById(req.params.pollid, function (err, poll) {
+        if (err) return res.status(500).send(err.reason);
+        res.format({
+          'application/json': function () {
+            res.send(poll);
+          }
+        });
+      }, false);
 
-      res.format({
-        'application/json': function () {
-          res.send(poll);
-        }
-      });
-    });
+    } else {
+      var pass = req.query.pass;
+      getPollById(req.params.pollid, function (err, poll) {
+        if (err) return res.status(500).send(err.reason);
+
+        res.format({
+          'application/json': function () {
+            res.send(poll);
+          }
+        });
+      }, true, pass);
+    }
   }
-
-  /*Poll.findById(req.params.pollid, function (err, poll) {
-   console.log(err);
-   if (err) return res.status(500).send("Couldn't found the specified poll");
-   response.name = poll.name;
-   response.creator = poll.creator;
-   response.creation_date = poll.creationDate;
-   response.state = poll.state;
-   Question.count({poll_id: req.params.pollid}, function (err, nbQuestions) {
-   if (err) return res.status(500).send("Couldn't count questions in the poll");
-   response.nb_questions = nbQuestions;
-   Instance.count({poll_id: req.params.pollid}, function (err, nbInstances) {
-   if (err) return res.status(500).send("Couldn't count instances in the poll");
-   response.nb_instances = nbInstances;*/
-
-
-  /*});
-   });
-   });
-   });*/
 });
 
 router.get("/polls/:pollid/questions", function (req, res) {

@@ -2,12 +2,15 @@
 h2.section-title.text-center.wow.fadeInDown Gérer les questions
 
 form.form-horizontal(ng-controller='manageQuestsCtrl')
-  select.form-control
-    option(value='one') One
-    option(value='two') Two
-    option(value='three') Three
-    option(value='four') Four
-    option(value='five') Five
+  .form-group
+    select.form-control.col-md-6
+      option(value='one') One
+      option(value='two') Two
+      option(value='three') Three
+      option(value='four') Four
+      option(value='five') Five
+    label.col-md-1.text-center ou
+    span.btn.btn-primary.col-md-5(role='button', ng-click="") Créer une nouvelle question
   .form-group
     label.control-label.col-xs-2 Intitulé de la question
     .col-xs-10
