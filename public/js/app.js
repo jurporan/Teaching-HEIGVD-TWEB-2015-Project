@@ -275,6 +275,40 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.create = $state.current.name === "createPoll";
   $scope.edit = $state.current.name === "editPoll";
 
+  /* The current pollID. When creating a new poll this is undefined and will be
+   set when the poll is posted.*/
+  $scope.pollId = "none";
+
+  instances = [];
+
+  if ($state.current.name === "editPoll") {
+    $scope.pollActionString = "Modifier le sondage";
+    $scope.pollId = $stateParams.pollId;
+
+    $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass).then(function (response) {
+      $scope.pollName = response.data.name;
+      $scope.adminName = response.data.creator;
+      $scope.adminPassword = response.data.admin_password;
+      $scope.userPassword = response.data.user_password;
+      $scope.isPublic = response.data.public_results;
+      console.log("Passer");
+    }, function() {
+      var modalInstance = $uibModal.open({
+        templateUrl: 'views/partials/modalErrorPassword.jade',
+        controller: 'ErrorPasswordCtrl',
+        backdrop: true,
+        keyboard: true,
+        backdropClick: true,
+        size: 'lg'
+      });
+      $state.go('listPolls');
+    });
+
+    $http.get("/api/polls/" + $scope.pollId + "/instances").then(function(response){
+      $scope.instances = response.data.instances;
+    });
+  }
+
   $scope.formVisible = true;
   $scope.questionVisible = false;
   $scope.questionAvailable = false;
@@ -320,10 +354,6 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.userPasswordValid = true;
   $scope.userPasswordConfirmationValid = true;
 
-  /* The current pollID. When creating a new poll this is undefined and will be
-   set when the poll is posted.*/
-  $scope.pollId = "none";
-
   $scope.createPoll = function () {
 
       if($scope.pollName == null || $scope.pollName.length < 1)
@@ -356,6 +386,9 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
           alert("Certains champs du formulaire contiennent des erreurs");
           return;
       }
+
+  /* If the user is creating  a poll, we post the new poll informations, in the other case we update the poll. The update is not implemented yet.*/
+  $scope.pollAction = function () {
 
       $http({
         url: "/api/polls/",
@@ -484,6 +517,17 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       alert("Nouvelle instance créée");
     }).error(function (data, status, headers, config) {
       alert("Erreur lors de l'envoi");
+    });
+  }
+
+  $scope.deleteInstance = function(id) {
+      $http({
+      url: "/api/polls/" + $scope.pollId + "/instances/" + id,
+      method: "DELETE"
+    }).success(function (data, status, headers, config) {
+      //OK
+    }).error(function (data, status, headers, config) {
+      //
     });
   }
 });

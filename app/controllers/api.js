@@ -517,7 +517,7 @@ router.post('/polls/:pollid/instances/:instanceid/results', function (req, res) 
 
 // PUT requests handlers
 
-router.put('/poll/:pollid', function (req, res) {
+router.put('/polls/:pollid', function (req, res) {
   Poll.findOne({_id: req.params.pollid}, function (err, poll) {
     if (err) throw  err;
     poll.name = req.body.name;
@@ -530,7 +530,7 @@ router.put('/poll/:pollid', function (req, res) {
   });
 });
 
-router.put('/poll/:pollid/question/:questionid', function (req, res) {
+router.put('/polls/:pollid/questions/:questionid', function (req, res) {
   Poll.findOne({_id: req.params.pollid}, function (err, poll) {
     if (err) throw  err;
     poll.name = req.body.name;
@@ -543,7 +543,7 @@ router.put('/poll/:pollid/question/:questionid', function (req, res) {
   });
 });
 
-router.put('/poll/:pollid/question/:questionid/choice/:choiceid', function (req, res) {
+router.put('/polls/:pollid/questions/:questionid/choice/:choiceid', function (req, res) {
   Poll.findOne({_id: req.params.pollid}, function (err, poll) {
     if (err) throw  err;
     poll.name = req.body.name;
@@ -558,7 +558,7 @@ router.put('/poll/:pollid/question/:questionid/choice/:choiceid', function (req,
 
 // DELETE requests handler
 
-router.delete('/poll/:pollid', function (req, res) {
+router.delete('/polls/:pollid', function (req, res) {
   Poll.findById(req.params.pollid, function (err, poll) {
     poll.pre('remove', function (next) {
       Question.remove({poll_id: this._id}).exec();
@@ -568,7 +568,7 @@ router.delete('/poll/:pollid', function (req, res) {
   });
 });
 
-router.delete('/poll/:pollid/question/:questionid', function (req, res) {
+router.delete('/polls/:pollid/questions/:questionid', function (req, res) {
   Choice.remove({question_id: req.params.questionid}, function (err) {
     if (err) res.status(500).send("Couldn't delete choices.");
     Question.findByIdAndRemove(req.params.questionid, function (err) {
@@ -577,7 +577,16 @@ router.delete('/poll/:pollid/question/:questionid', function (req, res) {
   });
 });
 
-router.delete('/poll/:pollid/question/:questionid/choice/:choiceid', function (req, res) {
+router.delete('/polls/:pollid/instances/:instanceid', function (req, res) {
+  Instance.remove({instance_id: req.params.instanceid}, function (err) {
+    if (err) res.status(500).send("Couldn't delete instance.");
+    Instance.findByIdAndRemove(req.params.instanceid, function (err) {
+      res.send();
+    });
+  });
+});
+
+router.delete('/polls/:pollid/questions/:questionid/choice/:choiceid', function (req, res) {
   Choice.findByIdAndRemove(req.params.choiceid, function (err) {
     if (err)throw err;
   });
