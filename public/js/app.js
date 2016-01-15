@@ -441,7 +441,8 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   
   $scope.deleteInstance = function(id) {
       $http.delete("/api/polls/" + $scope.pollId + "/instances/").then(function(response){
-      $scope.instances = response.data.instances;
+      console.log(response);
+      // if(response.code == 200) {//virer l'instance}
     });
   }
 });
