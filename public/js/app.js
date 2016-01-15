@@ -291,16 +291,6 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.create = $state.current.name === "createPoll";
   $scope.edit = $state.current.name === "editPoll";
 
-  if (!$scope.edit)
-  {
-      alert ("Pouet");
-  }
-
-  if ($scope.create)
-  {
-      alert ("Fougère")
-  }
-
   /* The current pollID. When creating a new poll this is undefined and will be
    set when the poll is posted.*/
   $scope.pollId = "none";
