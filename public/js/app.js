@@ -1,5 +1,5 @@
 // Array Remove - By John Resig (MIT Licensed)
-Array.prototype.remove = function(from, to) {
+Array.prototype.remove = function (from, to) {
   var rest = this.slice((to || from) + 1 || this.length);
   this.length = from < 0 ? this.length + from : from;
   return this.push.apply(this, rest);
@@ -15,8 +15,8 @@ var northPoll = angular.module('northPoll', [
 // Ui-router
 northPoll.config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
-	//$locationProvider.html5Mode(true);
-	$urlRouterProvider.otherwise('/');
+  //$locationProvider.html5Mode(true);
+  $urlRouterProvider.otherwise('/');
 
   $stateProvider.state('welcome', {
     templateUrl: 'views/partials/welcome.jade',
@@ -64,12 +64,16 @@ northPoll.controller("carouselController", function ($scope, $state) {
 });
 
 // Stats of the app controller
-northPoll.controller("statsAppController", function ($http, $scope) {
+northPoll.controller("statsAppController", function ($http, $scope, $state) {
   $http.get("/api/polls/stats").then(function (response) {
     $scope.total = response.data.nb_total;
     $scope.recent = response.data.nb_recent;
     $scope.open = response.data.nb_open;
   });
+  
+  $scope.goToPolls = function() {
+      $state.go('listPolls');
+  };
 });
 
 
@@ -249,9 +253,11 @@ northPoll.controller("ModalInstanceCtrl", function ($scope, $uibModalInstance, p
                                                     instId, $uibModal, $state, action) {
   $scope.ok = function () {
     $http.get("/api/polls/" + pollId + "?pass=" + $scope.pass).then(function (response) {
+      console.log("here");
       $uibModalInstance.close('ok');
-      $state.go(action, {instId: instId, pollId: pollId, pass:$scope.pass});
-    },function(response) {
+      $state.go(action, {instId: instId, pollId: pollId, pass: $scope.pass});
+    }, function (response) {
+      console.log("dfasfd");
       var modalInstance = $uibModal.open({
         templateUrl: 'views/partials/modalErrorPassword.jade',
         controller: 'ErrorPasswordCtrl',
@@ -262,12 +268,12 @@ northPoll.controller("ModalInstanceCtrl", function ($scope, $uibModalInstance, p
       });
     });
     /*if ($scope.pass === passRequired) {
-      $uibModalInstance.close('ok');
-      $state.go(action, {instId: instId, pollId: pollId});
-    } else {
-      // Password failed
+     $uibModalInstance.close('ok');
+     $state.go(action, {instId: instId, pollId: pollId});
+     } else {
+     // Password failed
 
-    }*/
+     }*/
   };
 
   $scope.cancel = function () {
@@ -284,7 +290,7 @@ northPoll.controller("ErrorPasswordCtrl", function ($scope, $uibModalInstance) {
 /* This angular controller is used in the creation and modificaation process of
  a poll. For now only the creation process is done. The update process will have
  to wait for the next step.*/
-northPoll.controller("PollController", function ($scope, $http, $state, $stateParams, $uibModal){
+northPoll.controller("PollController", function ($scope, $http, $state, $stateParams, $uibModal) {
 
 
   $scope.actionString = "Créer le sondage";
@@ -306,30 +312,30 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.questionAdded = false;
 
   if ($scope.edit) {
-      $scope.actionString = "Modifier le sondage";
-      $scope.questionVisible = false;
-      $scope.questionAvailable = true;
-      $scope.deletePossible = true;
-      $scope.instancesVisible = true;
+    $scope.actionString = "Modifier le sondage";
+    $scope.questionVisible = false;
+    $scope.questionAvailable = true;
+    $scope.deletePossible = true;
+    $scope.instancesVisible = true;
 
-      $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass).then(function (response) {
-          $scope.pollName = response.data.name;
-          $scope.adminName = response.data.creator;
-          $scope.adminPassword = response.data.admin_password;
-          $scope.adminPasswordConfirmation = response.data.admin_password;
-          $scope.userPassword = response.data.user_password;
-          $scope.userPasswordConfirmation = response.data.user_password;
-          $scope.isPublic = response.data.public_results;
-          $scope.pollId = response.data.id;
-      },  function() {
-        var modalInstance = $uibModal.open({
-            templateUrl: 'views/partials/modalErrorPassword.jade',
-            controller: 'ErrorPasswordCtrl',
-            backdrop: true,
-            keyboard: true,
-            backdropClick: true,
-            size: 'lg'
-        });
+    $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass).then(function (response) {
+      $scope.pollName = response.data.name;
+      $scope.adminName = response.data.creator;
+      $scope.adminPassword = response.data.admin_password;
+      $scope.adminPasswordConfirmation = response.data.admin_password;
+      $scope.userPassword = response.data.user_password;
+      $scope.userPasswordConfirmation = response.data.user_password;
+      $scope.isPublic = response.data.public_results;
+      $scope.pollId = response.data.id;
+    }, function () {
+      var modalInstance = $uibModal.open({
+        templateUrl: 'views/partials/modalErrorPassword.jade',
+        controller: 'ErrorPasswordCtrl',
+        backdrop: true,
+        keyboard: true,
+        backdropClick: true,
+        size: 'lg'
+      });
       $state.go('listPolls');
     });
   }
@@ -345,85 +351,94 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
 
   $scope.createPoll = function () {
 
-      if($scope.pollName == null || $scope.pollName.length < 1)
-      { $scope.pollNameValid = false;}
-      else
-      { $scope.pollNameValid = true; }
+    if ($scope.pollName == null || $scope.pollName.length < 1) {
+      $scope.pollNameValid = false;
+    }
+    else {
+      $scope.pollNameValid = true;
+    }
 
-      if($scope.adminName == null || $scope.adminName.length < 1)
-      { $scope.adminNameValid = false}
-      else
-      { $scope.adminNameValid = true; }
+    if ($scope.adminName == null || $scope.adminName.length < 1) {
+      $scope.adminNameValid = false
+    }
+    else {
+      $scope.adminNameValid = true;
+    }
 
-      if($scope.adminPassword == null || $scope.adminPassword.length < 1)
-      { $scope.adminPasswordValid = false}
-      else
-      { $scope.adminPasswordValid = true; }
+    if ($scope.adminPassword == null || $scope.adminPassword.length < 1) {
+      $scope.adminPasswordValid = false
+    }
+    else {
+      $scope.adminPasswordValid = true;
+    }
 
-      if(!($scope.adminPassword === $scope.adminPasswordConfirmation))
-      { $scope.adminPasswordConfirmationValid = false}
-      else
-      { $scope.adminPasswordConfirmationValid = true; }
+    if (!($scope.adminPassword === $scope.adminPasswordConfirmation)) {
+      $scope.adminPasswordConfirmationValid = false
+    }
+    else {
+      $scope.adminPasswordConfirmationValid = true;
+    }
 
-      if(!($scope.userPassword === $scope.userPasswordConfirmation))
-      { $scope.userPasswordConfirmationValid = false}
-      else
-      { $scope.userPasswordConfirmationValid = true; }
+    if (!($scope.userPassword === $scope.userPasswordConfirmation)) {
+      $scope.userPasswordConfirmationValid = false
+    }
+    else {
+      $scope.userPasswordConfirmationValid = true;
+    }
 
-      if(!$scope.pollNameValid || !$scope.adminNameValid || !$scope.adminPasswordValid || !$scope.adminPasswordConfirmationValid || !$scope.userPasswordConfirmationValid)
-      {
-          alert("Certains champs du formulaire contiennent des erreurs");
-          return;
+    if (!$scope.pollNameValid || !$scope.adminNameValid || !$scope.adminPasswordValid || !$scope.adminPasswordConfirmationValid || !$scope.userPasswordConfirmationValid) {
+      alert("Certains champs du formulaire contiennent des erreurs");
+      return;
+    }
+
+    $http({
+      url: "/api/polls/",
+      method: "POST",
+      data: {
+        name: $scope.pollName,
+        creator: $scope.adminName,
+        admin_password: $scope.adminPassword,
+        user_password: $scope.userPassword,
+        public_results: $scope.isPublic
       }
+    }).success(function (data, status, headers, config) {
+      // We retrieve the pollId.
+      $scope.pollId = data.id;
+      // New actions are now available.
+      $scope.edit = true;
+      $scope.create = false;
+      $scope.questionAvailable = true;
+      $state.go("editPoll", {pollId: $scope.pollId, pass: $scope.adminPassword});
 
-      $http({
-        url: "/api/polls/",
-        method: "POST",
-        data: {
-          name: $scope.pollName,
-          creator: $scope.adminName,
-          admin_password: $scope.adminPassword,
-          user_password: $scope.userPassword,
-          public_results: $scope.isPublic
-        }
-      }).success(function (data, status, headers, config) {
-        // We retrieve the pollId.
-        $scope.pollId = data.id;
-        // New actions are now available.
-        $scope.edit= true;
-        $scope.create = false;
-        $scope.questionAvailable = true;
-        $state.go("editPoll", {pollId: $scope.pollId, pass: $scope.adminPassword});
-
-      }).error(function (data, status, headers, config) {
-        alert("Erreur lors de l'envoi");
-      });
+    }).error(function (data, status, headers, config) {
+      alert("Erreur lors de l'envoi");
+    });
   }
 
-  $scope.updatePoll = function (){
-      $http({
-        url: "/api/polls/",
-        method: "POST",
-        data: {
-          name: $scope.pollName,
-          creator: $scope.adminName,
-          admin_password: $scope.adminPassword,
-          user_password: $scope.userPassword,
-          public_results: $scope.isPublic
-        }
-      }).success(function (data, status, headers, config) {
-        // We retrieve the pollId.
-        $scope.pollId = data.id;
-        // New actions are now available.
-        $scope.edit= true;
-        $scope.create = false;
-        $scope.questionAvailable = true;
-      }).error(function (data, status, headers, config) {
-        alert("Erreur lors de l'envoi");
-      });
+  $scope.updatePoll = function () {
+    $http({
+      url: "/api/polls/",
+      method: "POST",
+      data: {
+        name: $scope.pollName,
+        creator: $scope.adminName,
+        admin_password: $scope.adminPassword,
+        user_password: $scope.userPassword,
+        public_results: $scope.isPublic
+      }
+    }).success(function (data, status, headers, config) {
+      // We retrieve the pollId.
+      $scope.pollId = data.id;
+      // New actions are now available.
+      $scope.edit = true;
+      $scope.create = false;
+      $scope.questionAvailable = true;
+    }).error(function (data, status, headers, config) {
+      alert("Erreur lors de l'envoi");
+    });
   }
 
-  $scope.manageQuestions = function() {
+  $scope.manageQuestions = function () {
     $state.go('manageQuestions', {pollId: $scope.pollId, pass: $scope.adminPassword});
   }
 
@@ -433,15 +448,15 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
 
   /* We remove the poll. */
   $scope.deletePoll = function () {
-      $http({
-          url : "/api/polls/" + $scope.pollId,
-          method: "DELETE",
-          data: {}
-      }).success(function (data, status, headers, config) {
-          alert("Le sondage a été supprimé.");
-      }).error(function (data, status, headers, config) {
-          alert("Le sondage n'a pas put être supprimé.")
-      });
+    $http({
+      url: "/api/polls/" + $scope.pollId,
+      method: "DELETE",
+      data: {}
+    }).success(function (data, status, headers, config) {
+      alert("Le sondage a été supprimé.");
+    }).error(function (data, status, headers, config) {
+      alert("Le sondage n'a pas put être supprimé.")
+    });
   }
 
   /* When the user wishes to add questions to the poll, we change the view to
@@ -502,8 +517,10 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   }
 });
 
-northPoll.controller("manageQuestsCtrl", function($scope, $stateParams) {
-  console.log("New Controller");
+northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams) {
+  $http.get("/api/polls/" + $stateParams.pollId + "/questions").then(function (response) {
+
+  });
 });
 
 // This angular controller will handle the response process. It is responsible of everything related to the answer fragment of the page.
@@ -609,7 +626,7 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, mySocket, $statePara
   });
 });
 
-northPoll.controller("manageInstCtrl", function($scope, $http, $stateParams) {
+northPoll.controller("manageInstCtrl", function($scope, $http, $state, $stateParams) {
     $scope.instances = [];
     $scope.pollId = $stateParams.pollId;
 
@@ -650,4 +667,8 @@ northPoll.controller("manageInstCtrl", function($scope, $http, $stateParams) {
       //
     });
   }
+  
+  $scope.backToPoll = function() {
+      $state.go('editPoll', {pollId: $scope.pollId, pass: $stateParams.pass});
+  };
 });
