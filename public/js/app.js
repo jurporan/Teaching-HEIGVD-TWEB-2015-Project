@@ -35,7 +35,11 @@ northPoll.config(function ($stateProvider, $urlRouterProvider, $locationProvider
   $stateProvider.state('editPoll', {
     templateUrl: 'views/partials/create_poll.jade',
     url: '/editPoll/:pollId?pass'
-  })
+  });
+  $stateProvider.state('manageQuestions', {
+    templateUrl: 'views/partials/manageQuestions.jade',
+    url: '/editPoll/:pollId/questions?pass'
+  });
 });
 
 // This factory is necessary to use socket.io in our controllers
@@ -273,6 +277,10 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
 
   $scope.pollActionString = "Créer le sondage";
 
+  /* The current pollID. When creating a new poll this is undefined and will be
+   set when the poll is posted.*/
+  $scope.pollId = "none";
+
   if ($state.current.name === "editPoll") {
     $scope.pollActionString = "Modifier le sondage";
 
@@ -282,6 +290,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       $scope.adminPassword = response.data.admin_password;
       $scope.userPassword = response.data.user_password;
       $scope.isPublic = response.data.public_results;
+      $scope.pollId = response.data.id;
       console.log("Passer");
     }, function() {
       var modalInstance = $uibModal.open({
@@ -314,10 +323,6 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.userPasswordValid = true;
   $scope.userPasswordConfirmationValid = true;
 
-  /* The current pollID. When creating a new poll this is undefined and will be
-   set when the poll is posted.*/
-  $scope.pollId = "none";
-
   /* If the user is creating  a poll, we post the new poll informations, in the other case we update the poll. The update is not implemented yet.*/
   $scope.pollAction = function () {
 
@@ -347,6 +352,10 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
     else {
       // TODO : Update form
     }
+  }
+
+  $scope.manageQuestions = function() {
+    $state.go('manageQuestions', {pollId: $scope.pollId, pass: $scope.adminPassword});
   }
 
   /* We remove the poll. */
@@ -431,6 +440,10 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       alert("Erreur lors de l'envoi");
     });
   }
+});
+
+northPoll.controller("manageQuestsCtrl", function($scope, $stateParams) {
+  console.log("New Controller");
 });
 
 // This angular controller will handle the response process. It is responsible of everything related to the answer fragment of the page.

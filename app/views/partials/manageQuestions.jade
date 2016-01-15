@@ -1,0 +1,54 @@
+// Created by jermoret on 15.01.2016.
+h2.section-title.text-center.wow.fadeInDown Gérer les questions
+
+form.form-horizontal(ng-controller='manageQuestsCtrl')
+  select.form-control
+    option(value='one') One
+    option(value='two') Two
+    option(value='three') Three
+    option(value='four') Four
+    option(value='five') Five
+  .form-group
+    label.control-label.col-xs-2 Intitulé de la question
+    .col-xs-10
+      input.form-control(type='text', placeholder='Intitulé', ng-model='questionText')
+  .form-group
+    label.control-label.col-xs-2(for='maxChoices') Nombre maximum de réponses
+    .col-xs-10
+      input#maxChoices.form-control(type='number', ng-model='maxChoices', max='choices.length > 0 ? choices.length : 1', min='1')
+  .form-group
+    .col-xs-offset-2.col-xs-10
+      .checkbox
+        label
+          input(type='checkbox', ng-model='isOptional')
+          | Question optionnelle
+  .form-group(ng-repeat='choice in choices')
+    label.control-label.col-xs-2 Intitulé de la réponse
+    .col-xs-10
+      input.form-control(type='text', ng-model='choice.text')
+      .checkbox
+        label
+          input(type='checkbox', ng-model='choice.correct')
+          | Choix correct
+  .form-group(ng-show='choices.length > 0')
+    .col-xs-offset-2.col-xs-10
+      span.btn.btn-primary#actionPoll(role='button', ng-click='choices.pop()') Supprimer un choix
+
+  .form-group
+    label.control-label.col-xs-2 Intitulé de la réponse
+    .col-xs-10
+      input.form-control(type='text', ng-model='choiceText', placeholder='Choix')
+      .checkbox
+        label
+          input(type='checkbox', ng-model='isCorrect')
+          | Choix correcte
+  .form-group
+    .col-xs-offset-2.col-xs-10
+      span.btn.btn-primary(role='button', ng-click="addChoice()") Ajouter un choix
+
+  .form-group
+    .col-xs-offset-2.col-xs-10
+      span.btn.btn-primary(role='button', ng-click="addQuestion()") Ajouter la question au sondage
+  .form-group
+    .col-xs-offset-2.col-xs-10
+      span.btn.btn-primary#actionPoll(role='button', ng-click="modifyPoll()") Retour au sondage
