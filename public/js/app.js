@@ -438,7 +438,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
     $state.go('manageQuestions', {pollId: $scope.pollId, pass: $scope.adminPassword});
   }
 
-  $scope.manageInstances = function() {
+  $scope.manageInstances = function () {
     $state.go('manageInstances', {pollId: $scope.pollId, pass: $scope.adminPassword});
   }
 
@@ -476,47 +476,70 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
    cause errors if they are not checked by the user. */
   $scope.isCorrect = false;
   $scope.isOptional = false;
+});
+
+northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http) {
+  $scope.questions = [];
+  $scope.choices = [{text: '', correct: false}];
+  $scope.modify = false;
+
+  $http.get("/api/polls/" + $stateParams.pollId + "/questions?pass=" + $stateParams.pass).then(function (response) {
+    $scope.questions = $scope.questions.concat(response.data.questions);
+  });
 
   // Add the choice in the lower part of the UI to the array and renitialize the fields.
   $scope.addChoice = function () {
-    $scope.choices.push({text: $scope.choiceText, correct: $scope.isCorrect});
-    $scope.choiceText = "";
-    $scope.isCorrect = false;
-    $scope.maxChoices = 1;
+    $scope.choices.push({text: '', correct: false});
+  }
+
+  $scope.selectChoice = function () {
+    $scope.modify = true;
+    $scope.questionText = $scope.select.text;
+    $scope.maxChoices = $scope.select.choices_available;
+    $scope.isOptional = $scope.select.optional;
+    $scope.choices = $scope.select.choices;
   }
 
   /* Add the question to the poll. If an error is encountered an alert is displayed.
    Upon success the fields are renitialized and an alret is also displayed. */
   $scope.addQuestion = function () {
-    $scope.choices.push({text: $scope.choiceText, correct: $scope.isCorrect});
-    $http({
-      url: "/api/polls/" + $scope.pollId + "/questions",
-      method: "POST",
-      data: {
+    $http.post("/api/polls/" + $stateParams.pollId + "/questions",
+      {
         text: $scope.questionText,
         choices_available: $scope.maxChoices,
         optional: $scope.isOptional,
         choices: $scope.choices
       }
-    }).success(function (data, status, headers, config) {
-      $scope.choices = [];
-      $scope.choiceText = "";
-      $scope.isCorrect = false;
-      $scope.isOptional = false;
-      $scope.maxChoices = 1;
-      $scope.questionText = "";
-      $scope.questionAdded = true;
-      alert("Question ajoutée");
-    }).error(function (data, status, headers, config) {
-      alert("Erreur lors de l'envoi");
-    });
+    ).then(function (response) {
+        $scope.questions = $scope.questions.concat(response.data.questions);
+      }, function(response) {
+        console.log(response);
+      });
   }
-});
 
-northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams) {
-  $http.get("/api/polls/" + $stateParams.pollId + "/questions").then(function (response) {
+  $scope.modifyQuestion = function () {
+    alert("Doesn't work yet, put in api not implemented");
+    /*
+    $http.put("/api/polls/" + $stateParams.pollId + "/questions",
+      {
+        text: $scope.questionText,
+        choices_available: $scope.maxChoices,
+        optional: $scope.isOptional,
+        choices: $scope.choices
+      }
+    ).then(function (response) {
+        $scope.questions = $scope.questions.concat(response.data.questions);
+      });*/
+  }
 
-  });
+  $scope.createNewQuestion = function() {
+    $scope.modify = false;
+    $scope.questionText = undefined;
+    $scope.maxChoices = undefined;
+    $scope.isOptional = undefined;
+    $scope.select = undefined;
+    $scope.choices = [{text: '', correct: false}];
+  }
 });
 
 // This angular controller will handle the response process. It is responsible of everything related to the answer fragment of the page.
@@ -622,13 +645,13 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, mySocket, $statePara
   });
 });
 
-northPoll.controller("manageInstCtrl", function($scope, $http, $stateParams) {
-    $scope.instances = [];
-    $scope.pollId = $stateParams.pollId;
+northPoll.controller("manageInstCtrl", function ($scope, $http, $stateParams) {
+  $scope.instances = [];
+  $scope.pollId = $stateParams.pollId;
 
-  $http.get("/api/polls/" + $scope.pollId + "/instances").then(function(response){
-      $scope.instances = response.data.instances;
-    });
+  $http.get("/api/polls/" + $scope.pollId + "/instances").then(function (response) {
+    $scope.instances = response.data.instances;
+  });
 
   // Adds an instance to the poll.
   $scope.addInstance = function () {
@@ -638,26 +661,24 @@ northPoll.controller("manageInstCtrl", function($scope, $http, $stateParams) {
       data: {name: $scope.instanceName}
     }).success(function (data, status, headers, config) {
       $scope.instanceName = "";
-      $http.get("/api/polls/" + $scope.pollId + "/instances").then(function(response){
-      $scope.instances = response.data.instances;
-    });
+      $http.get("/api/polls/" + $scope.pollId + "/instances").then(function (response) {
+        $scope.instances = response.data.instances;
+      });
     }).error(function (data, status, headers, config) {
       alert("Erreur lors de l'envoi");
     });
   }
 
-  $scope.deleteInstance = function(id) {
-      $http({
+  $scope.deleteInstance = function (id) {
+    $http({
       url: "/api/polls/" + $scope.pollId + "/instances/" + id,
       method: "DELETE"
     }).success(function (data, status, headers, config) {
-      for (i in $scope.instances)
-      {
-          if ($scope.instances[i].id === id)
-          {
-              $scope.instances.remove(i);
-              break;
-          }
+      for (i in $scope.instances) {
+        if ($scope.instances[i].id === id) {
+          $scope.instances.remove(i);
+          break;
+        }
       }
     }).error(function (data, status, headers, config) {
       //

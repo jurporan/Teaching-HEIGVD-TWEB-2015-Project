@@ -3,14 +3,9 @@ h2.section-title.text-center.wow.fadeInDown Gérer les questions
 
 form.form-horizontal(ng-controller='manageQuestsCtrl')
   .form-group
-    select.form-control.col-md-6
-      option(value='one') One
-      option(value='two') Two
-      option(value='three') Three
-      option(value='four') Four
-      option(value='five') Five
+    select.form-control.col-md-6(ng-change='selectChoice()', ng-model='select', ng-options="question as question.text for question in questions" )
     label.col-md-1.text-center ou
-    span.btn.btn-primary.col-md-5(role='button', ng-click="") Créer une nouvelle question
+    span.btn.btn-primary.col-md-5(role='button', ng-click='createNewQuestion()') Créer une nouvelle question
   .form-group
     label.control-label.col-xs-2 Intitulé de la question
     .col-xs-10
@@ -19,6 +14,7 @@ form.form-horizontal(ng-controller='manageQuestsCtrl')
     label.control-label.col-xs-2(for='maxChoices') Nombre maximum de réponses
     .col-xs-10
       input#maxChoices.form-control(type='number', ng-model='maxChoices', max='choices.length > 0 ? choices.length : 1', min='1')
+
   .form-group
     .col-xs-offset-2.col-xs-10
       .checkbox
@@ -33,25 +29,18 @@ form.form-horizontal(ng-controller='manageQuestsCtrl')
         label
           input(type='checkbox', ng-model='choice.correct')
           | Choix correct
+
   .form-group(ng-show='choices.length > 0')
     .col-xs-offset-2.col-xs-10
       span.btn.btn-primary#actionPoll(role='button', ng-click='choices.pop()') Supprimer un choix
-
-  .form-group
-    label.control-label.col-xs-2 Intitulé de la réponse
-    .col-xs-10
-      input.form-control(type='text', ng-model='choiceText', placeholder='Choix')
-      .checkbox
-        label
-          input(type='checkbox', ng-model='isCorrect')
-          | Choix correcte
   .form-group
     .col-xs-offset-2.col-xs-10
       span.btn.btn-primary(role='button', ng-click="addChoice()") Ajouter un choix
-
   .form-group
-    .col-xs-offset-2.col-xs-10
-      span.btn.btn-primary(role='button', ng-click="addQuestion()") Ajouter la question au sondage
-  .form-group
-    .col-xs-offset-2.col-xs-10
+    .col-xs-offset-2.col-xs-2
+      span.btn.btn-primary(role='button', ng-click="addQuestion()", ng-disabled='modify') Ajouter la question
+    .col-xs-2
+      span.btn.btn-primary(role='button', ng-click="modifyQuestion()", ng-disabled='!modify') Modifier la question
+    .col-xs-2
       span.btn.btn-primary#actionPoll(role='button', ng-click="modifyPoll()") Retour au sondage
+
