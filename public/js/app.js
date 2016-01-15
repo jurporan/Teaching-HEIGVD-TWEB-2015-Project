@@ -259,22 +259,10 @@ northPoll.controller("ErrorPasswordCtrl", function ($scope, $uibModalInstance) {
  to wait for the next step.*/
 northPoll.controller("PollController", function ($scope, $http, $state, $stateParams) {
 
-  $scope.pollActionString = "Créer le sondage";
+  $scope.actionString = "Créer le sondage";
+  $scope.create = $state.current.name === "createPoll";
+  $scope.edit = $state.current.name === "editPoll";
 
-  if ($state.current.name === "editPoll") {
-    $scope.pollActionString = "Modifier le sondage";
-
-    $http.get("/api/polls/" + $stateParams.pollId).then(function (response) {
-      $scope.pollName = response.data.name;
-      $scope.adminName = response.data.creator;
-      $scope.adminPassword = response.data.admin_password;
-      $scope.userPassword = response.data.user_password;
-      $scope.isPublic = response.data.public_results;
-      console.log("Passer");
-    });
-  }
-
-  $scope.pollActionDisabled = false;
   $scope.formVisible = true;
   $scope.questionVisible = false;
   $scope.questionAvailable = false;
@@ -282,6 +270,23 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.instancesVisible = false;
   $scope.isPublic = false;
   $scope.questionAdded = false;
+
+  if ($scope.edit) {
+      $scope.actionString = "Modifier le sondage";
+      $scope.questionVisible = false;
+      $scope.questionAvailable = true;
+      $scope.deletePossible = true;
+      $scope.instancesVisible = true;
+    $http.get("/api/polls/" + $stateParams.pollId).then(function (response) {
+      $scope.pollName = response.data.name;
+      $scope.adminName = response.data.creator;
+      $scope.adminPassword = response.data.admin_password;
+      $scope.adminPasswordConfirmation = response.data.admin_password;
+      $scope.userPassword = response.data.user_password;
+      $scope.userPasswordConfirmation = response.data.user_password;
+      $scope.isPublic = response.data.public_results;
+    });
+  }
 
   /* Variables use to indicate if the fields in the form are valid or not. By defautl they are. When the user tries to post the form we will check the validity and change those variable accordingly. Those verifications are not
    done yet.*/
@@ -296,10 +301,39 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
    set when the poll is posted.*/
   $scope.pollId = "none";
 
-  /* If the user is creating  a poll, we post the new poll informations, in the other case we update the poll. The update is not implemented yet.*/
-  $scope.pollAction = function () {
+  $scope.createPoll = function () {
 
-    if ($scope.pollActionString == "Créer le sondage") {
+      if($scope.pollName == null || $scope.pollName.length < 1)
+      { $scope.pollNameValid = false;}
+      else
+      { $scope.pollNameValid = true; }
+
+      if($scope.adminName == null || $scope.adminName.length < 1)
+      { $scope.adminNameValid = false}
+      else
+      { $scope.adminNameValid = true; }
+
+      if($scope.adminPassword == null || $scope.adminPassword.length < 1)
+      { $scope.adminPasswordValid = false}
+      else
+      { $scope.adminPasswordValid = true; }
+
+      if(!($scope.adminPassword === $scope.adminPasswordConfirmation))
+      { $scope.adminPasswordConfirmationValid = false}
+      else
+      { $scope.adminPasswordConfirmationValid = true; }
+
+      if(!($scope.userPassword === $scope.userPasswordConfirmation))
+      { $scope.userPasswordConfirmationValid = false}
+      else
+      { $scope.userPasswordConfirmationValid = true; }
+
+      if(!$scope.pollNameValid || !$scope.adminNameValid || !$scope.adminPasswordValid || !$scope.adminPasswordConfirmationValid || !$scope.userPasswordConfirmationValid)
+      {
+          alert("Certains champs du formulaire contiennent des erreurs");
+          return;
+      }
+
       $http({
         url: "/api/polls/",
         method: "POST",
@@ -314,17 +348,37 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
         // We retrieve the pollId.
         $scope.pollId = data.id;
         // New actions are now available.
-        $scope.pollActionString = "Appliquer les modifications";
-        $scope.pollActionDisabled = true;
+        $scope.edit= true;
+        $scope.create = false;
         $scope.questionAvailable = true;
+        $state.go("editPoll", {pollId: $scope.pollId});
+
       }).error(function (data, status, headers, config) {
         alert("Erreur lors de l'envoi");
       });
   }
 
-    else {
-      // TODO : Update form
-    }
+  $scope.updatePoll = function (){
+      $http({
+        url: "/api/polls/",
+        method: "POST",
+        data: {
+          name: $scope.pollName,
+          creator: $scope.adminName,
+          admin_password: $scope.adminPassword,
+          user_password: $scope.userPassword,
+          public_results: $scope.isPublic
+        }
+      }).success(function (data, status, headers, config) {
+        // We retrieve the pollId.
+        $scope.pollId = data.id;
+        // New actions are now available.
+        $scope.edit= true;
+        $scope.create = false;
+        $scope.questionAvailable = true;
+      }).error(function (data, status, headers, config) {
+        alert("Erreur lors de l'envoi");
+      });
   }
 
   /* We remove the poll. */
