@@ -671,4 +671,8 @@ northPoll.controller("manageInstCtrl", function($scope, $http, $state, $statePar
   $scope.backToPoll = function() {
       $state.go('editPoll', {pollId: $scope.pollId, pass: $stateParams.pass});
   };
+  
+  $scope.showResults = function(id) {
+      alert(id);
+  };
 });
