@@ -269,7 +269,8 @@ northPoll.controller("ErrorPasswordCtrl", function ($scope, $uibModalInstance) {
 /* This angular controller is used in the creation and modificaation process of
  a poll. For now only the creation process is done. The update process will have
  to wait for the next step.*/
-northPoll.controller("PollController", function ($scope, $http, $state, $stateParams, $uibModal) {
+northPoll.controller("PollController", function ($scope, $http, $state, $stateParams, $uibModal){
+
 
   $scope.actionString = "Créer le sondage";
   $scope.create = $state.current.name === "createPoll";
@@ -280,34 +281,6 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.pollId = "none";
 
   instances = [];
-
-  if ($state.current.name === "editPoll") {
-    $scope.pollActionString = "Modifier le sondage";
-    $scope.pollId = $stateParams.pollId;
-
-    $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass).then(function (response) {
-      $scope.pollName = response.data.name;
-      $scope.adminName = response.data.creator;
-      $scope.adminPassword = response.data.admin_password;
-      $scope.userPassword = response.data.user_password;
-      $scope.isPublic = response.data.public_results;
-      console.log("Passer");
-    }, function() {
-      var modalInstance = $uibModal.open({
-        templateUrl: 'views/partials/modalErrorPassword.jade',
-        controller: 'ErrorPasswordCtrl',
-        backdrop: true,
-        keyboard: true,
-        backdropClick: true,
-        size: 'lg'
-      });
-      $state.go('listPolls');
-    });
-
-    $http.get("/api/polls/" + $scope.pollId + "/instances").then(function(response){
-      $scope.instances = response.data.instances;
-    });
-  }
 
   $scope.formVisible = true;
   $scope.questionVisible = false;
@@ -342,6 +315,9 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
             size: 'lg'
         });
       $state.go('listPolls');
+    });
+    $http.get("/api/polls/" + $scope.pollId + "/instances").then(function(response){
+      $scope.instances = response.data.instances;
     });
   }
 
@@ -387,9 +363,6 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
           return;
       }
 
-  /* If the user is creating  a poll, we post the new poll informations, in the other case we update the poll. The update is not implemented yet.*/
-  $scope.pollAction = function () {
-
       $http({
         url: "/api/polls/",
         method: "POST",
@@ -407,7 +380,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
         $scope.edit= true;
         $scope.create = false;
         $scope.questionAvailable = true;
-        $state.go("editPoll", {pollId: $scope.pollId pass: $scope.adminPassword});
+        $state.go("editPoll", {pollId: $scope.pollId, pass: $scope.adminPassword});
 
       }).error(function (data, status, headers, config) {
         alert("Erreur lors de l'envoi");
