@@ -1,3 +1,10 @@
+// Array Remove - By John Resig (MIT Licensed)
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
+
 var northPoll = angular.module('northPoll', [
   'ui.router',
   'chart.js',
@@ -444,7 +451,14 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       url: "/api/polls/" + $scope.pollId + "/instances/" + id,
       method: "DELETE"
     }).success(function (data, status, headers, config) {
-      //OK
+      for (i in $scope.instances)
+      {
+          if ($scope.instances[i].id === id)
+          {
+              $scope.instances.remove(i);
+              break;
+          }
+      }
     }).error(function (data, status, headers, config) {
       //
     });
