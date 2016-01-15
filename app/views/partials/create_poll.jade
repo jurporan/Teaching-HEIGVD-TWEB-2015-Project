@@ -1,9 +1,8 @@
 section
   .container
     .section-header
-      h2.section-title.text-center.wow.fadeInDown Créer un sondage
-      
       div(ng-controller='PollController')
+          h2.section-title.text-center.wow.fadeInDown {{ actionString }}
           form.form-horizontal(ng-show='formVisible')
               .form-group(ng-class="{'has-error' : !pollNameValid}")
                   label.control-label.col-xs-2(for='pollName') Nom du sondage*
@@ -21,12 +20,13 @@ section
                   label.control-label.col-xs-2(for='adminPassword') Mot de passe administrateur*
                   .col-xs-10
                     input#adminPassword.form-control(type='password', placeholder='Mot de passe', ng-model='adminPassword')
-                    p.help-block(ng-hide='adminPasswordValid') Ce mot de mot de passe doit correspondre au précédent.
+                    p.help-block(ng-hide='adminPasswordValid') Ce champ est obligatoire.
 
                 .form-group(ng-class="{'has-error' : !adminPasswordConfirmationValid}")
                   label.control-label.col-xs-2(for='adminPasswordConfirmation') Confirmation du mot de passe*
                   .col-xs-10
-                    input#adminPasswordConfirmation.form-control(type='password', placeholder='Confirmation mot de passe administrateur', ng-model='adminPaaswordConfirmationValid')
+                    input#adminPasswordConfirmation.form-control(type='password', placeholder='Confirmation mot de passe administrateur', ng-model='adminPasswordConfirmation')
+                    p.help-block(ng-hide='adminPasswordConfirmationValid')  Ce mot de passe doit correspondre au précédent.
 
                 .form-group(ng-class="{'has-error' : !userPasswordValid}")
                   label.control-label.col-xs-2(for='userPassword') Mot de passe utilisateur
@@ -45,19 +45,19 @@ section
                           label
                               input(type='checkbox', ng-model='isPublic')
                               | Résultats publics
-        
+
                 .form-group
                   .col-xs-offset-2.col-xs-10
-                      span.btn.btn-primary#actionPoll(role='button', ng-disabled='pollActionDisabled', ng-click="pollAction()") {{ pollActionString }}
+                      span.btn.btn-primary#actionPoll(role='button', ng-show='create', ng-click="createPoll()") Créer un sondage
+                  .col-xs-offset-2.col-xs-10
+                      span.btn.btn-primary#actionPoll(role='button', ng-show='edit', ng-click="updatePoll()") Modifier Sondage
                   .col-xs-offset-2.col-xs-10
                       span.btn.btn-primary#deletePoll(role='button', ng-disabled='!deletePossible') Supprimer Sondage
                   .col-xs-offset-2.col-xs-10
                       span.btn.btn-primary#createInstance(role='button', ng-disabled='!questionAdded', ng-click="instancesVisible = true") Lancer le sondage
                   .col-xs-offset-2.col-xs-10
                       span.btn.btn-primary#createQuestion(role='button', ng-disabled='!questionAvailable', ng-click='createQuestion()') Créer les questions
-              
-                
-        
+
           form.form-horizontal(ng-show='instancesVisible')
               .form-group
                   label.control-label.col-xs-2 Nom de la nouvelle instance
@@ -113,6 +113,7 @@ section
               .form-group
                   .col-xs-offset-2.col-xs-10
                       span.btn.btn-primary#actionPoll(role='button', ng-click="modifyPoll()") Retour au sondage
+
           h3.section-title.text-center.wow.fadeInDown Instances existantes
           h4.text-center.wow.fadeInDown(ng-if="instances.length == 0") Aucune instance n'existe pour ce sondage
           table.table.table-hover(ng-if="instances.length > 0")
