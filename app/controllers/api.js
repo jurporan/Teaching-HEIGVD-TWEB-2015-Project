@@ -602,7 +602,6 @@ router.delete('/polls/:pollid/questions/:questionid', function (req, res) {
 });
 
 router.delete('/polls/:pollid/instances/:instanceid', function (req, res) {
-    console.log("POUEEEEEEEEEEEEEEEEEEEt");
   Instance.remove({instance_id: req.params.instanceid}, function (err) {
     if (err) res.status(500).send("Couldn't delete instance.");
     Instance.findByIdAndRemove(req.params.instanceid, function (err) {
