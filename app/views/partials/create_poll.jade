@@ -57,15 +57,8 @@ section
                       span.btn.btn-primary#createInstance(role='button', ng-disabled='!questionAdded', ng-click="instancesVisible = true") Lancer le sondage
                   .col-xs-offset-2.col-xs-10
                       span.btn.btn-primary#createQuestion(role='button', ng-click='manageQuestions()') Gérer les questions
-
-          form.form-horizontal(ng-show='instancesVisible')
-              .form-group
-                  label.control-label.col-xs-2 Nom de la nouvelle instance
-                  .col-xs-10
-                    input.form-control(type='text', placeholder='Nouvelle instance', ng-model='instanceName')
-              .form-group
-                .col-xs-offset-2.col-xs-10
-                    span.btn.btn-primary(role='button', ng-click="addInstance()") Ajouter une instance
+                  .col-xs-offset-2.col-xs-10
+                      span.btn.btn-primary#createQuestion(role='button', ng-click='manageInstances()') Gérer les instances
 
 
           //form.form-horizontal(ng-show='questionVisible')
@@ -113,17 +106,3 @@ section
               .form-group
                   .col-xs-offset-2.col-xs-10
                       span.btn.btn-primary#actionPoll(role='button', ng-click="modifyPoll()") Retour au sondage
-
-          h3.section-title.text-center.wow.fadeInDown Instances existantes
-          h4.text-center.wow.fadeInDown(ng-if="instances.length == 0") Aucune instance n'existe pour ce sondage
-          table.table.table-hover(ng-if="instances.length > 0")
-            thead
-              tr
-                th Nom
-                th Contrôles
-              tbody(ng-repeat='instance in instances')
-                tr.clicker
-                  th {{ instance.name }}
-                  td
-                    span.btn.btn-danger.instance(role="button", ng-click="deleteInstance(instance.id)") Supprimer
-          span.btn.btn-success.instance(role="button", ng-click="instancesVisible = true") Ajouter

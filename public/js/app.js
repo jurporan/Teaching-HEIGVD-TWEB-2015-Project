@@ -47,6 +47,10 @@ northPoll.config(function ($stateProvider, $urlRouterProvider, $locationProvider
     templateUrl: 'views/partials/manageQuestions.jade',
     url: '/editPoll/:pollId/questions?pass'
   });
+  $stateProvider.state('manageInstances', {
+    templateUrl: 'views/partials/manageInstances.jade',
+    url: '/editPoll/:pollId/instances?pass'
+  });
 });
 
 // This factory is necessary to use socket.io in our controllers
@@ -330,9 +334,6 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       });
       $state.go('listPolls');
     });
-    $http.get("/api/polls/" + $scope.pollId + "/instances").then(function (response) {
-      $scope.instances = response.data.instances;
-    });
   }
 
   /* Variables use to indicate if the fields in the form are valid or not. By defautl they are. When the user tries to post the form we will check the validity and change those variable accordingly. Those verifications are not
@@ -437,6 +438,10 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
     $state.go('manageQuestions', {pollId: $scope.pollId, pass: $scope.adminPassword});
   }
 
+  $scope.manageInstances = function() {
+    $state.go('manageInstances', {pollId: $scope.pollId, pass: $scope.adminPassword});
+  }
+
   /* We remove the poll. */
   $scope.deletePoll = function () {
     $http({
@@ -504,37 +509,6 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       alert("Question ajoutée");
     }).error(function (data, status, headers, config) {
       alert("Erreur lors de l'envoi");
-    });
-  }
-
-  // Adds an instance to the poll.
-  $scope.addInstance = function () {
-    $http({
-      url: "/api/polls/" + $scope.pollId + "/instances",
-      method: "POST",
-      data: {name: $scope.instanceName}
-    }).success(function (data, status, headers, config) {
-      $http.get("/api/polls/" + $scope.pollId + "/instances").then(function (response) {
-        $scope.instances = response.data.instances;
-      });
-    }).error(function (data, status, headers, config) {
-      alert("Erreur lors de l'envoi");
-    });
-  }
-
-  $scope.deleteInstance = function (id) {
-    $http({
-      url: "/api/polls/" + $scope.pollId + "/instances/" + id,
-      method: "DELETE"
-    }).success(function (data, status, headers, config) {
-      for (i in $scope.instances) {
-        if ($scope.instances[i].id === id) {
-          $scope.instances.remove(i);
-          break;
-        }
-      }
-    }).error(function (data, status, headers, config) {
-      //
     });
   }
 });
@@ -646,4 +620,47 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, mySocket, $statePara
     $scope.results = [];
     $scope.next();
   });
+});
+
+northPoll.controller("manageInstCtrl", function($scope, $http, $stateParams) {
+    $scope.instances = [];
+    $scope.pollId = $stateParams.pollId;
+
+  $http.get("/api/polls/" + $scope.pollId + "/instances").then(function(response){
+      $scope.instances = response.data.instances;
+    });
+
+  // Adds an instance to the poll.
+  $scope.addInstance = function () {
+    $http({
+      url: "/api/polls/" + $scope.pollId + "/instances",
+      method: "POST",
+      data: {name: $scope.instanceName}
+    }).success(function (data, status, headers, config) {
+      $scope.instanceName = "";
+      $http.get("/api/polls/" + $scope.pollId + "/instances").then(function(response){
+      $scope.instances = response.data.instances;
+    });
+    }).error(function (data, status, headers, config) {
+      alert("Erreur lors de l'envoi");
+    });
+  }
+
+  $scope.deleteInstance = function(id) {
+      $http({
+      url: "/api/polls/" + $scope.pollId + "/instances/" + id,
+      method: "DELETE"
+    }).success(function (data, status, headers, config) {
+      for (i in $scope.instances)
+      {
+          if ($scope.instances[i].id === id)
+          {
+              $scope.instances.remove(i);
+              break;
+          }
+      }
+    }).error(function (data, status, headers, config) {
+      //
+    });
+  }
 });
