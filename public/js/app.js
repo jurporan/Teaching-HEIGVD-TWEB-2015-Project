@@ -64,12 +64,16 @@ northPoll.controller("carouselController", function ($scope, $state) {
 });
 
 // Stats of the app controller
-northPoll.controller("statsAppController", function ($http, $scope) {
+northPoll.controller("statsAppController", function ($http, $scope, $state) {
   $http.get("/api/polls/stats").then(function (response) {
     $scope.total = response.data.nb_total;
     $scope.recent = response.data.nb_recent;
     $scope.open = response.data.nb_open;
   });
+
+  $scope.goToPolls = function() {
+      $state.go('listPolls');
+  };
 });
 
 
@@ -645,9 +649,9 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, mySocket, $statePara
   });
 });
 
-northPoll.controller("manageInstCtrl", function ($scope, $http, $stateParams) {
-  $scope.instances = [];
-  $scope.pollId = $stateParams.pollId;
+northPoll.controller("manageInstCtrl", function($scope, $http, $state, $stateParams) {
+    $scope.instances = [];
+    $scope.pollId = $stateParams.pollId;
 
   $http.get("/api/polls/" + $scope.pollId + "/instances").then(function (response) {
     $scope.instances = response.data.instances;
@@ -684,4 +688,12 @@ northPoll.controller("manageInstCtrl", function ($scope, $http, $stateParams) {
       //
     });
   }
+
+  $scope.backToPoll = function() {
+      $state.go('editPoll', {pollId: $scope.pollId, pass: $stateParams.pass});
+  };
+
+  $scope.showResults = function(id) {
+      alert(id);
+  };
 });

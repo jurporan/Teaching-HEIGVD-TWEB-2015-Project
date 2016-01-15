@@ -1,14 +1,21 @@
-// Created by jermoret on 02.12.2015.
 
-include statsApp.jade
+.welcome
+  h2(ng-controller='statsAppController')
+      span NorthPoll
+      |  Gardez vos réponses au frais !
+      br
+      br
+      span {{ total }}
+      |  sondages
+      span  existants
+      br
+      span  {{ recent }}
+      |  sondages
+      span  récents
+      br
+      span  {{ open }}
+      |  sondages
+      span  ouverts 
+      button.btn.btn-primary.btn-lg(href="#answer" style="margin-top: -10px;" class="btn pull-right", ng-click="goToPolls()") Explorer !
 
-section#main-slider
-  .owl-carousel
-    .item(style='background-image: url(images/slider/background4.jpg);')
-      .slider-inner
-        .container
-          .row
-            .col-sm-6
-               .carousel-content
-                  include statsApp.jade
 
