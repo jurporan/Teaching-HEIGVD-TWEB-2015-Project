@@ -8,7 +8,7 @@ var northPoll = angular.module('northPoll', [
 // Ui-router
 northPoll.config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
-	$locationProvider.html5Mode(true);
+	//$locationProvider.html5Mode(true);
 	$urlRouterProvider.otherwise('/');
 
   $stateProvider.state('welcome', {

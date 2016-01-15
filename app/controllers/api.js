@@ -198,7 +198,7 @@ router.get('/polls/:pollid', function (req, res) {
       }, false);
 
     } else {
-
+      var pass = req.query.pass;
       getPollById(req.params.pollid, function (err, poll) {
         if (err) return res.status(500).send(err.reason);
 
