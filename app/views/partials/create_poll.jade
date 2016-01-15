@@ -122,7 +122,7 @@ section
                 th Contrôles
               tbody(ng-repeat='instance in instances')
                 tr.clicker
-                  th {{instance.name}}
+                  th {{ instance.name }}
                   td
                     span.btn.btn-danger.instance(role="button", ng-click="deleteInstance(instance.id)") Supprimer
-          span.btn.btn-success.instance(role="button") Ajouter
+          span.btn.btn-success.instance(role="button", ng-click="instancesVisible = true") Ajouter
