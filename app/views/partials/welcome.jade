@@ -1,21 +1,21 @@
 
 .welcome
   h2(ng-controller='statsAppController')
-  span NorthPoll
-  |  Gardez vos réponses au frais !
-  br
-  br
-  span {{ total }}
-  |  sondages
-  span  existants
-  br
-  span  {{ recent }}
-  |  sondages
-  span  récents
-  br
-  span  {{ open }}
-  |  sondages
-  span  ouverts 
-  button.btn.btn-primary.btn-lg(href="#answer" style="margin-top: -10px;" class="btn pull-right") Explorer !
+      span NorthPoll
+      |  Gardez vos réponses au frais !
+      br
+      br
+      span {{ total }}
+      |  sondages
+      span  existants
+      br
+      span  {{ recent }}
+      |  sondages
+      span  récents
+      br
+      span  {{ open }}
+      |  sondages
+      span  ouverts 
+      button.btn.btn-primary.btn-lg(href="#answer" style="margin-top: -10px;" class="btn pull-right", ng-click="goToPolls()") Explorer !
 
 
