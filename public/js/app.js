@@ -349,45 +349,55 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.userPasswordValid = true;
   $scope.userPasswordConfirmationValid = true;
 
+  $scope.checkFormFields = function(){
+      formOk = true;
+      if ($scope.pollName == null || $scope.pollName.length < 1) {
+        $scope.pollNameValid = false;
+        formOk = false;
+      }
+      else {
+        $scope.pollNameValid = true;
+      }
+
+      if ($scope.adminName == null || $scope.adminName.length < 1) {
+        $scope.adminNameValid = false;
+        formOk = false;
+      }
+      else {
+        $scope.adminNameValid = true;
+      }
+
+      if ($scope.adminPassword == null || $scope.adminPassword.length < 1) {
+        $scope.adminPasswordValid = false;
+        formOk = false;
+      }
+      else {
+        $scope.adminPasswordValid = true;
+      }
+
+      if (!($scope.adminPassword === $scope.adminPasswordConfirmation)) {
+        $scope.adminPasswordConfirmationValid = false;
+        formOk = false;
+      }
+      else {
+        $scope.adminPasswordConfirmationValid = true;
+      }
+
+      if (!($scope.userPassword === $scope.userPasswordConfirmation)) {
+        $scope.userPasswordConfirmationValid = false;
+        formOk = false;
+      }
+      else {
+        $scope.userPasswordConfirmationValid = true;
+      }
+
+      return formOk;
+  }
+
   $scope.createPoll = function () {
 
-    if ($scope.pollName == null || $scope.pollName.length < 1) {
-      $scope.pollNameValid = false;
-    }
-    else {
-      $scope.pollNameValid = true;
-    }
-
-    if ($scope.adminName == null || $scope.adminName.length < 1) {
-      $scope.adminNameValid = false
-    }
-    else {
-      $scope.adminNameValid = true;
-    }
-
-    if ($scope.adminPassword == null || $scope.adminPassword.length < 1) {
-      $scope.adminPasswordValid = false
-    }
-    else {
-      $scope.adminPasswordValid = true;
-    }
-
-    if (!($scope.adminPassword === $scope.adminPasswordConfirmation)) {
-      $scope.adminPasswordConfirmationValid = false
-    }
-    else {
-      $scope.adminPasswordConfirmationValid = true;
-    }
-
-    if (!($scope.userPassword === $scope.userPasswordConfirmation)) {
-      $scope.userPasswordConfirmationValid = false
-    }
-    else {
-      $scope.userPasswordConfirmationValid = true;
-    }
-
-    if (!$scope.pollNameValid || !$scope.adminNameValid || !$scope.adminPasswordValid || !$scope.adminPasswordConfirmationValid || !$scope.userPasswordConfirmationValid) {
-      alert("Certains champs du formulaire contiennent des erreurs");
+    if (! $scope.checkFormFields())
+    {
       return;
     }
 
@@ -416,23 +426,24 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   }
 
   $scope.updatePoll = function () {
+    if (! $scope.checkFormFields())
+    {
+    return;
+    }
+
     $http({
-      url: "/api/polls/",
-      method: "POST",
+      url: "/api/polls/" + $scope.pollId,
+      method: "PUT",
       data: {
         name: $scope.pollName,
         creator: $scope.adminName,
         admin_password: $scope.adminPassword,
         user_password: $scope.userPassword,
+        state : "open",
         public_results: $scope.isPublic
       }
     }).success(function (data, status, headers, config) {
-      // We retrieve the pollId.
-      $scope.pollId = data.id;
-      // New actions are now available.
-      $scope.edit = true;
-      $scope.create = false;
-      $scope.questionAvailable = true;
+      alert("Le sondage a été modifiée.");
     }).error(function (data, status, headers, config) {
       alert("Erreur lors de l'envoi");
     });
@@ -453,9 +464,9 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       method: "DELETE",
       data: {}
     }).success(function (data, status, headers, config) {
-      alert("Le sondage a été supprimé.");
+      $state.go('listPolls');
     }).error(function (data, status, headers, config) {
-      alert("Le sondage n'a pas put être supprimé.")
+      alert("Le sondage n'a pas put être supprimé.");
     });
   }
 

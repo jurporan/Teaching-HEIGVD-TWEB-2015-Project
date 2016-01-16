@@ -541,6 +541,7 @@ router.put('/polls/:pollid', function (req, res) {
     poll.user_password = req.body.user_password;
     poll.state = req.body.state;
     poll.save();
+    res.status(200).send();
   });
 });
 
@@ -554,6 +555,7 @@ router.put('/polls/:pollid/questions/:questionid', function (req, res) {
     poll.user_password = req.body.user_password;
     poll.state = req.body.state;
     poll.save();
+    res.status(200).send();
   });
 });
 
@@ -567,20 +569,21 @@ router.put('/polls/:pollid/questions/:questionid/choice/:choiceid', function (re
     poll.user_password = req.body.user_password;
     poll.state = req.body.state;
     poll.save();
+    res.status(200).send();
   });
 });
 
 // DELETE requests handler
 
 router.delete('/polls/:pollid', function (req, res) {
-  Poll.findById(req.params.pollid, function (err, poll) {
-    poll.pre('remove', function (next) {
-      Question.remove({poll_id: this._id}).exec();
-      Submission.remove({client_id: this._id}).exec();
-      next();
+      Question.remove({poll_id: req.params.pollid}).exec();
+      Instance.remove({poll_id: req.params.pollid}).exec();
+      Poll.findByIdAndRemove(req.params.pollid, function(err) {
+          if (err)
+            { res.status(500).send("Coudln't delete poll");}
+      });
+      res.status(200).send();
     });
-  });
-});
 
 router.delete('/polls/:pollid/questions/:questionid', function (req, res) {
   Choice.remove({question_id: req.params.questionid}, function (err) {
