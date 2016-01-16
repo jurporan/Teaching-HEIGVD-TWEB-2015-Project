@@ -1,27 +1,10 @@
-<header class="site-header">
-  <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-			 {% for my_page in site.pages %}
-				{% if my_page.title %}
-					<span class="icon-bar"></span>
-				{% endif %}
-			{% endfor %}
-			</button>
-			<a class="navbar-brand" href="{{ site.baseurl }}/">{{ site.title }}</a>
+<header>
+    <div class="header-content">
+        <div class="header-content-inner">
+            <h1>NorthPoll : Gardez vos réponses au frais</h1>
+            <hr>
+            <p style="color: black;">Créez vos sondages rapidement et facilement, rien de plus simple!</p>
+            <a href="#about" class="btn btn-primary btn-xl page-scroll">Find Out More</a>
         </div>
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav">
-		  {% for my_page in site.pages %}
-            {% if my_page.title %}
-              <li>
-                <a class="page-link" href="{{ my_page.url | prepend: site.baseurl }}">{{ my_page.title }}</a>
-              </li>
-            {% endif %}
-		  {% endfor %}
-        </ul>
-      </div>
-      </div>
-  </nav>
+    </div>
 </header>

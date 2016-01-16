@@ -40,7 +40,7 @@ function getPollById(id, callback, passRequired, pass) {
 }
 
 // Used to fetch a question by its id
-function getQuestionById(id, callback) {
+function getQuestionById(id, callback, pass) {
   var question = {};
   Question.findById(id, function (err, quest) {
     if (err) return callback({reason: "Couldn't find the specified question"}, null);
@@ -50,9 +50,11 @@ function getQuestionById(id, callback) {
     question.optional = quest.optional;
     question.choices = [];
     quest.choices.forEach(function (choice, idx, arr) {
-      question.choices.push({text: choice.text});
+      var ch = {text: choice.text};
+      if (pass) ch.correct = choice.correct;
+      question.choices.push(ch);
       if (idx === arr.length - 1) {
-        callback(null, question);
+        return callback(null, question);
       }
     });
   });
@@ -99,6 +101,18 @@ function getQuestionsByPoll(id, callback) {
       response.push(question);
     });
   });
+}
+
+function checkPasswordPoll(pollId, pass, callback) {
+  if (pass === undefined) return callback(false);
+  Poll.findById(pollId, function (err, poll) {
+    if (err) return callback(false);
+    if (poll === null) return callback(false);
+    if (pass === poll.admin_password) {
+      return callback(true);
+    }
+    return callback(false);
+  })
 }
 
 // Simple constant for the errorCode we will use when the client sends wrong data. The client shouldn't make fun of us, so we send him an "I am a teapot" error.
@@ -214,31 +228,28 @@ router.get('/polls/:pollid', function (req, res) {
 router.get("/polls/:pollid/questions", function (req, res) {
   var response = {questions: []};
   var expectedNbrResp;
-  Question.count({poll_id: req.params.pollid}, function (err, nbrQ) {
-    if (err) return res.status(500).send("Couldn't count number of questions");
-    expectedNbrResp = nbrQ;
 
-    var inserted = 0;
-    Question.find({poll_id: req.params.pollid}, function (err, questions) {
-      if (err) return res.status(500).send("Couldn'f find any questions");
-      questions.forEach(function (quest, idx, arr) {
-        getQuestionById(quest._id, function (err, question) {
-          if (err) return res.status(500).send(err.reason);
-          response.questions.push(question);
-          inserted++;
-          if (inserted === expectedNbrResp) {
-            res.format({
-              'application/json': function () {
-                res.send(response);
-              }
-            });
-          }
+  checkPasswordPoll(req.params.pollid, req.query.pass, function (pass) {
+    Question.count({poll_id: req.params.pollid}, function (err, nbrQ) {
+      if (err) return res.status(500).send("Couldn't count number of questions");
+      expectedNbrResp = nbrQ;
+
+      var inserted = 0;
+      Question.find({poll_id: req.params.pollid}, function (err, questions) {
+        if (err) return res.status(500).send("Couldn'f find any questions");
+        questions.forEach(function (quest, idx, arr) {
+          getQuestionById(quest._id, function (err, question) {
+            if (err) return res.status(500).send(err.reason);
+            response.questions.push(question);
+            inserted++;
+            if (inserted === expectedNbrResp) {
+              return res.send(response);
+            }
+          }, pass);
         });
       });
     });
-
   });
-
 });
 
 router.get('/polls/:pollid/questions/:questionid', function (req, res) {
@@ -530,6 +541,7 @@ router.put('/polls/:pollid', function (req, res) {
     poll.user_password = req.body.user_password;
     poll.state = req.body.state;
     poll.save();
+    res.status(200).send();
   });
 });
 
@@ -543,6 +555,7 @@ router.put('/polls/:pollid/questions/:questionid', function (req, res) {
     poll.user_password = req.body.user_password;
     poll.state = req.body.state;
     poll.save();
+    res.status(200).send();
   });
 });
 
@@ -556,20 +569,21 @@ router.put('/polls/:pollid/questions/:questionid/choice/:choiceid', function (re
     poll.user_password = req.body.user_password;
     poll.state = req.body.state;
     poll.save();
+    res.status(200).send();
   });
 });
 
 // DELETE requests handler
 
 router.delete('/polls/:pollid', function (req, res) {
-  Poll.findById(req.params.pollid, function (err, poll) {
-    poll.pre('remove', function (next) {
-      Question.remove({poll_id: this._id}).exec();
-      Submission.remove({client_id: this._id}).exec();
-      next();
+      Question.remove({poll_id: req.params.pollid}).exec();
+      Instance.remove({poll_id: req.params.pollid}).exec();
+      Poll.findByIdAndRemove(req.params.pollid, function(err) {
+          if (err)
+            { res.status(500).send("Coudln't delete poll");}
+      });
+      res.status(200).send();
     });
-  });
-});
 
 router.delete('/polls/:pollid/questions/:questionid', function (req, res) {
   Choice.remove({question_id: req.params.questionid}, function (err) {
