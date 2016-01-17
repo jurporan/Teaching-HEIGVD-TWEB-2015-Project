@@ -58,6 +58,28 @@ northPoll.factory('mySocket', function (socketFactory) {
   return socketFactory();
 });
 
+var openModal = function(uibModal, title, text, type)
+{
+    var modalInstance = uibModal.open({
+        templateUrl: 'views/partials/modalMessage.jade',
+        controller: 'modalMessageCtrl',
+        backdrop: true,
+        keyboard: true,
+        backdropClick: true,
+        size: 'lg',
+        resolve: {
+        msg: function () {
+          return title;
+        },
+        txt: function () {
+          return text;
+        },
+        colorClass: function () {
+          return type;
+        }
+      }
+      });
+};
 
 northPoll.controller("carouselController", function ($scope, $state) {
   $scope.currentState = $state.current;
@@ -412,6 +434,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
         public_results: $scope.isPublic
       }
     }).success(function (data, status, headers, config) {
+        openModal($uibModal, "Succès!", "Le sondage a été créé", "alert-success");
       // We retrieve the pollId.
       $scope.pollId = data.id;
       // New actions are now available.
@@ -421,7 +444,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       $state.go("editPoll", {pollId: $scope.pollId, pass: $scope.adminPassword});
 
     }).error(function (data, status, headers, config) {
-      alert("Erreur lors de l'envoi");
+      openModal($uibModal, "Erreur!", "Le sondage n'a pas pu être créé", "alert-danger");
     });
   }
 
@@ -443,9 +466,9 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
         public_results: $scope.isPublic
       }
     }).success(function (data, status, headers, config) {
-      alert("Le sondage a été modifiée.");
+      openModal($uibModal, "Succès!", "Le sondage a été modifié", "alert-success");
     }).error(function (data, status, headers, config) {
-      alert("Erreur lors de l'envoi");
+      openModal($uibModal, "Erreur!", "Impossible d'éditer le sondage", "alert-danger");
     });
   }
 
@@ -464,9 +487,10 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       method: "DELETE",
       data: {}
     }).success(function (data, status, headers, config) {
+        openModal($uibModal, "Succès!", "Le sondage a été supprimé", "alert-success");
       $state.go('listPolls');
     }).error(function (data, status, headers, config) {
-      alert("Le sondage n'a pas put être supprimé.");
+      openModal($uibModal, "Erreur!", "Le sondage n'a pas pu être supprimé", "alert-danger");
     });
   }
 
@@ -493,7 +517,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.isOptional = false;
 });
 
-northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http) {
+northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, $uibModal) {
   $scope.questions = [];
   $scope.choices = [{text: '', correct: false}];
   $scope.modify = false;
@@ -533,7 +557,7 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http) 
   }
 
   $scope.modifyQuestion = function () {
-    alert("Doesn't work yet, put in api not implemented");
+      openModal($uibModal, "Alert!", "Doesn't work yet, put in api not implemented", "alert-warning");
     /*
     $http.put("/api/polls/" + $stateParams.pollId + "/questions",
       {
@@ -558,7 +582,7 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http) 
 });
 
 // This angular controller will handle the response process. It is responsible of everything related to the answer fragment of the page.
-northPoll.controller("AnswerCtrl", function ($scope, $http, mySocket, $stateParams) {
+northPoll.controller("AnswerCtrl", function ($scope, $http, $uibModal, mySocket, $stateParams, $state) {
 
   // This function handles the click on a choice
   $scope.select = function (choice) {
@@ -635,11 +659,14 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, mySocket, $statePara
         method: "POST",
         data: {results: $scope.results}
       }).success(function (data, status, headers, config) {
-        console.log($scope.results);
-        alert("Envoyé");
+      
+      openModal($uibModal, "Réponses envoyées!", "Vous avez participé au sondage, les résultats ont été envoyés.", "alert-success");
+        
       }).error(function (data, status, headers, config) {
-        alert("Erreur lors de l'envoi");
+        openModal($uibModal, "Erreur!", "Vos résultats n'ont pas pu être envoyés", "alert-danger");
       });
+      
+      $state.go('listPolls');
     }
   }
 
@@ -660,10 +687,27 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, mySocket, $statePara
   });
 });
 
-northPoll.controller("manageInstCtrl", function($scope, $http, $state, $stateParams) {
+northPoll.controller("modalMessageCtrl", function ($scope, $uibModalInstance, msg, txt, colorClass) {
+  $scope.close = function () {
+    $uibModalInstance.close();
+  };
+  
+  // The popup will automatically close after 4 seconds
+  setTimeout(function(){
+      $scope.close();
+      }, 4000);
+  
+  // We load the parameters
+  $scope.msg = msg;
+  $scope.txt = txt;
+  $scope.colorClass = colorClass;
+});
+
+northPoll.controller("manageInstCtrl", function($scope, $http, $state, $stateParams, $uibModal) {
     $scope.instances = [];
     $scope.pollId = $stateParams.pollId;
-
+    
+    // We load the instances
   $http.get("/api/polls/" + $scope.pollId + "/instances").then(function (response) {
     $scope.instances = response.data.instances;
   });
@@ -680,15 +724,18 @@ northPoll.controller("manageInstCtrl", function($scope, $http, $state, $statePar
         $scope.instances = response.data.instances;
       });
     }).error(function (data, status, headers, config) {
-      alert("Erreur lors de l'envoi");
+      openModal($uibModal, "Erreur!", "L'instance n'a pas pu être créée", "alert-danger");
     });
   }
-
+  
+  // Delete an instance
   $scope.deleteInstance = function (id) {
     $http({
       url: "/api/polls/" + $scope.pollId + "/instances/" + id,
       method: "DELETE"
     }).success(function (data, status, headers, config) {
+        
+        // If the instance was successfully deleted, no need to reload the instance array, we simply delete the row, on client side
       for (i in $scope.instances) {
         if ($scope.instances[i].id === id) {
           $scope.instances.remove(i);
@@ -696,7 +743,7 @@ northPoll.controller("manageInstCtrl", function($scope, $http, $state, $statePar
         }
       }
     }).error(function (data, status, headers, config) {
-      //
+      openModal($uibModal, "Erreur!", "L'instance n'a pas pu être supprimée", "alert-danger");
     });
   }
 
@@ -705,6 +752,6 @@ northPoll.controller("manageInstCtrl", function($scope, $http, $state, $statePar
   };
 
   $scope.showResults = function(id) {
-      alert(id);
+      openModal($uibModal, "Alert!", "Doesn't work yet", "alert-warning");
   };
 });
