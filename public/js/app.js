@@ -253,7 +253,7 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
     });
   });
 
-  $scope.openModal = function (pollId, instId, action) {
+  $scope.openModal = function (pollId, instId, action, typePass) {
     var modalInstance = $uibModal.open({
       size: 'sm',
       templateUrl: 'views/partials/modalPassword.jade',
@@ -267,6 +267,9 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
         },
         action: function () {
           return action;
+        },
+        typePass: function () {
+          return typePass;
         }
       }
     });
@@ -275,9 +278,9 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
 });
 
 northPoll.controller("ModalInstanceCtrl", function ($scope, $uibModalInstance, pollId, $http,
-                                                    instId, $uibModal, $state, action) {
+                                                    instId, $uibModal, $state, action, typePass) {
   $scope.ok = function () {
-    $http.get("/api/polls/" + pollId + "?pass=" + $scope.pass).then(function (response) {
+    $http.get("/api/polls/" + pollId + "?pass=" + $scope.pass + "&typePass=" + typePass).then(function (response) {
       if(response.data.admin_password === undefined) {
         var modalInstance = $uibModal.open({
           templateUrl: 'views/partials/modalErrorPassword.jade',
@@ -332,7 +335,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
     $scope.deletePossible = true;
     $scope.instanceAvailable = true;
 
-    $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass).then(function (response) {
+    $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass + "&typePass=admin").then(function (response) {
       $scope.pollName = response.data.name;
       $scope.adminName = response.data.creator;
       $scope.adminPassword = response.data.admin_password;
@@ -496,7 +499,7 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, 
   $scope.questionTextValid = true;
   $scope.numberOfPossibleChoicesValid = true;
 
-  $http.get("/api/polls/" + $stateParams.pollId + "/questions?pass=" + $stateParams.pass).then(function (response) {
+  $http.get("/api/polls/" + $stateParams.pollId + "/questions?pass=" + $stateParams.pass + "&typePass=admin").then(function (response) {
     $scope.questions = $scope.questions.concat(response.data.questions);
   });
 
@@ -762,7 +765,7 @@ northPoll.controller("manageInstCtrl", function ($scope, $http, $state, $statePa
   $scope.isPublic = "";
 
   $scope.closePoll = function(){
-      $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass).then(function (response) {
+      $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass + "&typePass=user").then(function (response) {
         $scope.pollName = response.data.name;
         $scope.adminName = response.data.creator;
         $scope.adminPassword = response.data.admin_password;
