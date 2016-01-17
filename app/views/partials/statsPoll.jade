@@ -4,14 +4,8 @@ section
       h2.section-title.text-center.wow.fadeInDown Statistiques
       div(ng-controller='statsInstanceController')
         h2.text-center {{pollName}} / {{instanceName}}
-        #myCarousel.carousel.slide(data-ride='carousel')
 
-          // Indicators
-          //ol.carousel-indicators
-          //  li.active(data-target='#myCarousel', data-slide-to='0')
-          //  li(data-target='#myCarousel', data-slide-to='1')
-          //  li(data-target='#myCarousel', data-slide-to='2')
-          //  li(data-target='#myCarousel', data-slide-to='3')
+        #myCarousel.carousel.slide(data-ride='carousel')
 
           // Wrapper for slides
           .carousel-inner(role='listbox')
@@ -28,12 +22,12 @@ section
                 | &nbsp;{{percentage | number:2}} %
 
           // Left and right controls
-          //a.left.carousel-control(href='#myCarousel', role='button', data-slide='prev')
-          //  span.glyphicon.glyphicon-chevron-left(aria-hidden='true')
-          //  span.sr-only Previous
-          //a.right.carousel-control(href='#myCarousel', role='button', data-slide='next')
-          //  span.glyphicon.glyphicon-chevron-right(aria-hidden='true')
-          //  span.sr-only Next
+          a.left.carousel-control(href='{{ url }} #myCarousel', role='button', data-slide='prev')
+            span.glyphicon.glyphicon-chevron-left(aria-hidden='true')
+            span.sr-only Previous
+          a.right.carousel-control(href='{{ url }} #myCarousel', role='button', data-slide='next')
+            span.glyphicon.glyphicon-chevron-right(aria-hidden='true')
+            span.sr-only Next
 
 
 

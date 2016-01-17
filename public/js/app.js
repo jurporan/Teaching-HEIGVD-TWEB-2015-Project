@@ -106,14 +106,12 @@ northPoll.controller("statsInstanceController", function ($scope, $http, mySocke
   $scope.pollId = $stateParams.pollId;
   $scope.pass = $stateParams.pass;
 
-  var url = "api/polls/" + $scope.pollId;
+  $scope.url = "api/polls/" + $scope.pollId;
   if ($scope.pass !== undefined) {
-    url += "?pass=" + $scope.pass;
+    $scope.url += "?pass=" + $scope.pass;
   }
 
-  console.log(url);
-
-  $http.get(url).then(function (response) {
+  $http.get($scope.url).then(function (response) {
     $scope.pollName = response.data.name;
     if (response.data.public_results === false && response.data.admin_password === undefined) {
       openModal($uibModal, "Erreur!", "Les statistiques de ce sondage sont privées.", "alert-danger");
@@ -214,9 +212,6 @@ northPoll.controller("statsInstanceController", function ($scope, $http, mySocke
             });
             if (idx === arr.length - 1) {
               $scope.calculatePercentageForQuestion(question, idxQuest);
-              /*question.percentage.forEach(function (percentageChoice, idx, arr) {
-               question.percentage[idx] = question.data[idx] / question.nb_answers * 100;
-               });*/
             }
           });
         });
