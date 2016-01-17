@@ -170,8 +170,6 @@ Le serveur répond simplement un message contenant l'dentifiant de la question n
     }
 ```
 
-Chaque champ est facultatif, le client peut très bien ne modifier qu'une propriété.
-
 - **PUT** ```/api/polls/<pollid>/questions/<questionid>``` : Modifie une question existante. Le client spécifie ses modifications dans la structure suivante:
 
 ```
@@ -188,13 +186,9 @@ Chaque champ est facultatif, le client peut très bien ne modifier qu'une propri
     }
 ```
 
-Chaque champ est facultatif, le client peut très bien ne modifier qu'une propriété.
-
-- **PUT** ```/api/polls/<pollid>/instances``` : Modifie une instance d'un sondage donné, permet de fermer l'instance. Prend simplement le json : ```{open : <true|false>}```.
-
-Chaque champ est facultatif, le client peut très bien ne modifier qu'une propriété.
-
 - **DELETE** ```/api/polls/<pollid>``` : Supprime un sondage existant. Attention, cette action supprimera aussi toutes les questions et leurs choix liées à ce sondage.
+
+- **DELETE** ```/api/polls/<pollid>/instances/<instanceid>``` : Supprime une instance d'un sondage. Attention, cela supprimera automatiquement les résultats qui y sont enregistrés.
 
 - **DELETE** ```/api/polls/<pollid>/questions/<questionid>``` : Supprime une question d'un sondage. Attention, cette action supprimera aussi tous les choix liés à cette question.
 

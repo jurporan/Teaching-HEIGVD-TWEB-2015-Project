@@ -33,7 +33,7 @@ northPoll.config(function ($stateProvider, $urlRouterProvider, $locationProvider
   });
   $stateProvider.state('statsInstancePoll', {
     templateUrl: 'views/partials/statsPoll.jade',
-    url: '/stats/:pollId/instance/:instId'
+    url: '/stats/:pollId/instance/:instId?pass'
   });
   $stateProvider.state('createPoll', {
     templateUrl: 'views/partials/create_poll.jade',
@@ -58,27 +58,26 @@ northPoll.factory('mySocket', function (socketFactory) {
   return socketFactory();
 });
 
-var openModal = function(uibModal, title, text, type)
-{
-    var modalInstance = uibModal.open({
-        templateUrl: 'views/partials/modalMessage.jade',
-        controller: 'modalMessageCtrl',
-        backdrop: true,
-        keyboard: true,
-        backdropClick: true,
-        size: 'lg',
-        resolve: {
-        msg: function () {
-          return title;
-        },
-        txt: function () {
-          return text;
-        },
-        colorClass: function () {
-          return type;
-        }
+var openModal = function (uibModal, title, text, type) {
+  var modalInstance = uibModal.open({
+    templateUrl: 'views/partials/modalMessage.jade',
+    controller: 'modalMessageCtrl',
+    backdrop: true,
+    keyboard: true,
+    backdropClick: true,
+    size: 'lg',
+    resolve: {
+      msg: function () {
+        return title;
+      },
+      txt: function () {
+        return text;
+      },
+      colorClass: function () {
+        return type;
       }
-      });
+    }
+  });
 };
 
 northPoll.controller("carouselController", function ($scope, $state) {
@@ -93,23 +92,32 @@ northPoll.controller("statsAppController", function ($http, $scope, $state) {
     $scope.open = response.data.nb_open;
   });
 
-  $scope.goToPolls = function() {
-      $state.go('listPolls');
+  $scope.goToPolls = function () {
+    $state.go('listPolls');
   };
 });
 
 
 // Stats of an instance controller
-northPoll.controller("statsInstanceController", function ($scope, $http, mySocket, $stateParams) {
+northPoll.controller("statsInstanceController", function ($scope, $http, mySocket, $stateParams, $uibModal, $state) {
 
   // Fetch names of actual instance and poll
   $scope.instanceId = $stateParams.instId;
   $scope.pollId = $stateParams.pollId;
+  $scope.pass = $stateParams.pass;
 
-  $http.get("/api/polls/" + $scope.pollId + "?noPass=true").then(function (response) {
+  var url = "api/polls/" + $scope.pollId;
+  if($scope.pass !== undefined) {
+    url += "?pass=" + $scope.pass;
+  }
+
+  console.log(url);
+
+  $http.get(url).then(function (response) {
     $scope.pollName = response.data.name;
-    if (response.data.public_results === false) {
-      $scope.pollName = "Stats are private";
+    if (response.data.public_results === false && response.data.admin_password === undefined) {
+      openModal($uibModal, "Erreur!", "Les statistiques de ce sondage sont privées.", "alert-danger");
+      $state.go('listPolls');
       return;
     }
 
@@ -371,55 +379,54 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.userPasswordValid = true;
   $scope.userPasswordConfirmationValid = true;
 
-  $scope.checkFormFields = function(){
-      formOk = true;
-      if ($scope.pollName == null || $scope.pollName.length < 1) {
-        $scope.pollNameValid = false;
-        formOk = false;
-      }
-      else {
-        $scope.pollNameValid = true;
-      }
+  $scope.checkFormFields = function () {
+    formOk = true;
+    if ($scope.pollName == null || $scope.pollName.length < 1) {
+      $scope.pollNameValid = false;
+      formOk = false;
+    }
+    else {
+      $scope.pollNameValid = true;
+    }
 
-      if ($scope.adminName == null || $scope.adminName.length < 1) {
-        $scope.adminNameValid = false;
-        formOk = false;
-      }
-      else {
-        $scope.adminNameValid = true;
-      }
+    if ($scope.adminName == null || $scope.adminName.length < 1) {
+      $scope.adminNameValid = false;
+      formOk = false;
+    }
+    else {
+      $scope.adminNameValid = true;
+    }
 
-      if ($scope.adminPassword == null || $scope.adminPassword.length < 1) {
-        $scope.adminPasswordValid = false;
-        formOk = false;
-      }
-      else {
-        $scope.adminPasswordValid = true;
-      }
+    if ($scope.adminPassword == null || $scope.adminPassword.length < 1) {
+      $scope.adminPasswordValid = false;
+      formOk = false;
+    }
+    else {
+      $scope.adminPasswordValid = true;
+    }
 
-      if (!($scope.adminPassword === $scope.adminPasswordConfirmation)) {
-        $scope.adminPasswordConfirmationValid = false;
-        formOk = false;
-      }
-      else {
-        $scope.adminPasswordConfirmationValid = true;
-      }
+    if (!($scope.adminPassword === $scope.adminPasswordConfirmation)) {
+      $scope.adminPasswordConfirmationValid = false;
+      formOk = false;
+    }
+    else {
+      $scope.adminPasswordConfirmationValid = true;
+    }
 
-      if (!($scope.userPassword === $scope.userPasswordConfirmation)) {
-        $scope.userPasswordConfirmationValid = false;
-        formOk = false;
-      }
-      else {
-        $scope.userPasswordConfirmationValid = true;
-      }
+    if (!($scope.userPassword === $scope.userPasswordConfirmation)) {
+      $scope.userPasswordConfirmationValid = false;
+      formOk = false;
+    }
+    else {
+      $scope.userPasswordConfirmationValid = true;
+    }
 
-      return formOk;
+    return formOk;
   }
 
   $scope.createPoll = function () {
 
-    if (! $scope.checkFormFields())
-    {
+    if (!$scope.checkFormFields()) {
       return;
     }
 
@@ -434,7 +441,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
         public_results: $scope.isPublic
       }
     }).success(function (data, status, headers, config) {
-        openModal($uibModal, "Succès!", "Le sondage a été créé", "alert-success");
+      openModal($uibModal, "Succès!", "Le sondage a été créé", "alert-success");
       // We retrieve the pollId.
       $scope.pollId = data.id;
       // New actions are now available.
@@ -449,9 +456,8 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   }
 
   $scope.updatePoll = function () {
-    if (! $scope.checkFormFields())
-    {
-    return;
+    if (!$scope.checkFormFields()) {
+      return;
     }
 
     $http({
@@ -462,7 +468,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
         creator: $scope.adminName,
         admin_password: $scope.adminPassword,
         user_password: $scope.userPassword,
-        state : "open",
+        state: "open",
         public_results: $scope.isPublic
       }
     }).success(function (data, status, headers, config) {
@@ -487,7 +493,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       method: "DELETE",
       data: {}
     }).success(function (data, status, headers, config) {
-        openModal($uibModal, "Succès!", "Le sondage a été supprimé", "alert-success");
+      openModal($uibModal, "Succès!", "Le sondage a été supprimé", "alert-success");
       $state.go('listPolls');
     }).error(function (data, status, headers, config) {
       openModal($uibModal, "Erreur!", "Le sondage n'a pas pu être supprimé", "alert-danger");
@@ -517,10 +523,11 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.isOptional = false;
 });
 
-northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, $uibModal) {
+northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, $uibModal, $state) {
   $scope.questions = [];
   $scope.choices = [{text: '', correct: false}];
   $scope.modify = false;
+  $scope.isOptional = false;
 
   $http.get("/api/polls/" + $stateParams.pollId + "/questions?pass=" + $stateParams.pass).then(function (response) {
     $scope.questions = $scope.questions.concat(response.data.questions);
@@ -542,6 +549,7 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, 
   /* Add the question to the poll. If an error is encountered an alert is displayed.
    Upon success the fields are renitialized and an alret is also displayed. */
   $scope.addQuestion = function () {
+    console.log($scope.isOptional);
     $http.post("/api/polls/" + $stateParams.pollId + "/questions",
       {
         text: $scope.questionText,
@@ -551,15 +559,16 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, 
       }
     ).then(function (response) {
         $scope.questions = $scope.questions.concat(response.data.questions);
-      }, function(response) {
+        openModal($uibModal, "Succès!", "La question a correctement été ajoutée au sondage", "alert-success");
+      }, function (response) {
+        openModal($uibModal, "Erreur!", "Impossible d'ajouter cette question, " + response.data.errors[0] +
+          " semble ne pas être correctement resnseigné", "alert-danger");
         console.log(response);
       });
   }
 
   $scope.modifyQuestion = function () {
-      openModal($uibModal, "Alert!", "Doesn't work yet, put in api not implemented", "alert-warning");
-    /*
-    $http.put("/api/polls/" + $stateParams.pollId + "/questions",
+    $http.put("/api/polls/" + $stateParams.pollId + "/questions/" + $scope.select.id,
       {
         text: $scope.questionText,
         choices_available: $scope.maxChoices,
@@ -567,17 +576,23 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, 
         choices: $scope.choices
       }
     ).then(function (response) {
-        $scope.questions = $scope.questions.concat(response.data.questions);
-      });*/
+        openModal($uibModal, "Succès!", "Cette question a correctement été mise à jour", "alert-success");
+      }, function(response) {
+        openModal($uibModal, "Erreur!", "Impossible de mettre à jour cette question", "alert-danger");
+      });
   }
 
-  $scope.createNewQuestion = function() {
+  $scope.createNewQuestion = function () {
     $scope.modify = false;
     $scope.questionText = undefined;
     $scope.maxChoices = undefined;
-    $scope.isOptional = undefined;
+    $scope.isOptional = false;
     $scope.select = undefined;
     $scope.choices = [{text: '', correct: false}];
+  }
+
+  $scope.backToPoll = function() {
+    $state.go('editPoll', {pollId: $stateParams.pollId, pass: $stateParams.pass});
   }
 });
 
@@ -659,13 +674,13 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, $uibModal, mySocket,
         method: "POST",
         data: {results: $scope.results}
       }).success(function (data, status, headers, config) {
-      
-      openModal($uibModal, "Réponses envoyées!", "Vous avez participé au sondage, les résultats ont été envoyés.", "alert-success");
-        
+
+        openModal($uibModal, "Réponses envoyées!", "Vous avez participé au sondage, les résultats ont été envoyés.", "alert-success");
+
       }).error(function (data, status, headers, config) {
         openModal($uibModal, "Erreur!", "Vos résultats n'ont pas pu être envoyés", "alert-danger");
       });
-      
+
       $state.go('listPolls');
     }
   }
@@ -691,23 +706,23 @@ northPoll.controller("modalMessageCtrl", function ($scope, $uibModalInstance, ms
   $scope.close = function () {
     $uibModalInstance.close();
   };
-  
+
   // The popup will automatically close after 4 seconds
-  setTimeout(function(){
-      $scope.close();
-      }, 4000);
-  
+  setTimeout(function () {
+    $scope.close();
+  }, 4000);
+
   // We load the parameters
   $scope.msg = msg;
   $scope.txt = txt;
   $scope.colorClass = colorClass;
 });
 
-northPoll.controller("manageInstCtrl", function($scope, $http, $state, $stateParams, $uibModal) {
-    $scope.instances = [];
-    $scope.pollId = $stateParams.pollId;
-    
-    // We load the instances
+northPoll.controller("manageInstCtrl", function ($scope, $http, $state, $stateParams, $uibModal) {
+  $scope.instances = [];
+  $scope.pollId = $stateParams.pollId;
+
+  // We load the instances
   $http.get("/api/polls/" + $scope.pollId + "/instances").then(function (response) {
     $scope.instances = response.data.instances;
   });
@@ -727,15 +742,15 @@ northPoll.controller("manageInstCtrl", function($scope, $http, $state, $statePar
       openModal($uibModal, "Erreur!", "L'instance n'a pas pu être créée", "alert-danger");
     });
   }
-  
+
   // Delete an instance
   $scope.deleteInstance = function (id) {
     $http({
       url: "/api/polls/" + $scope.pollId + "/instances/" + id,
       method: "DELETE"
     }).success(function (data, status, headers, config) {
-        
-        // If the instance was successfully deleted, no need to reload the instance array, we simply delete the row, on client side
+
+      // If the instance was successfully deleted, no need to reload the instance array, we simply delete the row, on client side
       for (i in $scope.instances) {
         if ($scope.instances[i].id === id) {
           $scope.instances.remove(i);
@@ -747,11 +762,11 @@ northPoll.controller("manageInstCtrl", function($scope, $http, $state, $statePar
     });
   }
 
-  $scope.backToPoll = function() {
-      $state.go('editPoll', {pollId: $scope.pollId, pass: $stateParams.pass});
+  $scope.backToPoll = function () {
+    $state.go('editPoll', {pollId: $scope.pollId, pass: $stateParams.pass});
   };
 
-  $scope.showResults = function(id) {
-      openModal($uibModal, "Alert!", "Doesn't work yet", "alert-warning");
+  $scope.showResults = function (id) {
+    $state.go('statsInstancePoll', {pollId: $scope.pollId, instId:id, pass:$stateParams.pass});
   };
 });
