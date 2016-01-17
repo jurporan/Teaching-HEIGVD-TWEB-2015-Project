@@ -3,7 +3,7 @@ section
     .section-header
       div(ng-controller='PollController')
           h2.section-title.text-center.wow.fadeInDown {{ actionString }}
-          form.form-horizontal(ng-show='formVisible')
+          form.form-horizontal
               .form-group(ng-class="{'has-error' : !pollNameValid}")
                   label.control-label.col-xs-2(for='pollName') Nom du sondage*
                   .col-xs-10
@@ -47,59 +47,8 @@ section
                               | Résultats publics
 
                 .btn-group.btn-group-justified
-                      span.btn.btn-primary.btn-form(role='button', ng-disabled = '!create', ng-click="createPoll()") Créer un sondage
-                      span.btn.btn-primary.btn-form(role='button', ng-disabled = '!edit', ng-click="updatePoll()") Modifier Sondage
+                      span.btn.btn-primary.btn-form(role='button', ng-disabled = '!create', ng-click="createPoll()") Créer le sondage
+                      span.btn.btn-primary.btn-form(role='button', ng-disabled = '!edit', ng-click="updatePoll()") Modifier le sondage
                       span.btn.btn-primary.btn-form(role='button', ng-disabled='!deletePossible', ng-click = "deletePoll()") Supprimer Sondage
-                      span.btn.btn-primary.btn-form(role='button', ng-click='manageQuestions()') Gérer les questions
-                      span.btn.btn-primary.btn-form(role='button', ng-click='manageInstances()') Gérer les instances
-
-
-
-          //form.form-horizontal(ng-show='questionVisible')
-              .form-group
-                  label.control-label.col-xs-2 Intitulé de la question
-                  .col-xs-10
-                    input.form-control(type='text', placeholder='Intitulé', ng-model='questionText')
-              .form-group
-                  label.control-label.col-xs-2(for='maxChoices') Nombre maximum de réponses
-                  .col-xs-10
-                    input#maxChoices.form-control(type='number', ng-model='maxChoices', max='choices.length > 0 ? choices.length : 1', min='1')
-              .form-group
-                .col-xs-offset-2.col-xs-10
-                    .checkbox
-                        label
-                            input(type='checkbox', ng-model='isOptional')
-                            | Question optionnelle
-              .form-group(ng-repeat='choice in choices')
-                  label.control-label.col-xs-2 Intitulé de la réponse
-                  .col-xs-10
-                    input.form-control(type='text', ng-model='choice.text')
-                    .checkbox
-                        label
-                            input(type='checkbox', ng-model='choice.correct')
-                            | Choix correct
-              .form-group(ng-show='choices.length > 0')
-                .col-xs-offset-2.col-xs-10
-                  span.btn.btn-primary#actionPoll(role='button', ng-click='choices.pop()') Supprimer un choix
-
-              .form-group
-                  label.control-label.col-xs-2 Intitulé de la réponse
-                  .col-xs-10
-                    input.form-control(type='text', ng-model='choiceText', placeholder='Choix')
-                    .checkbox
-                        label
-                            input(type='checkbox', ng-model='isCorrect')
-                            | Choix correcte
-              .form-group
-                .col-xs-offset-2.col-xs-10
-                    span.btn.btn-primary(role='button', ng-click="addChoice()") Ajouter un choix
-
-              .form-group
-                  .col-xs-offset-2.col-xs-10
-                      span.btn.btn-primary(role='button', ng-click="addQuestion()") Ajouter la question au sondage
-              .form-group
-                  .col-xs-offset-2.col-xs-10
-                      span.btn.btn-primary#actionPoll(role='button', ng-click="modifyPoll()") Retour au sondage
-                      
-                      
-
+                      span.btn.btn-primary.btn-form(role='button', ng-click='manageQuestions()' ng-disabled = '!questionAvailable') Gérer les questions
+                      span.btn.btn-primary.btn-form(role='button', ng-click='manageInstances()' ng-disabled = '!instanceAvailable') Gérer les instances

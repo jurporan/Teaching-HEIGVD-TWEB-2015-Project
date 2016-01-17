@@ -333,20 +333,16 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
 
   instances = [];
 
-  $scope.formVisible = true;
-  $scope.questionVisible = false;
   $scope.questionAvailable = false;
   $scope.deletePossible = false;
-  $scope.instancesVisible = false;
+  $scope.instanceAvailable = false;
   $scope.isPublic = false;
-  $scope.questionAdded = false;
 
   if ($scope.edit) {
     $scope.actionString = "Modifier le sondage";
-    $scope.questionVisible = false;
     $scope.questionAvailable = true;
     $scope.deletePossible = true;
-    $scope.instancesVisible = true;
+    $scope.instanceAvailable = true;
 
     $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass).then(function (response) {
       $scope.pollName = response.data.name;
@@ -357,6 +353,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       $scope.userPasswordConfirmation = response.data.user_password;
       $scope.isPublic = response.data.public_results;
       $scope.pollId = response.data.id;
+      $scope.pollState = response.data.state;
     }, function () {
       var modalInstance = $uibModal.open({
         templateUrl: 'views/partials/modalErrorPassword.jade',
@@ -448,6 +445,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       $scope.edit = true;
       $scope.create = false;
       $scope.questionAvailable = true;
+      $scope.instanceAvailable = true;
       $state.go("editPoll", {pollId: $scope.pollId, pass: $scope.adminPassword});
 
     }).error(function (data, status, headers, config) {
@@ -459,7 +457,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
     if (!$scope.checkFormFields()) {
       return;
     }
-
+    alert($scope.pollState);
     $http({
       url: "/api/polls/" + $scope.pollId,
       method: "PUT",
@@ -468,7 +466,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
         creator: $scope.adminName,
         admin_password: $scope.adminPassword,
         user_password: $scope.userPassword,
-        state: "open",
+        state: $scope.pollState,
         public_results: $scope.isPublic
       }
     }).success(function (data, status, headers, config) {
@@ -499,28 +497,6 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       openModal($uibModal, "Erreur!", "Le sondage n'a pas pu être supprimé", "alert-danger");
     });
   }
-
-  /* When the user wishes to add questions to the poll, we change the view to
-   display the question creation form. */
-  $scope.createQuestion = function () {
-    $scope.formVisible = false;
-    $scope.questionVisible = true;
-    $scope.instancesVisible = false;
-  }
-
-  /* Changes the UI when the user wished to return to the main form. */
-  $scope.modifyPoll = function () {
-    $scope.formVisible = true;
-    $scope.questionVisible = false;
-  }
-
-  /* Array used to add choices to the form. When a choice is added a new
-   field will be added to the UI.*/
-  $scope.choices = [];
-  /* Initialization of the creation form checkbox. If they are not it could
-   cause errors if they are not checked by the user. */
-  $scope.isCorrect = false;
-  $scope.isOptional = false;
 });
 
 northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, $uibModal, $state) {
@@ -529,12 +505,20 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, 
   $scope.modify = false;
   $scope.isOptional = false;
 
+  $scope.questionTextValid = true;
+  $scope.numberOfPossibleChoicesValid = true;
+
   $http.get("/api/polls/" + $stateParams.pollId + "/questions?pass=" + $stateParams.pass).then(function (response) {
     $scope.questions = $scope.questions.concat(response.data.questions);
   });
 
   // Add the choice in the lower part of the UI to the array and renitialize the fields.
   $scope.addChoice = function () {
+    if($scope.choices[$scope.choices.length - 1].text === ''){
+         openModal($uibModal, "Erreur!", "Le texte d'un choix ne peut pas être vide !", "alert-danger");
+        return;
+    }
+
     $scope.choices.push({text: '', correct: false});
   }
 
@@ -549,6 +533,21 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, 
   /* Add the question to the poll. If an error is encountered an alert is displayed.
    Upon success the fields are renitialized and an alret is also displayed. */
   $scope.addQuestion = function () {
+
+    if ($scope.questionText  == null || $scope.questionText === '')
+      { $scope.questionTextValid = false; }
+    else { $scope.questionTextValid =  true; }
+
+    if ($scope.maxChoices  == null || $scope.maxChoices === ''
+        || $scope.maxChoices < 0 || $scope.maxChoices > $scope.choices.length)
+      { $scope.numberOfPossibleChoicesValid = false; }
+    else { $scope.numberOfPossibleChoicesValid =  true; }
+
+    if (!$scope.questionTextValid || !$scope.numberOfPossibleChoicesValid)
+    {
+        return;
+    }
+
     console.log($scope.isOptional);
     $http.post("/api/polls/" + $stateParams.pollId + "/questions",
       {
@@ -562,7 +561,7 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, 
         openModal($uibModal, "Succès!", "La question a correctement été ajoutée au sondage", "alert-success");
       }, function (response) {
         openModal($uibModal, "Erreur!", "Impossible d'ajouter cette question, " + response.data.errors[0] +
-          " semble ne pas être correctement resnseigné", "alert-danger");
+          " semble ne pas être correctement renseigné", "alert-danger");
         console.log(response);
       });
   }
