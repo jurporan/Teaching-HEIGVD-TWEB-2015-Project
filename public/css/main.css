@@ -20,7 +20,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: 600;
+  font-weight: 200;
   font-family: 'Roboto', sans-serif;
   color: #000000;
 }
@@ -42,7 +42,7 @@ hr {
 }
 
 .section-header .section-title {
-  font-size: 44px;
+  font-size: 36px;
   color: #545454;
   text-transform: uppercase;
   position: relative;
@@ -210,11 +210,14 @@ ul.nostyle i {
 padding-left: 0px; padding-right: 0px;
 position: relative;
 margin-top: 200px;
+  font-weight: 400;
 }
 
 .span.btn.btn-primary.btn-form {
 	margin:10px;
 }
+ 
+ .big-checkbox {width: 30px; height: 30px;}
  
 .nav.main-tab {
   background: #eee;
