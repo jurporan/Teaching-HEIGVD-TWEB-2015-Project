@@ -1,20 +1,21 @@
 
-h2.welcome(ng-controller='statsAppController')
-      span NorthPoll
+h2.welcome(style='color: #545454;')(ng-controller='statsAppController')
+      NorthPoll
       |  Gardez vos réponses au frais !
       br
       br
-      span {{ total }}
+      span(style='color: #1899C4;') {{ total }}
       |  sondages
-      span  existants
+      span(style='color: #1899C4;')  existants
       br
-      span  {{ recent }}
+      span(style='color: #1899C4;')  {{ recent }}
       |  sondages
-      span  récents
+      span(style='color: #1899C4;')  récents
       br
-      span  {{ open }}
+      span(style='color: #1899C4;')  {{ open }}
       |  sondages
-      span  ouverts 
+      span(style='color: #1899C4;')  ouverts 
+      
       button.btn.btn-primary.btn-lg(href="#answer" style="margin-top: -10px;" class="btn pull-right", ng-click="goToPolls()") Explorer !
 
 

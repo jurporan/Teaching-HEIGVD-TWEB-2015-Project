@@ -21,15 +21,15 @@ section
                   span.label.label-danger(ng-if='poll.state=="closed"') Fermé
                 td {{poll.creator}}
                 td
-                  button.btn.btn-primary(type="button", ng-click='openModal(poll.id, instance.id, "editPoll")') Modifier
+                  button.btn.btn-primary.btn-xs(type="button", ng-click='openModal(poll.id, instance.id, "editPoll")') Modifier
               tr.clicker(ng-repeat='instance in poll.instances')
                 td {{instance.name}}
 
                 td(colspan='2')
                   span#polls_controls
                     //button.btn.btn-primary(type="button", ui-sref='answerInstancePoll({instId:instance.id, pollId:poll.id})') Participer
-                    button.btn.btn-primary(type="button", ng-click='openModal(poll.id, instance.id, "answerInstancePoll")') Participer
-                    button.btn.btn-primary(type="button", ui-sref='statsInstancePoll({instId:instance.id, pollId:poll.id})', ng-disabled='!poll.public_results') Statistiques
+                    button.btn.btn-primary.btn-xs(type="button", ng-click='openModal(poll.id, instance.id, "answerInstancePoll")') Participer
+                    button.btn.btn-primary.btn-xs(type="button", ui-sref='statsInstancePoll({instId:instance.id, pollId:poll.id})', ng-disabled='!poll.public_results') Statistiques
 
 
 
