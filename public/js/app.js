@@ -107,7 +107,7 @@ northPoll.controller("statsInstanceController", function ($scope, $http, mySocke
   $scope.pass = $stateParams.pass;
 
   var url = "api/polls/" + $scope.pollId;
-  if($scope.pass !== undefined) {
+  if ($scope.pass !== undefined) {
     url += "?pass=" + $scope.pass;
   }
 
@@ -283,28 +283,21 @@ northPoll.controller("ModalInstanceCtrl", function ($scope, $uibModalInstance, p
                                                     instId, $uibModal, $state, action) {
   $scope.ok = function () {
     $http.get("/api/polls/" + pollId + "?pass=" + $scope.pass).then(function (response) {
-      console.log("here");
-      $uibModalInstance.close('ok');
-      $state.go(action, {instId: instId, pollId: pollId, pass: $scope.pass});
-    }, function (response) {
-      console.log("dfasfd");
-      var modalInstance = $uibModal.open({
-        templateUrl: 'views/partials/modalErrorPassword.jade',
-        controller: 'ErrorPasswordCtrl',
-        backdrop: true,
-        keyboard: true,
-        backdropClick: true,
-        size: 'lg'
-      });
+      if(response.data.admin_password === undefined) {
+        var modalInstance = $uibModal.open({
+          templateUrl: 'views/partials/modalErrorPassword.jade',
+          controller: 'ErrorPasswordCtrl',
+          backdrop: true,
+          keyboard: true,
+          backdropClick: true,
+          size: 'lg'
+        });
+      } else {
+        $uibModalInstance.close('ok');
+        $state.go(action, {instId: instId, pollId: pollId, pass: $scope.pass});
+      }
     });
-    /*if ($scope.pass === passRequired) {
-     $uibModalInstance.close('ok');
-     $state.go(action, {instId: instId, pollId: pollId});
-     } else {
-     // Password failed
-
-     }*/
-  };
+  }
 
   $scope.cancel = function () {
     $uibModalInstance.dismiss('cancel');
@@ -576,7 +569,7 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, 
       }
     ).then(function (response) {
         openModal($uibModal, "Succès!", "Cette question a correctement été mise à jour", "alert-success");
-      }, function(response) {
+      }, function (response) {
         openModal($uibModal, "Erreur!", "Impossible de mettre à jour cette question", "alert-danger");
       });
   }
@@ -590,7 +583,7 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, 
     $scope.choices = [{text: '', correct: false}];
   }
 
-  $scope.backToPoll = function() {
+  $scope.backToPoll = function () {
     $state.go('editPoll', {pollId: $stateParams.pollId, pass: $stateParams.pass});
   }
 });
@@ -820,6 +813,6 @@ northPoll.controller("manageInstCtrl", function ($scope, $http, $state, $statePa
   };
 
   $scope.showResults = function (id) {
-    $state.go('statsInstancePoll', {pollId: $scope.pollId, instId:id, pass:$stateParams.pass});
+    $state.go('statsInstancePoll', {pollId: $scope.pollId, instId: id, pass: $stateParams.pass});
   };
 });

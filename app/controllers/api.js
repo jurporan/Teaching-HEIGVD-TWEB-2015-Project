@@ -162,7 +162,9 @@ router.get('/polls/stats', function (req, res) {
 router.get('/polls/:pollid', function (req, res) {
   var response = {};
 
+  console.log("dsafds");
   checkPasswordPoll(req.params.pollid, req.query.pass, function (pass) {
+    console.log(pass);
     if (req.params.pollid === 'draft' ||
       req.params.pollid === 'open' ||
       req.params.pollid === 'closed') {
