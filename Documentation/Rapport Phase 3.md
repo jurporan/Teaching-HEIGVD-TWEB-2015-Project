@@ -45,4 +45,24 @@ Les flèches sont les interactions logiques.
 
 Depuis toute page du site, y compris la page d'accueil, qui affiche simplement les statistiques actuelles du site, il est possible de directement "sauter" vers les pages de création de sondage ou de liste des sondages. Les flèches sont donc représentatives des actions "logiques" que l'on peut effectuer sur une page.
 
-La page d'accueil...
+**Page d'accueil**
+
+![Page d'accueil](img/welcome.png)
+
+La page d'accueil affiche quelques statistiques concernant les sondages actuellement présents sur le serveur. Le bouton explorer mène directement sur la page de liste des sondages, aussi accessible via le menu en haut à droite.
+
+**Liste des sondages et des instances**
+
+![Page d'accueil](img/polls.png)
+
+Cette page liste les sondages actuellement disponibles et une pastille indique leur état. En dessous de chacun d'entre eux sont listées les instances de chaque sondage, et deux boutons permettent de participer au sondage (peut réquérir un mot de passe) et de visualiser les résultats en temps réel. Tout à leur droite, un bouton permet de gérer le sondage (modifier ses propriétés, gérer les questions, gérer les instances).
+
+![Page d'accueil](img/answer.png)
+
+![Page d'accueil](img/results.png)
+
+![Page d'accueil](img/create.png)
+
+![Page d'accueil](img/questions.png)
+
+![Page d'accueil](img/instances.png)
