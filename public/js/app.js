@@ -434,6 +434,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
         public_results: $scope.isPublic
       }
     }).success(function (data, status, headers, config) {
+        openModal($uibModal, "Succès!", "Le sondage a été créé", "alert-success");
       // We retrieve the pollId.
       $scope.pollId = data.id;
       // New actions are now available.
@@ -486,6 +487,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       method: "DELETE",
       data: {}
     }).success(function (data, status, headers, config) {
+        openModal($uibModal, "Succès!", "Le sondage a été supprimé", "alert-success");
       $state.go('listPolls');
     }).error(function (data, status, headers, config) {
       openModal($uibModal, "Erreur!", "Le sondage n'a pas pu être supprimé", "alert-danger");
@@ -515,7 +517,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   $scope.isOptional = false;
 });
 
-northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http) {
+northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, $uibModal) {
   $scope.questions = [];
   $scope.choices = [{text: '', correct: false}];
   $scope.modify = false;
@@ -555,7 +557,7 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http) 
   }
 
   $scope.modifyQuestion = function () {
-    alert("Doesn't work yet, put in api not implemented");
+      openModal($uibModal, "Alert!", "Doesn't work yet, put in api not implemented", "alert-warning");
     /*
     $http.put("/api/polls/" + $stateParams.pollId + "/questions",
       {
@@ -699,7 +701,7 @@ northPoll.controller("modalMessageCtrl", function ($scope, $uibModalInstance, ms
   $scope.colorClass = colorClass;
 });
 
-northPoll.controller("manageInstCtrl", function($scope, $http, $state, $stateParams) {
+northPoll.controller("manageInstCtrl", function($scope, $http, $state, $stateParams, $uibModal) {
     $scope.instances = [];
     $scope.pollId = $stateParams.pollId;
 
@@ -744,6 +746,6 @@ northPoll.controller("manageInstCtrl", function($scope, $http, $state, $statePar
   };
 
   $scope.showResults = function(id) {
-      alert(id);
+      openModal($uibModal, "Alert!", "Doesn't work yet", "alert-warning");
   };
 });
