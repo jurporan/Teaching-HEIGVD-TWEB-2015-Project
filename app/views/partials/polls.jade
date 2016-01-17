@@ -10,11 +10,13 @@ section
           thead
             tr
               th Nom
+              th status
               th Créateur
               th Contrôles
             tbody(ng-repeat='poll in polls')
               tr.clicker
-                th {{poll.name}} &nbsp;
+                th {{poll.name}} 
+                th
                   // Selection du badge selon l'état du sondage
                   span.label.label-success(ng-if='poll.state=="open"') Ouvert
                   span.label.label-info(ng-if='poll.state=="draft"') Initialisé
@@ -22,10 +24,11 @@ section
                 td {{poll.creator}}
                 td
                   button.btn.btn-primary.btn-xs(type="button", ng-click='openModal(poll.id, instance.id, "editPoll")') Modifier
+              
               tr.clicker(ng-repeat='instance in poll.instances')
                 td {{instance.name}}
 
-                td(colspan='2')
+                td(colspan='4')
                   span#polls_controls
                     //button.btn.btn-primary(type="button", ui-sref='answerInstancePoll({instId:instance.id, pollId:poll.id})') Participer
                     button.btn.btn-primary.btn-xs(type="button", ng-click='openModal(poll.id, instance.id, "answerInstancePoll")') Participer

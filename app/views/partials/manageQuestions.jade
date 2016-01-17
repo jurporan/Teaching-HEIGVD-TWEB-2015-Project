@@ -12,16 +12,18 @@ form.form-horizontal(ng-controller='manageQuestsCtrl')
       span.btn.btn-primary.pull-right(role='button', ng-click='createNewQuestion()') Créer une nouvelle question
 
   .form
-    .form-group
+    .form-group(ng-class="{'has-error' : !questionTextValid}")
       label.control-label Intitulé de la question
       input.form-control(type='text', placeholder='Intitulé de la question', ng-model='questionText')
+      p.help-block(ng-hide='questionTextValid') Ce champ est obligatoire.
       checkbox.big-checkbox
           label
           input(type='checkbox', ng-model='isOptional')
           | question optionnelle
-    .form-group
+    .form-group(ng-class="{'has-error' : !numberOfPossibleChoicesValid}")
         label.control-label(for='maxChoices') Nombre maximum de réponses à la question que peut donner l'utilisateur
         input#maxChoices.form-control(type='number', ng-model='maxChoices', max='choices.length > 0 ? choices.length : 1', min='1')
+        p.help-block(ng-hide='numberOfPossibleChoicesValid') Le nombre de choix doit être plus grand ou égal à 0 et inférieur ou égal au nombre de choix.
     .form-group(ng-repeat='choice in choices')
           label Intitulé de la réponse
           input.form-control(type='text', placeholder='Intitulé de la réponse', ng-model='choice.text')
@@ -38,4 +40,3 @@ form.form-horizontal(ng-controller='manageQuestsCtrl')
       span.btn.btn-primary(role='button', ng-click="modifyQuestion()", ng-disabled='!modify',ng-show='choices.length > 0') Modifier la question
 
   span.btn.btn-primary.pull-right#actionPoll(role='button', ng-click="backToPoll()") Retour au sondage
-
