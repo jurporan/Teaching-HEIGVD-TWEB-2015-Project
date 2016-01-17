@@ -3,10 +3,9 @@
 // Partie contenu
 section
   .container
-    .section-header
-      h2.section-title.text-center.wow.fadeInDown Sondages
+    .section-header   
+      h2.section-title.text-center.wow.fadeInDown(ng-controller='pollsController') Il y a {{ polls.length }} sondages existants
       div(ng-controller='pollsController')
-        p Il y a {{ polls.length }} sondages existants.
         table.table.table-hover
           thead
             tr

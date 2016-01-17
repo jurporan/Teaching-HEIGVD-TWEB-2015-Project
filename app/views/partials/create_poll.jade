@@ -46,17 +46,13 @@ section
                               input(type='checkbox', ng-model='isPublic')
                               | Résultats publics
 
-                .div
-                  .col-xs-2
-                      span.btn.btn-primary(role='button', ng-disabled = '!create', ng-click="createPoll()") Créer un sondage
-                  .col-xs-2
-                      span.btn.btn-primary(role='button', ng-disabled = '!edit', ng-click="updatePoll()") Modifier Sondage
-                  .col-xs-2
-                      span.btn.btn-primary(role='button', ng-disabled='!deletePossible', ng-click = "deletePoll()") Supprimer Sondage
-                  .col-xs-2
-                      span.btn.btn-primary(role='button', ng-click='manageQuestions()') Gérer les questions
-                  .col-xs-2
-                      span.btn.btn-primary(role='button', ng-click='manageInstances()') Gérer les instances
+                .btn-group.btn-group-justified
+                      span.btn.btn-primary.btn-form(role='button', ng-disabled = '!create', ng-click="createPoll()") Créer un sondage
+                      span.btn.btn-primary.btn-form(role='button', ng-disabled = '!edit', ng-click="updatePoll()") Modifier Sondage
+                      span.btn.btn-primary.btn-form(role='button', ng-disabled='!deletePossible', ng-click = "deletePoll()") Supprimer Sondage
+                      span.btn.btn-primary.btn-form(role='button', ng-click='manageQuestions()') Gérer les questions
+                      span.btn.btn-primary.btn-form(role='button', ng-click='manageInstances()') Gérer les instances
+
 
 
           //form.form-horizontal(ng-show='questionVisible')
@@ -104,3 +100,6 @@ section
               .form-group
                   .col-xs-offset-2.col-xs-10
                       span.btn.btn-primary#actionPoll(role='button', ng-click="modifyPoll()") Retour au sondage
+                      
+                      
+
