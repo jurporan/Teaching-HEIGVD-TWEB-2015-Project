@@ -6,7 +6,7 @@ form.form-horizontal(ng-controller='manageQuestsCtrl')
   .div
     .form-inline
       .form-group
-        label Sélectionner une question existante
+        label Modifier une question existante
         select.form-control(ng-change='selectChoice()', ng-model='select', ng-options="question as question.text for question in questions" )
 
       span.btn.btn-primary.pull-right(role='button', ng-click='createNewQuestion()') Créer une nouvelle question
@@ -15,24 +15,24 @@ form.form-horizontal(ng-controller='manageQuestsCtrl')
     .form-group
       label.control-label Intitulé de la question
       input.form-control(type='text', placeholder='Intitulé de la question', ng-model='questionText')
-    
+      checkbox.big-checkbox
+          label 
+          input(type='checkbox', ng-model='isOptional') 
+          | question optionnelle
     
     .form-group
-      label.control-label(for='maxChoices') Nombre maximum de réponses
-      input#maxChoices.form-control(type='number', ng-model='maxChoices', max='choices.length > 0 ? choices.length : 1', min='1')
+        label.control-label(for='maxChoices') Nombre maximum de réponses à la question que peut donner l'utilisateur 
+        input#maxChoices.form-control(type='number', ng-model='maxChoices', max='choices.length > 0 ? choices.length : 1', min='1')
+        
 
-    .checkbox
-          label 
-             input(type='checkbox', ng-model='isOptional')
-             | question optionnelle
-          
     .form-group(ng-repeat='choice in choices')
-      label.control-label Intitulé de la réponse
-        input.form-control(type='text', placeholder='Intitulé de la réponse', ng-model='choice.text')
-        .checkbox
-          label
+          label Intitulé de la réponse
+          input.form-control(type='text', placeholder='Intitulé de la réponse', ng-model='choice.text')
+          checkbox
+            label
             input(type='checkbox', ng-model='choice.correct')
-            | Choix correct
+            | choix correct
+
 
   .div(ng-show='choices.length > 0')
       span.btn.btn-primary#actionPoll(role='button', ng-click='choices.pop()') Supprimer un choix
