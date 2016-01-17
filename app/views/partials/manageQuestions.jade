@@ -2,7 +2,7 @@
 h2.section-title.text-center.wow.fadeInDown Gérer les questions
 
 form.form-horizontal(ng-controller='manageQuestsCtrl')
-  
+
   .div
     .form-inline
       .form-group
@@ -10,22 +10,22 @@ form.form-horizontal(ng-controller='manageQuestsCtrl')
         select.form-control(ng-change='selectChoice()', ng-model='select', ng-options="question as question.text for question in questions" )
 
       span.btn.btn-primary.pull-right(role='button', ng-click='createNewQuestion()') Créer une nouvelle question
-  
+
   .form
     .form-group
       label.control-label Intitulé de la question
       input.form-control(type='text', placeholder='Intitulé de la question', ng-model='questionText')
-    
-    
+
+
     .form-group
       label.control-label(for='maxChoices') Nombre maximum de réponses
       input#maxChoices.form-control(type='number', ng-model='maxChoices', max='choices.length > 0 ? choices.length : 1', min='1')
 
     .checkbox
-          label 
+          label
              input(type='checkbox', ng-model='isOptional')
              | question optionnelle
-          
+
     .form-group(ng-repeat='choice in choices')
       label.control-label Intitulé de la réponse
         input.form-control(type='text', placeholder='Intitulé de la réponse', ng-model='choice.text')
@@ -34,11 +34,11 @@ form.form-horizontal(ng-controller='manageQuestsCtrl')
             input(type='checkbox', ng-model='choice.correct')
             | Choix correct
 
-  .div(ng-show='choices.length > 0')
-      span.btn.btn-primary#actionPoll(role='button', ng-click='choices.pop()') Supprimer un choix
+  .div
+      span.btn.btn-primary#actionPoll(role='button', ng-click='choices.pop()',ng-show='choices.length > 0') Supprimer un choix
       span.btn.btn-primary(role='button', ng-click="addChoice()") Ajouter un choix
-      span.btn.btn-primary(role='button', ng-click="addQuestion()", ng-disabled='modify') Ajouter la question
-      span.btn.btn-primary(role='button', ng-click="modifyQuestion()", ng-disabled='!modify') Modifier la question
-  
-span.btn.btn-primary.pull-right#actionPoll(role='button', ng-click="modifyPoll()") Retour au sondage
+      span.btn.btn-primary(role='button', ng-click="addQuestion()", ng-disabled='modify',ng-show='choices.length > 0') Ajouter la question
+      span.btn.btn-primary(role='button', ng-click="modifyQuestion()", ng-disabled='!modify',ng-show='choices.length > 0') Modifier la question
+
+  span.btn.btn-primary.pull-right#actionPoll(role='button', ng-click="backToPoll()") Retour au sondage
 

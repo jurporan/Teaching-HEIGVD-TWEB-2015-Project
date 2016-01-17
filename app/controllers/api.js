@@ -547,15 +547,13 @@ router.put('/polls/:pollid', function (req, res) {
 });
 
 router.put('/polls/:pollid/questions/:questionid', function (req, res) {
-  Poll.findOne({_id: req.params.pollid}, function (err, poll) {
-    if (err) throw  err;
-    poll.name = req.body.name;
-    poll.creationDate = req.body.creationDate;
-    poll.creator = req.body.creator;
-    poll.admin_password = req.body.admin_password;
-    poll.user_password = req.body.user_password;
-    poll.state = req.body.state;
-    poll.save();
+  Question.findById(req.params.questionid, function (err, quest) {
+    if (err) return res.status(500).send("Couldn't find the specified question");
+    quest.text = req.body.text;
+    quest.choices_available = req.body.choices_available;
+    quest.optional = req.body.optional;
+    quest.choices = req.body.choices;
+    quest.save();
     res.status(200).send();
   });
 });
