@@ -443,7 +443,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
       $state.go("editPoll", {pollId: $scope.pollId, pass: $scope.adminPassword});
 
     }).error(function (data, status, headers, config) {
-      alert("Erreur lors de l'envoi");
+      openModal($uibModal, "Erreur!", "Le sondage n'a pas pu être créé", "alert-danger");
     });
   }
 
@@ -465,9 +465,9 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
         public_results: $scope.isPublic
       }
     }).success(function (data, status, headers, config) {
-      alert("Le sondage a été modifiée.");
+      openModal($uibModal, "Succès!", "Le sondage a été modifié", "alert-success");
     }).error(function (data, status, headers, config) {
-      alert("Erreur lors de l'envoi");
+      openModal($uibModal, "Erreur!", "Impossible d'éditer le sondage", "alert-danger");
     });
   }
 
@@ -488,7 +488,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
     }).success(function (data, status, headers, config) {
       $state.go('listPolls');
     }).error(function (data, status, headers, config) {
-      alert("Le sondage n'a pas put être supprimé.");
+      openModal($uibModal, "Erreur!", "Le sondage n'a pas pu être supprimé", "alert-danger");
     });
   }
 
@@ -715,7 +715,7 @@ northPoll.controller("manageInstCtrl", function($scope, $http, $state, $statePar
         $scope.instances = response.data.instances;
       });
     }).error(function (data, status, headers, config) {
-      alert("Erreur lors de l'envoi");
+      openModal($uibModal, "Erreur!", "L'instance n'a pas pu être créée", "alert-danger");
     });
   }
 
