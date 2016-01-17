@@ -692,10 +692,12 @@ northPoll.controller("modalMessageCtrl", function ($scope, $uibModalInstance, ms
     $uibModalInstance.close();
   };
   
+  // The popup will automatically close after 4 seconds
   setTimeout(function(){
       $scope.close();
       }, 4000);
   
+  // We load the parameters
   $scope.msg = msg;
   $scope.txt = txt;
   $scope.colorClass = colorClass;
@@ -704,7 +706,8 @@ northPoll.controller("modalMessageCtrl", function ($scope, $uibModalInstance, ms
 northPoll.controller("manageInstCtrl", function($scope, $http, $state, $stateParams, $uibModal) {
     $scope.instances = [];
     $scope.pollId = $stateParams.pollId;
-
+    
+    // We load the instances
   $http.get("/api/polls/" + $scope.pollId + "/instances").then(function (response) {
     $scope.instances = response.data.instances;
   });
@@ -724,12 +727,15 @@ northPoll.controller("manageInstCtrl", function($scope, $http, $state, $statePar
       openModal($uibModal, "Erreur!", "L'instance n'a pas pu être créée", "alert-danger");
     });
   }
-
+  
+  // Delete an instance
   $scope.deleteInstance = function (id) {
     $http({
       url: "/api/polls/" + $scope.pollId + "/instances/" + id,
       method: "DELETE"
     }).success(function (data, status, headers, config) {
+        
+        // If the instance was successfully deleted, no need to reload the instance array, we simply delete the row, on client side
       for (i in $scope.instances) {
         if ($scope.instances[i].id === id) {
           $scope.instances.remove(i);
@@ -737,7 +743,7 @@ northPoll.controller("manageInstCtrl", function($scope, $http, $state, $statePar
         }
       }
     }).error(function (data, status, headers, config) {
-      //
+      openModal($uibModal, "Erreur!", "L'instance n'a pas pu être supprimée", "alert-danger");
     });
   }
 
