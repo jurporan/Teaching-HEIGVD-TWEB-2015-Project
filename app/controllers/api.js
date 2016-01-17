@@ -100,13 +100,16 @@ function getQuestionsByPoll(id, callback) {
   });
 }
 
+// Return if the password is correct or not
 function checkPasswordPoll(pollId, pass, typePass, callback) {
-  console.log(typePass);
   if (pass === undefined) return callback(false);
+
+  // Find the specified poll
   Poll.findById(pollId, function (err, poll) {
     if (err) return callback(false);
     if (poll === null) return callback(false);
 
+    // Get the correct pass
     var correctPass;
     if(typePass === "admin") {
       correctPass = poll.admin_password;
@@ -114,8 +117,7 @@ function checkPasswordPoll(pollId, pass, typePass, callback) {
       correctPass = poll.user_password;
     }
 
-    console.log(correctPass);
-
+    // If the given pass is correct
     if (pass === correctPass) {
       return callback(true);
     }
@@ -173,7 +175,8 @@ router.get('/polls/stats', function (req, res) {
 router.get('/polls/:pollid', function (req, res) {
   var response = {};
 
-  console.log(req.query.typePass);
+  // Begin by checking the given pass
+  // If the user doesn't give a password we return the payload without pass information
   checkPasswordPoll(req.params.pollid, req.query.pass, req.query.typePass, function (pass) {
     if (req.params.pollid === 'draft' ||
       req.params.pollid === 'open' ||
