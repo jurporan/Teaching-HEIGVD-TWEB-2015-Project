@@ -540,6 +540,7 @@ router.put('/polls/:pollid', function (req, res) {
     poll.admin_password = req.body.admin_password;
     poll.user_password = req.body.user_password;
     poll.state = req.body.state;
+    poll.public_results = req.body.public_results;
     poll.save();
     res.status(200).send();
   });
