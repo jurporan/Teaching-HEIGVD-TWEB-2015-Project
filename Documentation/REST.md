@@ -165,7 +165,7 @@ Le serveur répond simplement un message contenant l'dentifiant de la question n
         creator : "<nom du créateur>",
         admin_password : "<mot de passe d'administration>",
         user_password : "<mot de passe à destination des utilisateurs>",
-        state : "draft|open|close",
+        state : "draft|open|closed",
         public_results : <true|false>
     }
 ```

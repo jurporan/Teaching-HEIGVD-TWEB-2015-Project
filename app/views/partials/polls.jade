@@ -3,7 +3,7 @@
 // Partie contenu
 section
   .container
-    .section-header   
+    .section-header
       h2.section-title.text-center.wow.fadeInDown(ng-controller='pollsController') Il y a {{ polls.length }} sondages existants
       div(ng-controller='pollsController')
         table.table.table-hover
@@ -15,7 +15,7 @@ section
               th Contrôles
             tbody(ng-repeat='poll in polls')
               tr.clicker
-                th {{poll.name}} 
+                th {{poll.name}}
                 th
                   // Selection du badge selon l'état du sondage
                   span.label.label-success(ng-if='poll.state=="open"') Ouvert
@@ -24,7 +24,7 @@ section
                 td {{poll.creator}}
                 td
                   button.btn.btn-primary.btn-xs(type="button", ng-click='openModal(poll.id, instance.id, "editPoll")') Modifier
-              
+
               tr.clicker(ng-repeat='instance in poll.instances')
                 td {{instance.name}}
 
@@ -33,7 +33,3 @@ section
                     //button.btn.btn-primary(type="button", ui-sref='answerInstancePoll({instId:instance.id, pollId:poll.id})') Participer
                     button.btn.btn-primary.btn-xs(type="button", ng-click='openModal(poll.id, instance.id, "answerInstancePoll")') Participer
                     button.btn.btn-primary.btn-xs(type="button", ui-sref='statsInstancePoll({instId:instance.id, pollId:poll.id})', ng-disabled='!poll.public_results') Statistiques
-
-
-
-

@@ -457,7 +457,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
     if (!$scope.checkFormFields()) {
       return;
     }
-    alert($scope.pollState);
+
     $http({
       url: "/api/polls/" + $scope.pollId,
       method: "PUT",
@@ -756,8 +756,62 @@ northPoll.controller("manageInstCtrl", function ($scope, $http, $state, $statePa
           break;
         }
       }
+
+      // If there's no more instances we close the poll for now.
+      if ($scope.instances.length == 0)
+      {
+         $scope.closePoll();
+      }
     }).error(function (data, status, headers, config) {
       openModal($uibModal, "Erreur!", "L'instance n'a pas pu être supprimée", "alert-danger");
+    });
+  }
+
+  $scope.pollName = "";
+  $scope.adminName = "";
+  $scope.adminPassword = "";
+  $scope.userPassword = "";
+  $scope.isPublic = "";
+
+  $scope.closePoll = function(){
+      $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass).then(function (response) {
+        $scope.pollName = response.data.name;
+        $scope.adminName = response.data.creator;
+        $scope.adminPassword = response.data.admin_password;
+        $scope.adminPasswordConfirmation = response.data.admin_password;
+        $scope.userPassword = response.data.user_password;
+        $scope.userPasswordConfirmation = response.data.user_password;
+        $scope.isPublic = response.data.public_results;
+        $scope.pollId = response.data.id;
+        $scope.pollState = response.data.state;
+        alert( $scope.pollName);
+
+        $http({
+          url: "/api/polls/" + $scope.pollId,
+          method: "PUT",
+          data: {
+            name: $scope.pollName,
+            creator: $scope.adminName,
+            admin_password: $scope.adminPassword,
+            user_password: $scope.userPassword,
+            state: "closed",
+            public_results: $scope.isPublic
+          }
+        }).success(function (data, status, headers, config) {
+          openModal($uibModal, "Succès", "Dernière instance supprimée. Le sondage a été fermé", "alert-success");
+        }).error(function (data, status, headers, config) {
+          openModal($uibModal, "Erreur!", "Impossible de fermer le sondage", "alert-danger");
+        });
+      }, function () {
+        var modalInstance = $uibModal.open({
+          templateUrl: 'views/partials/modalErrorPassword.jade',
+          controller: 'ErrorPasswordCtrl',
+          backdrop: true,
+          keyboard: true,
+          backdropClick: true,
+          size: 'lg'
+        });
+        $state.go('listPolls');
     });
   }
 
