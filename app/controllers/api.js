@@ -7,20 +7,17 @@ var express = require('express'),
   Instance = mongoose.model('Instance');
 
 // This function is useful to fetch a Poll object with just its ID
-function getPollById(id, callback, passRequired, pass) {
+function getPollById(id, callback, pass) {
   var response = {};
   Poll.findById(id, function (err, poll) {
     if (err) callback({reason: "Couldn't find the specified poll"}, null);
-    if (passRequired && pass !== poll.admin_password) {
-      return callback({reason: "You specify the wrong password"}, null);
-    }
     response.id = poll._id;
     response.name = poll.name;
     response.creator = poll.creator;
     response.creation_date = poll.creationDate;
     response.state = poll.state;
 
-    if (passRequired) {
+    if (pass) {
       response.admin_password = poll.admin_password;
       response.user_password = poll.user_password;
     }
@@ -165,53 +162,40 @@ router.get('/polls/stats', function (req, res) {
 router.get('/polls/:pollid', function (req, res) {
   var response = {};
 
-  if (req.params.pollid === 'draft' ||
-    req.params.pollid === 'open' ||
-    req.params.pollid === 'closed') {
-    response.polls = [];
-    // We search for every poll in the state :type
-    Poll.find({state: req.params.pollid}, function (err, polls) {
-      if (err) return res.status(500).send("Couldn't found any poll of this type");
+  checkPasswordPoll(req.params.pollid, req.query.pass, function (pass) {
+    if (req.params.pollid === 'draft' ||
+      req.params.pollid === 'open' ||
+      req.params.pollid === 'closed') {
+      response.polls = [];
+      // We search for every poll in the state :type
+      Poll.find({state: req.params.pollid}, function (err, polls) {
+        if (err) return res.status(500).send("Couldn't found any poll of this type");
 
-      // If there is none, we simply return the empty array
-      if (polls.length < 1) {
-        return res.send(response);
-      }
+        // If there is none, we simply return the empty array
+        if (polls.length < 1) {
+          return res.send(response);
+        }
 
-      var inserted = 0;
-      // Otherwise, we get the details of every poll
-      polls.forEach(function (poll, idx, arr) {
-        getPollById(poll._id, function (err, resp) {
-          if (err) return res.status(500).send("Couldn't found any poll");
-          response.polls.push(resp);
-          inserted++;
+        var inserted = 0;
+        // Otherwise, we get the details of every poll
+        polls.forEach(function (poll, idx, arr) {
+          getPollById(poll._id, function (err, resp) {
+            if (err) return res.status(500).send("Couldn't found any poll");
+            response.polls.push(resp);
+            inserted++;
 
-          // If we stored every poll available, we can return the result
-          if (inserted === arr.length) {
-            res.format({
-              'application/json': function () {
-                res.send(response);
-              }
-            });
-          }
-        }, false);
+            // If we stored every poll available, we can return the result
+            if (inserted === arr.length) {
+              res.format({
+                'application/json': function () {
+                  res.send(response);
+                }
+              });
+            }
+          }, pass);
+        });
       });
-    });
-  } else {
-    var noPass = req.query.noPass;
-    if (noPass) {
-      console.log("noPass");
-      getPollById(req.params.pollid, function (err, poll) {
-        if (err) return res.status(500).send(err.reason);
-        res.format({
-          'application/json': function () {
-            res.send(poll);
-          }
-        });
-      }, false);
-
     } else {
-      var pass = req.query.pass;
       getPollById(req.params.pollid, function (err, poll) {
         if (err) return res.status(500).send(err.reason);
 
@@ -220,9 +204,9 @@ router.get('/polls/:pollid', function (req, res) {
             res.send(poll);
           }
         });
-      }, true, pass);
+      }, pass);
     }
-  }
+  });
 });
 
 router.get("/polls/:pollid/questions", function (req, res) {
@@ -575,14 +559,15 @@ router.put('/polls/:pollid/questions/:questionid/choice/:choiceid', function (re
 // DELETE requests handler
 
 router.delete('/polls/:pollid', function (req, res) {
-      Question.remove({poll_id: req.params.pollid}).exec();
-      Instance.remove({poll_id: req.params.pollid}).exec();
-      Poll.findByIdAndRemove(req.params.pollid, function(err) {
-          if (err)
-            { res.status(500).send("Coudln't delete poll");}
-      });
-      res.status(200).send();
-    });
+  Question.remove({poll_id: req.params.pollid}).exec();
+  Instance.remove({poll_id: req.params.pollid}).exec();
+  Poll.findByIdAndRemove(req.params.pollid, function (err) {
+    if (err) {
+      res.status(500).send("Coudln't delete poll");
+    }
+  });
+  res.status(200).send();
+});
 
 router.delete('/polls/:pollid/questions/:questionid', function (req, res) {
   Choice.remove({question_id: req.params.questionid}, function (err) {

@@ -33,7 +33,7 @@ northPoll.config(function ($stateProvider, $urlRouterProvider, $locationProvider
   });
   $stateProvider.state('statsInstancePoll', {
     templateUrl: 'views/partials/statsPoll.jade',
-    url: '/stats/:pollId/instance/:instId'
+    url: '/stats/:pollId/instance/:instId?pass'
   });
   $stateProvider.state('createPoll', {
     templateUrl: 'views/partials/create_poll.jade',
@@ -99,16 +99,25 @@ northPoll.controller("statsAppController", function ($http, $scope, $state) {
 
 
 // Stats of an instance controller
-northPoll.controller("statsInstanceController", function ($scope, $http, mySocket, $stateParams) {
+northPoll.controller("statsInstanceController", function ($scope, $http, mySocket, $stateParams, $uibModal, $state) {
 
   // Fetch names of actual instance and poll
   $scope.instanceId = $stateParams.instId;
   $scope.pollId = $stateParams.pollId;
+  $scope.pass = $stateParams.pass;
 
-  $http.get("/api/polls/" + $scope.pollId + "?noPass=true").then(function (response) {
+  var url = "api/polls/" + $scope.pollId;
+  if($scope.pass !== undefined) {
+    url += "?pass=" + $scope.pass;
+  }
+
+  console.log(url);
+
+  $http.get(url).then(function (response) {
     $scope.pollName = response.data.name;
-    if (response.data.public_results === false) {
-      $scope.pollName = "Stats are private";
+    if (response.data.public_results === false && response.data.admin_password === undefined) {
+      openModal($uibModal, "Erreur!", "Les statistiques de ce sondage sont privées.", "alert-danger");
+      $state.go('listPolls');
       return;
     }
 
@@ -758,6 +767,6 @@ northPoll.controller("manageInstCtrl", function ($scope, $http, $state, $statePa
   };
 
   $scope.showResults = function (id) {
-    openModal($uibModal, "Alert!", "Doesn't work yet", "alert-warning");
+    $state.go('statsInstancePoll', {pollId: $scope.pollId, instId:id, pass:$stateParams.pass});
   };
 });
