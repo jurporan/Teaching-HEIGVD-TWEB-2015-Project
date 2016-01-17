@@ -690,6 +690,10 @@ northPoll.controller("modalMessageCtrl", function ($scope, $uibModalInstance, ms
     $uibModalInstance.close();
   };
   
+  setTimeout(function(){
+      $scope.close();
+      }, 4000);
+  
   $scope.msg = msg;
   $scope.txt = txt;
   $scope.colorClass = colorClass;
