@@ -1,12 +1,13 @@
+
 # Site settings
-title:
-email:
-description: > # this means to ignore newlines until "baseurl:"
-baseurl: "" # the subpath of your site, e.g. /blog/
-url: "" # the base hostname & protocol for your site
+title: NorthPoll
+email: contact@mail.com
+description: >
+baseurl: "/Teaching-HEIGVD-TWEB-2015-Project" # the subpath of your site, e.g. /blog/
+url: "http://jurporan.github.io" # the base hostname & protocol for your site
+heroku: "https://northpoll-tweb-2015-project.herokuapp.com/"
 
 twitter_username:
-github_username:
-
+github: jurporan
 # Build settings
 markdown: kramdown
