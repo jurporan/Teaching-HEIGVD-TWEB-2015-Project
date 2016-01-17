@@ -157,7 +157,7 @@ ul.nostyle i {
     -webit-transition: border-color 400ms;
     transition: border-color 400ms;
   }
-  
+
   #main-menu.navbar-default .dropdown-menu > li > a {
     border-top: 1px solid #8BA9C0;
     padding: 15px 0;
@@ -205,9 +205,9 @@ margin-top: 150px;
 .span.btn.btn-primary.btn-form {
 	margin:10px;
 }
- 
+
  .big-checkbox {width: 30px; height: 30px;}
- 
+
 .nav.main-tab {
   background: #eee;
   border-bottom: 3px solid #545454;
@@ -281,4 +281,12 @@ color: #ffffff;
 .footerFix{
 	position:fixed;
     bottom: 0;
+}
+
+.carousel-control.left, .carousel-control.right {
+  background-image: none
+}
+
+.glyphicon {
+  color: black;
 }

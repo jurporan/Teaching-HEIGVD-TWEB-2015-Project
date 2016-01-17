@@ -106,24 +106,26 @@ northPoll.controller("statsInstanceController", function ($scope, $http, mySocke
   $scope.pollId = $stateParams.pollId;
   $scope.pass = $stateParams.pass;
 
-  var url = "api/polls/" + $scope.pollId;
+  // Define url of the get
+  $scope.url = "api/polls/" + $scope.pollId;
   if ($scope.pass !== undefined) {
-    url += "?pass=" + $scope.pass;
+    $scope.url += "?pass=" + $scope.pass;
   }
 
-  console.log(url);
-
-  $http.get(url).then(function (response) {
+  $http.get($scope.url).then(function (response) {
     $scope.pollName = response.data.name;
+
+    // Check if the stats of the poll is private
     if (response.data.public_results === false && response.data.admin_password === undefined) {
       openModal($uibModal, "Erreur!", "Les statistiques de ce sondage sont privées.", "alert-danger");
       $state.go('listPolls');
       return;
     }
 
+    // Check if the instance exist
     $http.get("/api/polls/" + $scope.pollId + "/instances/" + $scope.instanceId).then(function (response) {
       $scope.instanceName = response.data.name;
-      $scope.everthingsVerified();
+      $scope.everthingsVerified(); // All is OK, we can continue
     }, function (response) {
       $scope.pollName = response.data;
     });
@@ -154,6 +156,7 @@ northPoll.controller("statsInstanceController", function ($scope, $http, mySocke
           percentage: []
         });
 
+        // Function to calculate the percentage of choices repartition
         $scope.calculatePercentageForQuestion = function (question, idQuest) {
           question.percentage.forEach(function (percentageChoice, idx, arr) {
             question.percentage[idx] = question.data[idx] / question.nb_answers * 100;
@@ -189,7 +192,7 @@ northPoll.controller("statsInstanceController", function ($scope, $http, mySocke
               // Ensure that this is the latest iteration
               if (idxQuest === arrResp.length - 1 && idx === arr.length - 1) {
                 $scope.questions.forEach(function (question, idx, arr) {
-                  $scope.calculatePercentageForQuestion(question, idx);
+                  $scope.calculatePercentageForQuestion(question, idx); // Calculate percentage
                 });
               }
             });
@@ -199,9 +202,12 @@ northPoll.controller("statsInstanceController", function ($scope, $http, mySocke
 
     mySocket.forward('updateChart', $scope);
 
+    // React on updateChart event
     $scope.$on('socket:updateChart', function (ev, data) {
+      // If the event concern our poll
       if (data[0].question === $scope.questions[0].question_text) {
-        console.log("C'est pareil je mets a jour");
+
+        // Update fields
         $scope.questions.forEach(function (question, idxQuest, arr) {
           question.nb_answers = question.nb_answers + data[idxQuest].choices.length;
 
@@ -214,9 +220,6 @@ northPoll.controller("statsInstanceController", function ($scope, $http, mySocke
             });
             if (idx === arr.length - 1) {
               $scope.calculatePercentageForQuestion(question, idxQuest);
-              /*question.percentage.forEach(function (percentageChoice, idx, arr) {
-               question.percentage[idx] = question.data[idx] / question.nb_answers * 100;
-               });*/
             }
           });
         });
@@ -258,12 +261,13 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
     });
   });
 
-  $scope.openModal = function (pollId, instId, action) {
+  // Function that open a modal dynamically with ui.bootstrap
+  $scope.openModal = function (pollId, instId, action, typePass) {
     var modalInstance = $uibModal.open({
       size: 'sm',
       templateUrl: 'views/partials/modalPassword.jade',
       controller: 'ModalInstanceCtrl',
-      resolve: {
+      resolve: { // Forward parameters
         pollId: function () {
           return pollId;
         },
@@ -272,6 +276,9 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
         },
         action: function () {
           return action;
+        },
+        typePass: function () {
+          return typePass;
         }
       }
     });
@@ -279,12 +286,18 @@ northPoll.controller("pollsController", function ($scope, $http, $stateParams, $
 
 });
 
+// Controller of the instance of a password modal instance
 northPoll.controller("ModalInstanceCtrl", function ($scope, $uibModalInstance, pollId, $http,
-                                                    instId, $uibModal, $state, action) {
+                                                    instId, $uibModal, $state, action, typePass) {
+  // Validate button click
   $scope.ok = function () {
-    $http.get("/api/polls/" + pollId + "?pass=" + $scope.pass).then(function (response) {
-      if(response.data.admin_password === undefined) {
-        var modalInstance = $uibModal.open({
+
+    // Get the desired poll
+    $http.get("/api/polls/" + pollId + "?pass=" + $scope.pass + "&typePass=" + typePass).then(function (response) {
+
+      // If the password is false, the API will not give the password in his payload
+      if (response.data.admin_password === undefined) {
+        var modalInstance = $uibModal.open({ // Error modal
           templateUrl: 'views/partials/modalErrorPassword.jade',
           controller: 'ErrorPasswordCtrl',
           backdrop: true,
@@ -292,18 +305,20 @@ northPoll.controller("ModalInstanceCtrl", function ($scope, $uibModalInstance, p
           backdropClick: true,
           size: 'lg'
         });
-      } else {
+      } else { // It's the good password we change the state
         $uibModalInstance.close('ok');
         $state.go(action, {instId: instId, pollId: pollId, pass: $scope.pass});
       }
     });
   }
 
+  // Cancel button
   $scope.cancel = function () {
     $uibModalInstance.dismiss('cancel');
   };
 });
 
+// Controller of the error modal
 northPoll.controller("ErrorPasswordCtrl", function ($scope, $uibModalInstance) {
   $scope.close = function () {
     $uibModalInstance.close();
@@ -337,7 +352,7 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
     $scope.deletePossible = true;
     $scope.instanceAvailable = true;
 
-    $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass).then(function (response) {
+    $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass + "&typePass=admin").then(function (response) {
       $scope.pollName = response.data.name;
       $scope.adminName = response.data.creator;
       $scope.adminPassword = response.data.admin_password;
@@ -492,29 +507,31 @@ northPoll.controller("PollController", function ($scope, $http, $state, $statePa
   }
 });
 
+// Controller for the manage questions part
 northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, $uibModal, $state) {
   $scope.questions = [];
-  $scope.choices = [{text: '', correct: false}];
+  $scope.choices = [{text: '', correct: false}]; // At start, we have a empty choice
   $scope.modify = false;
   $scope.isOptional = false;
-
   $scope.questionTextValid = true;
   $scope.numberOfPossibleChoicesValid = true;
 
-  $http.get("/api/polls/" + $stateParams.pollId + "/questions?pass=" + $stateParams.pass).then(function (response) {
+  // We get the questions for the dropdown list
+  $http.get("/api/polls/" + $stateParams.pollId + "/questions?pass=" + $stateParams.pass + "&typePass=admin").then(function (response) {
     $scope.questions = $scope.questions.concat(response.data.questions);
   });
 
   // Add the choice in the lower part of the UI to the array and renitialize the fields.
   $scope.addChoice = function () {
-    if($scope.choices[$scope.choices.length - 1].text === ''){
-         openModal($uibModal, "Erreur!", "Le texte d'un choix ne peut pas être vide !", "alert-danger");
-        return;
+    if ($scope.choices[$scope.choices.length - 1].text === '') {
+      openModal($uibModal, "Erreur!", "Le texte d'un choix ne peut pas être vide !", "alert-danger");
+      return;
     }
 
     $scope.choices.push({text: '', correct: false});
   }
 
+  // We select a question, we enter in modification mode
   $scope.selectChoice = function () {
     $scope.modify = true;
     $scope.questionText = $scope.select.text;
@@ -527,21 +544,26 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, 
    Upon success the fields are renitialized and an alret is also displayed. */
   $scope.addQuestion = function () {
 
-    if ($scope.questionText  == null || $scope.questionText === '')
-      { $scope.questionTextValid = false; }
-    else { $scope.questionTextValid =  true; }
-
-    if ($scope.maxChoices  == null || $scope.maxChoices === ''
-        || $scope.maxChoices < 0 || $scope.maxChoices > $scope.choices.length)
-      { $scope.numberOfPossibleChoicesValid = false; }
-    else { $scope.numberOfPossibleChoicesValid =  true; }
-
-    if (!$scope.questionTextValid || !$scope.numberOfPossibleChoicesValid)
-    {
-        return;
+    if ($scope.questionText == null || $scope.questionText === '') {
+      $scope.questionTextValid = false;
+    }
+    else {
+      $scope.questionTextValid = true;
     }
 
-    console.log($scope.isOptional);
+    if ($scope.maxChoices == null || $scope.maxChoices === ''
+      || $scope.maxChoices < 0 || $scope.maxChoices > $scope.choices.length) {
+      $scope.numberOfPossibleChoicesValid = false;
+    }
+    else {
+      $scope.numberOfPossibleChoicesValid = true;
+    }
+
+    if (!$scope.questionTextValid || !$scope.numberOfPossibleChoicesValid) {
+      return;
+    }
+
+    // We create the question in the DB
     $http.post("/api/polls/" + $stateParams.pollId + "/questions",
       {
         text: $scope.questionText,
@@ -555,10 +577,10 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, 
       }, function (response) {
         openModal($uibModal, "Erreur!", "Impossible d'ajouter cette question, " + response.data.errors[0] +
           " semble ne pas être correctement renseigné", "alert-danger");
-        console.log(response);
       });
   }
 
+  // Modification of a question
   $scope.modifyQuestion = function () {
     $http.put("/api/polls/" + $stateParams.pollId + "/questions/" + $scope.select.id,
       {
@@ -574,6 +596,7 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, 
       });
   }
 
+  // Create a new question, we reinitialize fields and enter in create mode
   $scope.createNewQuestion = function () {
     $scope.modify = false;
     $scope.questionText = undefined;
@@ -583,6 +606,7 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http, 
     $scope.choices = [{text: '', correct: false}];
   }
 
+  // Back to edit poll menu
   $scope.backToPoll = function () {
     $state.go('editPoll', {pollId: $stateParams.pollId, pass: $stateParams.pass});
   }
@@ -751,9 +775,8 @@ northPoll.controller("manageInstCtrl", function ($scope, $http, $state, $statePa
       }
 
       // If there's no more instances we close the poll for now.
-      if ($scope.instances.length == 0)
-      {
-         $scope.closePoll();
+      if ($scope.instances.length == 0) {
+        $scope.closePoll();
       }
     }).error(function (data, status, headers, config) {
       openModal($uibModal, "Erreur!", "L'instance n'a pas pu être supprimée", "alert-danger");
@@ -766,45 +789,45 @@ northPoll.controller("manageInstCtrl", function ($scope, $http, $state, $statePa
   $scope.userPassword = "";
   $scope.isPublic = "";
 
-  $scope.closePoll = function(){
-      $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass).then(function (response) {
-        $scope.pollName = response.data.name;
-        $scope.adminName = response.data.creator;
-        $scope.adminPassword = response.data.admin_password;
-        $scope.adminPasswordConfirmation = response.data.admin_password;
-        $scope.userPassword = response.data.user_password;
-        $scope.userPasswordConfirmation = response.data.user_password;
-        $scope.isPublic = response.data.public_results;
-        $scope.pollId = response.data.id;
-        $scope.pollState = response.data.state;
-        alert( $scope.pollName);
+  $scope.closePoll = function () {
+    $http.get("/api/polls/" + $stateParams.pollId + "?pass=" + $stateParams.pass + "&typePass=user").then(function (response) {
+      $scope.pollName = response.data.name;
+      $scope.adminName = response.data.creator;
+      $scope.adminPassword = response.data.admin_password;
+      $scope.adminPasswordConfirmation = response.data.admin_password;
+      $scope.userPassword = response.data.user_password;
+      $scope.userPasswordConfirmation = response.data.user_password;
+      $scope.isPublic = response.data.public_results;
+      $scope.pollId = response.data.id;
+      $scope.pollState = response.data.state;
+      alert($scope.pollName);
 
-        $http({
-          url: "/api/polls/" + $scope.pollId,
-          method: "PUT",
-          data: {
-            name: $scope.pollName,
-            creator: $scope.adminName,
-            admin_password: $scope.adminPassword,
-            user_password: $scope.userPassword,
-            state: "closed",
-            public_results: $scope.isPublic
-          }
-        }).success(function (data, status, headers, config) {
-          openModal($uibModal, "Succès", "Dernière instance supprimée. Le sondage a été fermé", "alert-success");
-        }).error(function (data, status, headers, config) {
-          openModal($uibModal, "Erreur!", "Impossible de fermer le sondage", "alert-danger");
-        });
-      }, function () {
-        var modalInstance = $uibModal.open({
-          templateUrl: 'views/partials/modalErrorPassword.jade',
-          controller: 'ErrorPasswordCtrl',
-          backdrop: true,
-          keyboard: true,
-          backdropClick: true,
-          size: 'lg'
-        });
-        $state.go('listPolls');
+      $http({
+        url: "/api/polls/" + $scope.pollId,
+        method: "PUT",
+        data: {
+          name: $scope.pollName,
+          creator: $scope.adminName,
+          admin_password: $scope.adminPassword,
+          user_password: $scope.userPassword,
+          state: "closed",
+          public_results: $scope.isPublic
+        }
+      }).success(function (data, status, headers, config) {
+        openModal($uibModal, "Succès", "Dernière instance supprimée. Le sondage a été fermé", "alert-success");
+      }).error(function (data, status, headers, config) {
+        openModal($uibModal, "Erreur!", "Impossible de fermer le sondage", "alert-danger");
+      });
+    }, function () {
+      var modalInstance = $uibModal.open({
+        templateUrl: 'views/partials/modalErrorPassword.jade',
+        controller: 'ErrorPasswordCtrl',
+        backdrop: true,
+        keyboard: true,
+        backdropClick: true,
+        size: 'lg'
+      });
+      $state.go('listPolls');
     });
   }
 

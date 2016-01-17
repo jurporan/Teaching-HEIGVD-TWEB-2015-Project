@@ -100,12 +100,25 @@ function getQuestionsByPoll(id, callback) {
   });
 }
 
-function checkPasswordPoll(pollId, pass, callback) {
+// Return if the password is correct or not
+function checkPasswordPoll(pollId, pass, typePass, callback) {
   if (pass === undefined) return callback(false);
+
+  // Find the specified poll
   Poll.findById(pollId, function (err, poll) {
     if (err) return callback(false);
     if (poll === null) return callback(false);
-    if (pass === poll.admin_password) {
+
+    // Get the correct pass
+    var correctPass;
+    if(typePass === "admin") {
+      correctPass = poll.admin_password;
+    } else {
+      correctPass = poll.user_password;
+    }
+
+    // If the given pass is correct
+    if (pass === correctPass) {
       return callback(true);
     }
     return callback(false);
@@ -162,9 +175,9 @@ router.get('/polls/stats', function (req, res) {
 router.get('/polls/:pollid', function (req, res) {
   var response = {};
 
-  console.log("dsafds");
-  checkPasswordPoll(req.params.pollid, req.query.pass, function (pass) {
-    console.log(pass);
+  // Begin by checking the given pass
+  // If the user doesn't give a password we return the payload without pass information
+  checkPasswordPoll(req.params.pollid, req.query.pass, req.query.typePass, function (pass) {
     if (req.params.pollid === 'draft' ||
       req.params.pollid === 'open' ||
       req.params.pollid === 'closed') {
@@ -215,7 +228,7 @@ router.get("/polls/:pollid/questions", function (req, res) {
   var response = {questions: []};
   var expectedNbrResp;
 
-  checkPasswordPoll(req.params.pollid, req.query.pass, function (pass) {
+  checkPasswordPoll(req.params.pollid, req.query.pass, req.query.typePass, function (pass) {
     Question.count({poll_id: req.params.pollid}, function (err, nbrQ) {
       if (err) return res.status(500).send("Couldn't count number of questions");
       expectedNbrResp = nbrQ;
