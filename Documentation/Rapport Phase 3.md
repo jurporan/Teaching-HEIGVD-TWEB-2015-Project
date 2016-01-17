@@ -57,7 +57,13 @@ La page d'accueil affiche quelques statistiques concernant les sondages actuelle
 
 Cette page liste les sondages actuellement disponibles et une pastille indique leur état. En dessous de chacun d'entre eux sont listées les instances de chaque sondage, et deux boutons permettent de participer au sondage (peut réquérir un mot de passe) et de visualiser les résultats en temps réel. Tout à leur droite, un bouton permet de gérer le sondage (modifier ses propriétés, gérer les questions, gérer les instances).
 
-![Page d'accueil](img/answer.png)
+**Participer à un sondage**
+
+![Participer](img/answer.png)
+
+Lorsque l'on clique sur "Participer" sur une instance d'un sondage et que l'on fournit le bon mot de passe (s'il y a lieu), cette page s'ouvre et permet de répondre aux questions du sondage sélectionné. Les boutons "précédent" et "suivant" permettent de passer d'une question à l'autre. Lorsque l'on est sur la dernière question, le bouton "suivant" se renomme en "envoyer" qui permet de soumettre ses réponses.
+
+Lorsque l'utilisateur répond aux questions, il peut sélectionner un ou plusieurs choix (selon les paramètres de la question). Le pointeur de la souris se transforme en main et le choix se colore de bleu clair lorsque le pointeur survole un choix. Le clic permet de sélectionner ou désélectionner un choix. Les choix sélectionnés sont en vert clair.
 
 ![Page d'accueil](img/results.png)
 
@@ -66,3 +72,10 @@ Cette page liste les sondages actuellement disponibles et une pastille indique l
 ![Page d'accueil](img/questions.png)
 
 ![Page d'accueil](img/instances.png)
+
+
+Sécurité
+--------
+
+À faire à l'avenir
+------------------
