@@ -58,6 +58,28 @@ northPoll.factory('mySocket', function (socketFactory) {
   return socketFactory();
 });
 
+var openModal = function(uibModal, title, text, type)
+{
+    var modalInstance = uibModal.open({
+        templateUrl: 'views/partials/modalMessage.jade',
+        controller: 'modalMessageCtrl',
+        backdrop: true,
+        keyboard: true,
+        backdropClick: true,
+        size: 'lg',
+        resolve: {
+        msg: function () {
+          return title;
+        },
+        txt: function () {
+          return text;
+        },
+        colorClass: function () {
+          return type;
+        }
+      }
+      });
+};
 
 northPoll.controller("carouselController", function ($scope, $state) {
   $scope.currentState = $state.current;
@@ -558,7 +580,7 @@ northPoll.controller("manageQuestsCtrl", function ($scope, $stateParams, $http) 
 });
 
 // This angular controller will handle the response process. It is responsible of everything related to the answer fragment of the page.
-northPoll.controller("AnswerCtrl", function ($scope, $http, mySocket, $stateParams) {
+northPoll.controller("AnswerCtrl", function ($scope, $http, $uibModal, mySocket, $stateParams, $state) {
 
   // This function handles the click on a choice
   $scope.select = function (choice) {
@@ -635,11 +657,14 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, mySocket, $statePara
         method: "POST",
         data: {results: $scope.results}
       }).success(function (data, status, headers, config) {
-        console.log($scope.results);
-        alert("Envoyé");
+      
+      openModal($uibModal, "Réponses envoyées!", "Vous avez participé au sondage, les résultats ont été envoyés.", "alert-success");
+        
       }).error(function (data, status, headers, config) {
-        alert("Erreur lors de l'envoi");
+        openModal($uibModal, "Erreur!", "Vos résultats n'ont pas pu être envoyés", "alert-danger");
       });
+      
+      $state.go('listPolls');
     }
   }
 
@@ -658,6 +683,16 @@ northPoll.controller("AnswerCtrl", function ($scope, $http, mySocket, $statePara
     $scope.results = [];
     $scope.next();
   });
+});
+
+northPoll.controller("modalMessageCtrl", function ($scope, $uibModalInstance, msg, txt, colorClass) {
+  $scope.close = function () {
+    $uibModalInstance.close();
+  };
+  
+  $scope.msg = msg;
+  $scope.txt = txt;
+  $scope.colorClass = colorClass;
 });
 
 northPoll.controller("manageInstCtrl", function($scope, $http, $state, $stateParams) {
