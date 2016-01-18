@@ -16,6 +16,7 @@ function getPollById(id, callback, pass) {
     response.creator = poll.creator;
     response.creation_date = poll.creationDate;
     response.state = poll.state;
+    response.protected = (poll.user_password == undefined ? false : true);
 
     if (pass) {
       response.admin_password = poll.admin_password;

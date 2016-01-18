@@ -28,9 +28,12 @@ Si le client n'a rien spécifié lors de sa requête, ```nb_recent``` = ```nb_op
         state : "draft|open|close",
         nb_questions : <nombre de questions>,
         nb_instances : <nombre de fois que ce sondage a été soumis>,
-        public_results : <true|false>
+        public_results : <true|false>,
+        protected: <true|false>
     }
 ```
+
+Le booléen `protected` indique si le sondage est ouvert à toutes les participations ou si cette action requiert un mot de passe. Le mot de passe lui-même n'est pas transmis et le contrôle se fait du côté serveur pour des raisons évidentes de sécurité.
 
 - **GET** ```/api/polls/draft```, ```/api/polls/open``` et ```/api/polls/closed``` : Renvoie la liste des sondages ouverts, respectivement terminés selon le json suivant:
 
